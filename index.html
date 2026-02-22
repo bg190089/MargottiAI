@@ -6,523 +6,488 @@
 <title>Margotti AI</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* ═══════════════════════════════════════════════════
-   VARIÁVEIS & RESET
-═══════════════════════════════════════════════════ */
 :root {
-  --bg:       #080d18;
-  --surface:  #0d1426;
-  --card:     #111b30;
-  --card2:    #162038;
-  --border:   rgba(99,140,255,0.1);
-  --border2:  rgba(99,140,255,0.2);
-  --text:     #dce8ff;
-  --muted:    #5a6e99;
-  --muted2:   #8098cc;
-  --blue:     #4f8ef7;
-  --blue2:    #7eb3ff;
-  --blue-dim: rgba(79,142,247,0.1);
-  --green:    #34d399;
-  --green-dim:rgba(52,211,153,0.1);
-  --red:      #f87171;
-  --red-dim:  rgba(248,113,113,0.1);
-  --amber:    #fbbf24;
-  --r:        10px;
-  --header-h: 52px;
-  --exams-h:  54px;
+  --bg:#080d18; --surf:#0d1426; --card:#111b30; --card2:#162038;
+  --bdr:rgba(99,140,255,.1); --bdr2:rgba(99,140,255,.2);
+  --txt:#dce8ff; --mut:#5a6e99; --mut2:#8098cc;
+  --blue:#4f8ef7; --blue2:#7eb3ff; --bdim:rgba(79,142,247,.12);
+  --grn:#34d399; --gdim:rgba(52,211,153,.12);
+  --red:#f87171; --rdim:rgba(248,113,113,.12);
+  --amb:#fbbf24; --pur:#7c3aed;
+  --r:10px; --hh:52px; --eh:52px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;}
-body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);font-size:13px;}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--txt);font-size:13px;}
 
-/* ═══════════════════════════════════════════════════
-   HEADER
-═══════════════════════════════════════════════════ */
-.header{
-  height:var(--header-h);
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 16px;
-  background:var(--surface);
-  border-bottom:1px solid var(--border);
-  position:relative;z-index:10;
-}
-.logo{font-size:17px;font-weight:700;letter-spacing:-0.5px;color:var(--blue2);}
-.logo em{color:var(--text);font-style:normal;}
-.header-right{display:flex;align-items:center;gap:8px;}
-.nav-tabs{display:flex;gap:2px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:3px;}
-.nav-tab{padding:5px 14px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:inherit;transition:all .2s;white-space:nowrap;}
-.nav-tab.on{background:var(--blue);color:#fff;}
-.api-pill{display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--card);border:1px solid var(--border2);border-radius:8px;color:var(--muted2);font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit;}
-.api-pill:hover{border-color:var(--blue);}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--muted);flex-shrink:0;}
-.dot.on{background:var(--green);box-shadow:0 0 8px var(--green);}
+/* ── HEADER ── */
+.hdr{height:var(--hh);display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;background:var(--surf);border-bottom:1px solid var(--bdr);position:relative;z-index:20;}
+.logo{font-size:17px;font-weight:700;letter-spacing:-.5px;color:var(--blue2);}
+.logo b{color:var(--txt);font-weight:700;}
+.hdr-r{display:flex;align-items:center;gap:8px;}
 
-/* ═══════════════════════════════════════════════════
-   FAIXA DE EXAMES (horizontal scroll)
-═══════════════════════════════════════════════════ */
-.exams-bar{
-  height:var(--exams-h);
-  display:flex;align-items:center;gap:6px;
-  padding:0 16px;
-  background:var(--surface);
-  border-bottom:1px solid var(--border);
-  overflow-x:auto;overflow-y:hidden;
-  scrollbar-width:none;flex-shrink:0;
-}
-.exams-bar::-webkit-scrollbar{display:none;}
-.exam-sep{width:1px;height:24px;background:var(--border2);flex-shrink:0;margin:0 4px;}
-.exam-chip{
-  display:flex;align-items:center;gap:6px;
-  padding:6px 14px;border-radius:20px;
-  border:1px solid var(--border2);background:transparent;
-  color:var(--muted2);font-size:12px;font-weight:500;
-  cursor:pointer;font-family:inherit;white-space:nowrap;
-  transition:all .2s;flex-shrink:0;
-}
-.exam-chip:hover{background:var(--blue-dim);color:var(--blue2);border-color:rgba(79,142,247,0.4);}
-.exam-chip.on{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600;}
-.exam-chip .ei{font-size:14px;}
-.exam-label-group{font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);padding:0 4px;flex-shrink:0;}
+/* Nav tabs desktop */
+.nav{display:flex;gap:2px;background:var(--card);border:1px solid var(--bdr);border-radius:8px;padding:3px;}
+.ntab{padding:5px 14px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;
+  border:none;background:transparent;color:var(--mut);font-family:inherit;transition:all .2s;white-space:nowrap;}
+.ntab.on{background:var(--blue);color:#fff;}
 
-/* ═══════════════════════════════════════════════════
-   MAIN LAYOUT (3 zonas verticais)
-═══════════════════════════════════════════════════ */
-.workspace{
-  display:flex;flex-direction:column;
-  height:calc(100vh - var(--header-h) - var(--exams-h));
-  overflow:hidden;
-}
-/* Zona superior: input + laudo lado a lado */
-.top-zone{
-  display:flex;flex:1;overflow:hidden;min-height:0;
-}
-/* INPUT PANEL */
-.input-panel{
-  width:290px;flex-shrink:0;
-  border-right:1px solid var(--border);
-  display:flex;flex-direction:column;
-  padding:14px;gap:10px;overflow-y:auto;
-}
-/* LAUDO PANEL */
-.laudo-panel{
-  flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;
-}
-.laudo-toolbar{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:10px 16px;border-bottom:1px solid var(--border);flex-shrink:0;
-}
-.laudo-label{font-size:10px;font-weight:700;letter-spacing:1.2px;color:var(--muted);text-transform:uppercase;}
-.laudo-actions{display:flex;gap:5px;}
-.act-btn{
-  padding:5px 11px;border-radius:7px;font-size:11px;font-weight:600;
-  cursor:pointer;border:1px solid var(--border2);background:var(--card);
-  color:var(--muted2);transition:all .2s;font-family:inherit;
-}
-.act-btn:hover{border-color:var(--blue);color:var(--blue2);}
-.act-btn.save{background:var(--green-dim);border-color:rgba(52,211,153,0.3);color:var(--green);}
-.act-btn.save:hover{background:var(--green);color:#000;}
-#laudo-empty{
-  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:12px;color:var(--muted);padding:20px;
-}
-.empty-icon{font-size:48px;opacity:.2;filter:grayscale(1);}
-.empty-txt{font-size:13px;text-align:center;line-height:1.7;color:var(--muted);}
-#laudo-text{
-  flex:1;width:100%;border:none;outline:none;resize:none;
-  background:var(--bg);color:var(--text);
-  font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.9;
-  padding:20px 24px;overflow-y:auto;
-}
-/* BANCO zona inferior — painel colapsável */
-.banco-zone{
-  border-top:1px solid var(--border);
-  height:220px;flex-shrink:0;
-  display:flex;flex-direction:column;
-  transition:height .3s;
-}
-.banco-zone.collapsed{height:40px;}
-.banco-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 16px;height:40px;flex-shrink:0;cursor:pointer;
-  background:var(--surface);
-}
-.banco-title-row{display:flex;align-items:center;gap:10px;}
-.banco-title{font-size:12px;font-weight:600;}
-.banco-count-badge{
-  background:var(--blue-dim);color:var(--blue2);
-  font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;
-  font-family:'JetBrains Mono',monospace;
-}
-.banco-toggle{font-size:12px;color:var(--muted);transition:transform .3s;}
-.banco-zone.collapsed .banco-toggle{transform:rotate(180deg);}
-.banco-body{
-  flex:1;display:flex;flex-direction:column;overflow:hidden;
-}
-.banco-filters{
-  display:flex;gap:4px;padding:8px 16px;border-bottom:1px solid var(--border);flex-shrink:0;
-}
-.filt{
-  padding:4px 12px;border-radius:14px;font-size:10px;font-weight:700;
-  cursor:pointer;border:1px solid var(--border);background:transparent;
-  color:var(--muted);font-family:inherit;transition:all .2s;
-}
-.filt.on{background:var(--blue-dim);border-color:rgba(79,142,247,.35);color:var(--blue2);}
-.banco-cards{
-  flex:1;overflow-x:auto;overflow-y:hidden;
-  display:flex;align-items:flex-start;gap:10px;
-  padding:10px 16px;scrollbar-width:thin;
-  scrollbar-color:var(--border2) transparent;
-}
-.lcard{
-  flex-shrink:0;width:220px;
-  background:var(--card);border:1px solid var(--border);
-  border-radius:var(--r);padding:12px;
-  cursor:pointer;transition:border-color .2s;
-}
+/* API pill */
+.apill{display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--card);
+  border:1px solid var(--bdr2);border-radius:8px;color:var(--mut2);font-size:11px;
+  font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit;}
+.apill:hover{border-color:var(--blue);}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--mut);flex-shrink:0;}
+.dot.on{background:var(--grn);box-shadow:0 0 8px var(--grn);}
+
+/* ── EXAM BAR ── */
+.ebar{height:var(--eh);display:flex;align-items:center;gap:5px;padding:0 14px;
+  background:var(--surf);border-bottom:1px solid var(--bdr);
+  overflow-x:auto;overflow-y:hidden;scrollbar-width:none;flex-shrink:0;}
+.ebar::-webkit-scrollbar{display:none;}
+.esep{width:1px;height:22px;background:var(--bdr2);flex-shrink:0;margin:0 3px;}
+.egl{font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--mut);padding:0 3px;flex-shrink:0;white-space:nowrap;}
+.echip{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:18px;
+  border:1px solid var(--bdr2);background:transparent;color:var(--mut2);font-size:11px;
+  font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap;
+  transition:all .18s;flex-shrink:0;}
+.echip:hover{background:var(--bdim);color:var(--blue2);border-color:rgba(79,142,247,.4);}
+.echip.on{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600;}
+.echip .ei{font-size:13px;}
+
+/* ── WORKSPACE ── */
+.ws{display:flex;flex-direction:column;height:calc(100vh - var(--hh) - var(--eh));overflow:hidden;}
+
+/* EDITOR layout */
+.editor{display:flex;flex:1;overflow:hidden;min-height:0;}
+
+/* Input panel */
+.ipanel{width:280px;flex-shrink:0;border-right:1px solid var(--bdr);
+  display:flex;flex-direction:column;padding:12px;gap:10px;overflow-y:auto;}
+
+/* Mode tabs */
+.mtabs{display:flex;gap:2px;background:var(--card);border-radius:8px;padding:3px;}
+.mtab{flex:1;padding:6px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;
+  border:none;background:transparent;color:var(--mut);font-family:inherit;transition:all .2s;text-align:center;}
+.mtab.on{background:var(--card2);color:var(--txt);border:1px solid var(--bdr2);}
+
+/* Textarea input */
+.iarea{width:100%;padding:11px 12px;border-radius:8px;background:var(--card);
+  border:1px solid var(--bdr2);color:var(--txt);font-family:'Sora',sans-serif;
+  font-size:12px;line-height:1.6;resize:none;outline:none;transition:border .2s;}
+.iarea:focus{border-color:var(--blue);}
+.iarea::placeholder{color:var(--mut);}
+
+/* Botões de ação */
+.gbtn{width:100%;padding:13px;border-radius:10px;background:linear-gradient(135deg,var(--blue),#6366f1);
+  border:none;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;
+  transition:all .2s;box-shadow:0 4px 20px rgba(79,142,247,.3);}
+.gbtn:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(79,142,247,.45);}
+.gbtn:active{transform:translateY(0);}
+.gbtn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
+.mbtn2{width:100%;padding:11px;border-radius:10px;
+  background:linear-gradient(135deg,#7c3aed,#4f46e5);
+  border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;
+  transition:all .2s;box-shadow:0 4px 20px rgba(124,58,237,.3);}
+.mbtn2:hover{transform:translateY(-1px);}
+.mbtn2:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+
+/* Laudo panel */
+.lpanel{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.ltoolbar{display:flex;align-items:center;justify-content:space-between;
+  padding:9px 14px;border-bottom:1px solid var(--bdr);flex-shrink:0;flex-wrap:wrap;gap:6px;}
+.llbl{font-size:10px;font-weight:700;letter-spacing:1.2px;color:var(--mut);text-transform:uppercase;}
+.lacts{display:flex;gap:5px;flex-wrap:wrap;}
+.abtn{padding:5px 10px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;
+  border:1px solid var(--bdr2);background:var(--card);color:var(--mut2);transition:all .2s;font-family:inherit;}
+.abtn:hover{border-color:var(--blue);color:var(--blue2);}
+.abtn.sv{background:var(--gdim);border-color:rgba(52,211,153,.3);color:var(--grn);}
+.abtn.sv:hover{background:var(--grn);color:#000;}
+
+#lempty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;padding:20px;}
+.eico{font-size:48px;opacity:.15;}
+.etxt{font-size:13px;text-align:center;line-height:1.8;color:var(--mut);}
+
+#ltextarea{flex:1;width:100%;border:none;outline:none;resize:none;
+  background:var(--bg);color:var(--txt);font-family:'JetBrains Mono',monospace;
+  font-size:13px;line-height:1.9;padding:20px 24px;overflow-y:auto;}
+
+/* Multi laudo tabs */
+.mltab{padding:5px 12px;border-radius:16px;font-size:11px;font-weight:600;cursor:pointer;
+  border:1px solid var(--bdr2);background:var(--card);color:var(--mut2);font-family:inherit;
+  transition:all .2s;white-space:nowrap;}
+.mltab.on{background:linear-gradient(135deg,#7c3aed,#4f46e5);border-color:#7c3aed;color:#fff;}
+
+/* ── BANCO INFERIOR ── */
+.banco{border-top:1px solid var(--bdr);flex-shrink:0;display:flex;flex-direction:column;
+  height:210px;transition:height .3s;}
+.banco.col{height:40px;overflow:hidden;}
+.bhdr{display:flex;align-items:center;justify-content:space-between;
+  padding:0 14px;height:40px;flex-shrink:0;cursor:pointer;background:var(--surf);}
+.btitle{font-size:12px;font-weight:600;}
+.bbadge{background:var(--bdim);color:var(--blue2);font-size:10px;font-weight:700;
+  padding:2px 8px;border-radius:10px;font-family:'JetBrains Mono',monospace;}
+.btoggle{font-size:11px;color:var(--mut);transition:transform .3s;}
+.banco.col .btoggle{transform:rotate(180deg);}
+.bfilters{display:flex;gap:4px;padding:7px 14px;border-bottom:1px solid var(--bdr);flex-shrink:0;}
+.bfilt{padding:4px 11px;border-radius:14px;font-size:10px;font-weight:700;cursor:pointer;
+  border:1px solid var(--bdr);background:transparent;color:var(--mut);font-family:inherit;transition:all .2s;}
+.bfilt.on{background:var(--bdim);border-color:rgba(79,142,247,.35);color:var(--blue2);}
+.bcards{flex:1;overflow-x:auto;overflow-y:hidden;display:flex;align-items:flex-start;
+  gap:10px;padding:10px 14px;scrollbar-width:thin;scrollbar-color:var(--bdr2) transparent;}
+.lcard{flex-shrink:0;width:210px;background:var(--card);border:1px solid var(--bdr);
+  border-radius:var(--r);padding:11px;cursor:pointer;transition:border-color .2s;}
 .lcard:hover{border-color:var(--blue);}
-.lcard-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
-.tag{font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.5px;}
-.tag-n{background:var(--green-dim);color:var(--green);}
-.tag-p{background:var(--red-dim);color:var(--red);}
-.lcard-exam{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:4px;}
-.lcard-obs{font-size:10px;color:var(--amber);margin-bottom:4px;}
-.lcard-preview{font-size:11px;color:var(--muted2);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:8px;}
-.lcard-date{font-size:9px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
-.lcard-btns{display:flex;gap:5px;margin-top:8px;}
-.lcbtn{
-  flex:1;padding:4px;border-radius:6px;font-size:10px;font-weight:600;
-  cursor:pointer;border:1px solid var(--border);background:transparent;
-  color:var(--muted);font-family:inherit;transition:all .15s;
-}
-.lcbtn:hover{background:var(--card2);color:var(--text);}
-.lcbtn.del:hover{background:var(--red-dim);border-color:rgba(248,113,113,.3);color:var(--red);}
-.banco-empty{padding:20px;color:var(--muted);font-size:12px;text-align:center;line-height:1.8;}
+.lctop{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
+.tag{font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:.5px;}
+.tn{background:var(--gdim);color:var(--grn);}
+.tp{background:var(--rdim);color:var(--red);}
+.lcex{font-size:10px;color:var(--mut);font-family:'JetBrains Mono',monospace;margin-bottom:3px;}
+.lcobs{font-size:10px;color:var(--amb);margin-bottom:3px;}
+.lcprev{font-size:11px;color:var(--mut2);line-height:1.4;display:-webkit-box;
+  -webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:7px;}
+.lcdt{font-size:9px;color:var(--mut);font-family:'JetBrains Mono',monospace;}
+.lcbtns{display:flex;gap:4px;margin-top:7px;}
+.lcbtn{flex:1;padding:4px;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer;
+  border:1px solid var(--bdr);background:transparent;color:var(--mut);font-family:inherit;transition:all .15s;}
+.lcbtn:hover{background:var(--card2);color:var(--txt);}
+.lcbtn.dl:hover{background:var(--rdim);border-color:rgba(248,113,113,.3);color:var(--red);}
+.bempty{padding:20px;color:var(--mut);font-size:12px;text-align:center;line-height:1.8;}
 
-/* ═══════════════════════════════════════════════════
-   INPUT PANEL INTERNALS
-═══════════════════════════════════════════════════ */
-.mode-tabs{display:flex;gap:2px;background:var(--card);border-radius:8px;padding:3px;}
-.mode-tab{flex:1;padding:6px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:inherit;transition:all .2s;text-align:center;}
-.mode-tab.on{background:var(--card2);color:var(--text);border:1px solid var(--border2);}
-textarea.iarea{
-  width:100%;padding:12px;border-radius:8px;
-  background:var(--card);border:1px solid var(--border2);
-  color:var(--text);font-family:'Sora',sans-serif;font-size:12px;
-  line-height:1.6;resize:none;outline:none;transition:border .2s;
-}
-textarea.iarea:focus{border-color:var(--blue);}
-textarea.iarea::placeholder{color:var(--muted);}
-.gen-btn{
-  width:100%;padding:13px;border-radius:10px;
-  background:linear-gradient(135deg,var(--blue),#6366f1);
-  border:none;color:#fff;font-size:14px;font-weight:700;
-  cursor:pointer;font-family:inherit;transition:all .2s;
-  box-shadow:0 4px 20px rgba(79,142,247,0.3);
-}
-.gen-btn:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(79,142,247,0.45);}
-.gen-btn:active{transform:translateY(0);}
-.gen-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
-.rec-center{display:flex;flex-direction:column;align-items:center;gap:8px;padding:10px;}
-.rec-btn{
-  width:56px;height:56px;border-radius:50%;border:2px solid var(--border2);
-  background:var(--card);font-size:22px;cursor:pointer;transition:all .2s;
-  display:flex;align-items:center;justify-content:center;
-}
-.rec-btn.live{background:var(--red-dim);border-color:var(--red);animation:pulse 1.5s infinite;}
+/* ── CONFIG ── */
+.cfgpage{display:none;flex:1;overflow-y:auto;padding:24px;}
+.ccard{background:var(--card);border:1px solid var(--bdr);border-radius:14px;
+  padding:20px;margin-bottom:16px;max-width:640px;}
+.cctitle{font-size:14px;font-weight:700;margin-bottom:4px;}
+.ccsub{font-size:12px;color:var(--mut);margin-bottom:16px;}
+.flbl{font-size:11px;font-weight:600;color:var(--mut2);margin-bottom:5px;display:block;}
+.finp{width:100%;padding:9px 12px;border-radius:8px;background:var(--card2);
+  border:1px solid var(--bdr2);color:var(--txt);font-size:13px;font-family:inherit;
+  outline:none;transition:border .2s;}
+.finp:focus{border-color:var(--blue);}
+.fsel{width:100%;padding:9px 12px;border-radius:8px;background:var(--card2);
+  border:1px solid var(--bdr2);color:var(--txt);font-size:13px;font-family:inherit;
+  outline:none;cursor:pointer;}
+.fld{margin-bottom:12px;}
+.pilist{display:flex;flex-direction:column;gap:6px;}
+.piitem{display:flex;align-items:flex-start;gap:8px;padding:10px;
+  background:var(--card2);border:1px solid var(--bdr);border-radius:8px;}
+.pitxt{flex:1;font-size:12px;color:var(--mut2);line-height:1.5;}
+.pitag{font-size:9px;padding:2px 7px;border-radius:4px;background:var(--bdim);
+  color:var(--blue2);font-weight:700;white-space:nowrap;}
+.pidel{padding:4px 8px;border-radius:5px;background:transparent;border:1px solid var(--bdr);
+  color:var(--mut);font-size:11px;cursor:pointer;font-family:inherit;transition:all .15s;}
+.pidel:hover{background:var(--rdim);border-color:var(--red);color:var(--red);}
+
+/* ── VOZ ── */
+.recarea{display:flex;flex-direction:column;align-items:center;gap:8px;padding:8px;}
+.recbtn{width:54px;height:54px;border-radius:50%;border:2px solid var(--bdr2);background:var(--card);
+  font-size:22px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;}
+.recbtn.live{background:var(--rdim);border-color:var(--red);animation:pulse 1.5s infinite;}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(248,113,113,.4);}50%{box-shadow:0 0 0 10px rgba(248,113,113,0);}}
-.rec-lbl{font-size:11px;color:var(--muted);}
-.rec-lbl.live{color:var(--red);}
-.drop-zone{
-  border:2px dashed var(--border2);border-radius:8px;
-  padding:20px;text-align:center;cursor:pointer;
-  color:var(--muted);transition:all .2s;
-}
-.drop-zone:hover{border-color:var(--blue);color:var(--blue2);}
+.reclbl{font-size:11px;color:var(--mut);}
+.reclbl.live{color:var(--red);}
 
-/* ═══════════════════════════════════════════════════
-   CONFIG PAGE
-═══════════════════════════════════════════════════ */
-.config-page{display:none;flex:1;overflow-y:auto;padding:24px;}
-.ccard{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px;max-width:640px;}
-.ccard-title{font-size:14px;font-weight:700;margin-bottom:4px;}
-.ccard-sub{font-size:12px;color:var(--muted);margin-bottom:16px;}
-.pinput{width:100%;padding:9px 12px;border-radius:8px;background:var(--card2);border:1px solid var(--border2);color:var(--text);font-size:13px;font-family:inherit;outline:none;}
-.pinput:focus{border-color:var(--blue);}
-.pselect{width:100%;padding:9px 12px;border-radius:8px;background:var(--card2);border:1px solid var(--border2);color:var(--text);font-size:13px;font-family:inherit;outline:none;cursor:pointer;}
-.plabel{font-size:11px;font-weight:600;color:var(--muted2);margin-bottom:5px;display:block;}
-.pfield{margin-bottom:12px;}
-.pi-list{display:flex;flex-direction:column;gap:6px;}
-.pi-item{display:flex;align-items:flex-start;gap:8px;padding:10px;background:var(--card2);border:1px solid var(--border);border-radius:8px;}
-.pi-text{flex:1;font-size:12px;color:var(--muted2);line-height:1.5;}
-.pi-tag{font-size:9px;padding:2px 7px;border-radius:4px;background:var(--blue-dim);color:var(--blue2);font-weight:700;white-space:nowrap;}
-.pi-del{padding:4px 8px;border-radius:5px;background:transparent;border:1px solid var(--border);color:var(--muted);font-size:11px;cursor:pointer;font-family:inherit;transition:all .15s;}
-.pi-del:hover{background:var(--red-dim);border-color:var(--red);color:var(--red);}
+/* ── FOTOS ── */
+.dropzone{border:2px dashed var(--bdr2);border-radius:8px;padding:16px;text-align:center;
+  cursor:pointer;color:var(--mut);transition:all .2s;}
+.dropzone:hover{border-color:var(--blue);color:var(--blue2);}
+.fpreviews{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.fthumb{width:54px;height:54px;border-radius:6px;overflow:hidden;
+  border:1px solid var(--bdr2);flex-shrink:0;}
+.fthumb img{width:100%;height:100%;object-fit:cover;}
 
-/* ═══════════════════════════════════════════════════
-   MODAIS
-═══════════════════════════════════════════════════ */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;z-index:1000;padding:16px;}
-.overlay.off{display:none;}
-.modal{background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:24px;width:100%;max-width:380px;}
-.modal-title{font-size:16px;font-weight:700;margin-bottom:4px;}
-.modal-sub{font-size:12px;color:var(--muted);margin-bottom:18px;}
+/* ── MODAIS ── */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;
+  align-items:center;justify-content:center;z-index:1000;padding:16px;}
+.ov.off{display:none;}
+.modal{background:var(--card);border:1px solid var(--bdr2);border-radius:16px;
+  padding:24px;width:100%;max-width:380px;}
+.mtitle{font-size:16px;font-weight:700;margin-bottom:4px;}
+.msub{font-size:12px;color:var(--mut);margin-bottom:18px;}
 .mbtns{display:flex;gap:8px;margin-top:18px;}
-.mbtn{flex:1;padding:10px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--border2);background:var(--card2);color:var(--muted);font-family:inherit;transition:all .2s;}
-.mbtn.primary{background:var(--blue);border-color:var(--blue);color:#fff;}
-.mbtn.primary:hover{background:#3a78e0;}
+.mmbtn{flex:1;padding:10px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;
+  border:1px solid var(--bdr2);background:var(--card2);color:var(--mut);font-family:inherit;transition:all .2s;}
+.mmbtn.pr{background:var(--blue);border-color:var(--blue);color:#fff;}
+.mmbtn.pr:hover{background:#3a78e0;}
 
-/* ═══════════════════════════════════════════════════
-   TOAST
-═══════════════════════════════════════════════════ */
-.toast{
-  position:fixed;bottom:20px;right:16px;z-index:9999;
-  padding:10px 16px;border-radius:10px;font-size:12px;font-weight:600;
-  max-width:calc(100vw - 32px);
-  transform:translateY(60px);opacity:0;transition:all .3s;
-}
+/* ── TOAST ── */
+.toast{position:fixed;bottom:20px;right:16px;z-index:9999;padding:10px 16px;
+  border-radius:10px;font-size:12px;font-weight:600;max-width:calc(100vw - 32px);
+  transform:translateY(60px);opacity:0;transition:all .3s;}
 .toast.show{transform:translateY(0);opacity:1;}
-.toast.ok{background:var(--green);color:#000;}
+.toast.ok{background:var(--grn);color:#000;}
 .toast.err{background:var(--red);color:#fff;}
 .toast.inf{background:var(--blue);color:#fff;}
 .dots{display:inline-flex;gap:4px;align-items:center;}
-.dots span{width:6px;height:6px;border-radius:50%;background:#fff;animation:d .8s infinite;}
+.dots span{width:6px;height:6px;border-radius:50%;background:#fff;animation:dot .8s infinite;}
 .dots span:nth-child(2){animation-delay:.15s;}
 .dots span:nth-child(3){animation-delay:.3s;}
-@keyframes d{0%,80%,100%{transform:scale(.6);opacity:.4;}40%{transform:scale(1);opacity:1;}}
+@keyframes dot{0%,80%,100%{transform:scale(.6);opacity:.4;}40%{transform:scale(1);opacity:1;}}
 
-.multi-tab{padding:5px 12px;border-radius:16px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border2);background:var(--card);color:var(--muted2);font-family:inherit;transition:all .2s;white-space:nowrap;}
-.multi-tab.on{background:linear-gradient(135deg,#7c3aed,#4f46e5);border-color:#7c3aed;color:#fff;}
-.multi-tab .mchk{margin-right:4px;}
-
-/* ═══════════════════════════════════════════════════
-   MOBILE  ≤ 768px
-═══════════════════════════════════════════════════ */
-@media(max-width:768px){
-  html,body{overflow:auto;height:auto;}
-  .workspace{height:auto;overflow:visible;}
-  .top-zone{flex-direction:column;}
-  .input-panel{width:100%;border-right:none;border-bottom:1px solid var(--border);}
-  .laudo-panel{min-height:55vh;}
-  #laudo-text{min-height:50vh;height:auto;}
-  .banco-zone{height:auto;max-height:none;}
-  .banco-zone.collapsed{height:40px;max-height:40px;overflow:hidden;}
-  .banco-cards{flex-direction:column;overflow-x:hidden;overflow-y:auto;max-height:60vh;}
-  .lcard{width:100%;}
-  .nav-tabs{display:none;}
-  .mobile-nav{display:flex !important;}
-  .exams-bar{height:auto;flex-wrap:nowrap;padding:8px 12px;}
-}
-.mobile-nav{
-  display:none;position:fixed;bottom:0;left:0;right:0;
-  background:var(--surface);border-top:1px solid var(--border);
-  height:52px;z-index:100;
-}
-.m-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:9px;font-weight:600;color:var(--muted);cursor:pointer;border:none;background:transparent;font-family:inherit;}
-.m-tab.on{color:var(--blue2);}
-.m-tab .mi{font-size:18px;}
-@media(max-width:768px){
-  body{padding-bottom:52px;}
-  .laudo-panel{display:flex;flex-direction:column;}
-}
+/* ── SCROLLBAR ── */
 ::-webkit-scrollbar{width:3px;height:3px;}
 ::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:4px;}
+
+/* ── MOBILE ── */
+@media(max-width:768px){
+  html,body{overflow:auto;height:auto;}
+  .ws{height:auto;overflow:visible;}
+  .editor{flex-direction:column;}
+  .ipanel{width:100%;border-right:none;border-bottom:1px solid var(--bdr);}
+  .lpanel{min-height:55vh;}
+  #ltextarea{min-height:50vh;}
+  .banco{height:auto;max-height:none;}
+  .banco.col{height:40px;max-height:40px;overflow:hidden;}
+  .bcards{flex-direction:column;overflow-x:hidden;overflow-y:auto;max-height:60vh;}
+  .lcard{width:100%;}
+  .nav{display:none;}
+  .mnav{display:flex !important;}
+}
+.mnav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surf);
+  border-top:1px solid var(--bdr);height:52px;z-index:100;}
+.mtbnav{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:1px;font-size:9px;font-weight:600;color:var(--mut);cursor:pointer;border:none;
+  background:transparent;font-family:inherit;}
+.mtbnav.on{color:var(--blue2);}
+.mtbnav .mi{font-size:18px;}
+@media(max-width:768px){body{padding-bottom:52px;}}
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
-<div class="header">
-  <div class="logo">Margotti<em>AI</em></div>
-  <div class="header-right">
-    <div class="nav-tabs">
-      <button class="nav-tab on" onclick="gotoTab('editor',this)">📝 Editor</button>
-      <button class="nav-tab" onclick="gotoTab('config',this)">⚙️ Config</button>
+<div class="hdr">
+  <div class="logo">Margotti<b>AI</b></div>
+  <div class="hdr-r">
+    <div class="nav">
+      <button class="ntab on" onclick="goTab('editor',this)">📝 Editor</button>
+      <button class="ntab" onclick="goTab('config',this)">⚙️ Config</button>
     </div>
-    <div class="api-pill" style="cursor:default;">
-      <span class="dot on" id="api-dot"></span>
-      <span id="api-lbl">Claude</span>
-    </div>
+    <button class="apill" onclick="openM('m-api')">
+      <span class="dot" id="adot"></span>
+      <span id="albl">Claude</span>
+    </button>
   </div>
 </div>
 
-<!-- FAIXA DE EXAMES -->
-<div class="exams-bar" id="exams-bar">
-  <!-- preenchido via JS -->
-</div>
+<!-- EXAM BAR -->
+<div class="ebar" id="ebar"></div>
 
 <!-- WORKSPACE -->
-<div class="workspace" id="ws-editor">
+<div class="ws">
 
-  <!-- TOPO: input + laudo -->
-  <div class="top-zone">
+  <!-- EDITOR -->
+  <div class="editor" id="pg-editor">
 
-    <!-- INPUT -->
-    <div class="input-panel">
-      <div class="mode-tabs">
-        <button class="mode-tab on" onclick="setMode('text',this)">✏️ Texto</button>
-        <button class="mode-tab" onclick="setMode('voice',this)">🎙️ Voz</button>
-        <button class="mode-tab" onclick="setMode('file',this)">📎 Arquivo</button>
+    <!-- INPUT PANEL -->
+    <div class="ipanel">
+      <div class="mtabs">
+        <button class="mtab on" onclick="setMode('text',this)">✏️ Texto</button>
+        <button class="mtab" onclick="setMode('voice',this)">🎙️ Voz</button>
+        <button class="mtab" onclick="setMode('file',this)">📎 Fotos</button>
       </div>
 
-      <div id="m-text">
-        <div style="position:relative;">
-          <textarea class="iarea" id="ti" rows="6" placeholder="Digite os achados do exame...&#10;&#10;Ex: abdome normal, fígado 14cm,&#10;vesícula sem cálculos"></textarea>
-          <button onclick="document.getElementById('ti').value=''" style="position:absolute;top:6px;right:6px;background:var(--card2);border:1px solid var(--border2);color:var(--muted);border-radius:5px;padding:2px 7px;font-size:10px;cursor:pointer;font-family:inherit;" title="Limpar">✕</button>
+      <!-- TEXTO -->
+      <div id="mm-text">
+        <div style="position:relative">
+          <textarea class="iarea" id="ti" rows="7"
+            placeholder="Digite os achados do exame...&#10;&#10;Ex: fígado 14cm, vesícula sem cálculos, rins normais"></textarea>
+          <button onclick="document.getElementById('ti').value=''"
+            style="position:absolute;top:6px;right:6px;background:var(--card2);border:1px solid var(--bdr2);
+            color:var(--mut);border-radius:5px;padding:2px 7px;font-size:10px;cursor:pointer;font-family:inherit;"
+            title="Limpar">✕</button>
         </div>
       </div>
-      <div id="m-voice" style="display:none">
-        <div class="rec-center">
-          <div class="rec-btn" id="rec-btn" onclick="toggleRec()">🎙️</div>
-          <div class="rec-lbl" id="rec-lbl">Clique para gravar</div>
+
+      <!-- VOZ -->
+      <div id="mm-voice" style="display:none">
+        <div class="recarea">
+          <div class="recbtn" id="recbtn" onclick="toggleRec()">🎙️</div>
+          <div class="reclbl" id="reclbl">Clique para gravar</div>
         </div>
-        <textarea class="iarea" id="vi" rows="3" placeholder="Transcrição..."></textarea>
+        <textarea class="iarea" id="vi" rows="4" placeholder="Transcrição em tempo real..."></textarea>
       </div>
-      <div id="m-file" style="display:none">
-        <div class="drop-zone" onclick="document.getElementById('fi').click()" id="drop-zone">
+
+      <!-- FOTOS -->
+      <div id="mm-file" style="display:none">
+        <div class="dropzone" onclick="document.getElementById('fi').click()">
           <div style="font-size:24px;margin-bottom:4px">🖼️</div>
-          <div style="font-size:12px">Clique para enviar fotos<br><span style="font-size:10px;color:var(--muted)">JPG · PNG · PDF · múltiplas</span></div>
-          <input type="file" id="fi" accept=".jpg,.jpeg,.png,.pdf" style="display:none" multiple onchange="onFiles(this)">
+          <div style="font-size:12px">Clique para enviar fotos<br>
+            <span style="font-size:10px;color:var(--mut)">JPG · PNG · múltiplas imagens</span></div>
+          <input type="file" id="fi" accept="image/*,.pdf" style="display:none" multiple onchange="onFiles(this)">
         </div>
-        <div id="file-previews" style="display:none;margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"></div>
-        <textarea class="iarea" id="fti" rows="2" placeholder="Fotos carregadas — clique em Gerar Laudo para extrair medidas..." style="margin-top:8px" readonly></textarea>
+        <div class="fpreviews" id="fprev"></div>
+        <textarea class="iarea" id="fti" rows="2" placeholder="Fotos carregadas..." style="margin-top:8px" readonly></textarea>
       </div>
 
-      <button class="gen-btn" id="gen-btn" onclick="generate()">⚡ Gerar Laudo</button>
-      <button class="gen-btn" id="multi-btn" onclick="generateMulti()" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);box-shadow:0 4px 20px rgba(124,58,237,0.3);margin-top:6px;">🧩 Multi-Laudo</button>
+      <button class="gbtn" id="gbtn" onclick="generate()">⚡ Gerar Laudo</button>
+      <button class="mbtn2" id="multibtn" onclick="generateMulti()">🧩 Multi-Laudo</button>
     </div>
 
-    <!-- LAUDO -->
-    <div class="laudo-panel">
-      <div id="laudo-empty">
-        <div class="empty-icon">🩻</div>
-        <div class="empty-txt">Selecione o exame na barra acima,<br>insira os dados e clique em<br><strong>⚡ Gerar Laudo</strong></div>
+    <!-- LAUDO PANEL -->
+    <div class="lpanel">
+
+      <!-- Vazio -->
+      <div id="lempty">
+        <div class="eico">🩻</div>
+        <div class="etxt">Selecione o exame na barra acima,<br>insira os dados e clique em<br><strong>⚡ Gerar Laudo</strong></div>
       </div>
+
       <!-- Laudo simples -->
-      <div id="laudo-area" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
-        <div class="laudo-toolbar">
-          <div class="laudo-label">📄 Laudo</div>
-          <div class="laudo-actions">
-            <button class="act-btn" onclick="copyL()">📋 Copiar</button>
-            <button class="act-btn" onclick="editL()">✏️ Editar</button>
-            <button class="act-btn" onclick="pdfL()">📥 PDF</button>
-            <button class="act-btn save" onclick="openM('m-save')">💾 Salvar</button>
+      <div id="larea" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
+        <div class="ltoolbar">
+          <div class="llbl">📄 Laudo</div>
+          <div class="lacts">
+            <button class="abtn" onclick="copyL()">📋 Copiar</button>
+            <button class="abtn" onclick="editL()">✏️ Editar</button>
+            <button class="abtn" onclick="pdfL()">📥 PDF</button>
+            <button class="abtn sv" onclick="openM('m-save')">💾 Salvar</button>
           </div>
         </div>
-        <textarea id="laudo-text" readonly placeholder="Laudo aparecerá aqui..."></textarea>
+        <textarea id="ltextarea" readonly placeholder="Laudo aparecerá aqui..."></textarea>
       </div>
-      <!-- Multi-Laudo com abas -->
-      <div id="multi-area" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
-        <div class="laudo-toolbar" style="flex-wrap:wrap;gap:6px;">
-          <div class="laudo-label">🧩 Multi-Laudo</div>
-          <div id="multi-tabs" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
-          <div class="laudo-actions">
-            <button class="act-btn" onclick="copyMulti()">📋 Copiar</button>
-            <button class="act-btn" onclick="pdfMulti()">📥 PDF</button>
-            <button class="act-btn save" onclick="saveMultiAll()">💾 Salvar Todos</button>
+
+      <!-- Multi-laudo -->
+      <div id="mlarea" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
+        <div class="ltoolbar">
+          <div class="llbl">🧩 Multi-Laudo</div>
+          <div id="mltabs" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
+          <div class="lacts">
+            <button class="abtn" onclick="copyML()">📋 Copiar</button>
+            <button class="abtn" onclick="pdfML()">📥 PDF</button>
+            <button class="abtn sv" onclick="saveAll()">💾 Salvar Todos</button>
           </div>
         </div>
-        <textarea id="multi-text" readonly style="flex:1;width:100%;border:none;outline:none;resize:none;background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.9;padding:20px 24px;overflow-y:auto;"></textarea>
+        <textarea id="mltextarea" readonly style="flex:1;width:100%;border:none;outline:none;resize:none;
+          background:var(--bg);color:var(--txt);font-family:'JetBrains Mono',monospace;
+          font-size:13px;line-height:1.9;padding:20px 24px;overflow-y:auto;"></textarea>
+      </div>
+
+    </div>
+  </div><!-- /editor -->
+
+  <!-- CONFIG PAGE -->
+  <div class="cfgpage" id="pg-config">
+    <div class="ccard">
+      <div class="cctitle">🔐 Instruções Personalizadas</div>
+      <div class="ccsub">A IA aplica automaticamente em todas as gerações. Senha: <code>margotti</code></div>
+      <div id="lockform">
+        <input class="finp" id="pwdinp" type="password" placeholder="Senha..."
+          onkeydown="if(event.key==='Enter')unlock()">
+        <button class="gbtn" onclick="unlock()" style="margin-top:10px;padding:10px;font-size:13px;">🔓 Desbloquear</button>
+      </div>
+      <div id="unlocked" style="display:none">
+        <div style="color:var(--grn);font-size:12px;margin-bottom:14px;">✅ Desbloqueado</div>
+        <div class="fld">
+          <label class="flbl">Exame</label>
+          <select class="fsel" id="pexam">
+            <option value="geral">⭐ Geral (todos)</option>
+            <option value="obstetrico">🤰 Obstétrico</option>
+            <option value="abdome">🫀 Abdome</option>
+            <option value="endovaginal">🔬 Endovaginal</option>
+            <option value="tireoide">🦋 Tireoide</option>
+            <option value="urinario">💧 Urinário</option>
+            <option value="mamas">🎗️ Mamas</option>
+            <option value="prostata">🔵 Próstata</option>
+            <option value="cervical">🔴 Cervical</option>
+            <option value="partes_moles">🟡 Partes Moles</option>
+            <option value="parede_abdominal">🟢 Parede Abdominal</option>
+          </select>
+        </div>
+        <div class="fld">
+          <label class="flbl">Instrução</label>
+          <textarea class="finp" id="ptxt" rows="3" style="resize:vertical"
+            placeholder="Ex: Sempre informar a localização e o tamanho de nódulos..."></textarea>
+        </div>
+        <button class="gbtn" onclick="addPrompt()" style="padding:10px;font-size:13px;">➕ Adicionar</button>
       </div>
     </div>
+    <div class="ccard">
+      <div class="cctitle">📋 Instruções Salvas</div>
+      <div class="ccsub">Carregadas do banco de dados em qualquer dispositivo</div>
+      <div class="pilist" id="pilist"><div style="color:var(--mut);font-size:12px">Nenhuma instrução.</div></div>
+    </div>
+  </div>
 
-  </div><!-- /top-zone -->
-
-  <!-- BANCO INFERIOR -->
-  <div class="banco-zone" id="banco-zone">
-    <div class="banco-header" onclick="toggleBanco()">
-      <div class="banco-title-row">
+  <!-- BANCO -->
+  <div class="banco" id="banco">
+    <div class="bhdr" onclick="toggleBanco()">
+      <div style="display:flex;align-items:center;gap:8px;">
         <span>🗂</span>
-        <span class="banco-title">Banco de Laudos</span>
-        <span class="banco-count-badge" id="banco-ct">0</span>
+        <span class="btitle">Banco de Laudos</span>
+        <span class="bbadge" id="bct">0</span>
       </div>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div class="banco-filters" onclick="event.stopPropagation()">
-          <button class="filt on" data-f="todos" onclick="filtBanco(this)">Todos</button>
-          <button class="filt" data-f="normal" onclick="filtBanco(this)">Normais</button>
-          <button class="filt" data-f="patologico" onclick="filtBanco(this)">Patol.</button>
+      <div style="display:flex;align-items:center;gap:10px;" onclick="event.stopPropagation()">
+        <div class="bfilters">
+          <button class="bfilt on" data-f="todos" onclick="filtB(this)">Todos</button>
+          <button class="bfilt" data-f="normal" onclick="filtB(this)">Normais</button>
+          <button class="bfilt" data-f="patologico" onclick="filtB(this)">Patol.</button>
         </div>
-        <span class="banco-toggle">▼</span>
+        <span class="btoggle" id="btog">▼</span>
       </div>
     </div>
-    <div class="banco-body" id="banco-body">
-      <div class="banco-cards" id="banco-cards">
-        <div class="banco-empty">Nenhum laudo salvo.<br>Gere e salve para<br>construir seu banco.</div>
-      </div>
+    <div class="bcards" id="bcards">
+      <div class="bempty">Nenhum laudo ainda.<br>Gere e salve para construir seu banco.</div>
     </div>
   </div>
 
-</div><!-- /ws-editor -->
-
-<!-- CONFIG PAGE -->
-<div class="config-page" id="ws-config">
-  <div class="ccard">
-    <div class="ccard-title">🔐 Instruções Personalizadas</div>
-    <div class="ccard-sub">A IA aplica essas instruções em todas as gerações. Senha: <code>margotti</code></div>
-    <div id="lock-form">
-      <input class="pinput" id="pwd" type="password" placeholder="Senha..." onkeydown="if(event.key==='Enter')unlock()">
-      <button class="gen-btn" onclick="unlock()" style="margin-top:10px;padding:10px;font-size:13px;">🔓 Desbloquear</button>
-    </div>
-    <div id="unlocked" style="display:none">
-      <div style="color:var(--green);font-size:12px;margin-bottom:14px;">✅ Painel desbloqueado</div>
-      <div class="pfield">
-        <label class="plabel">Exame</label>
-        <select class="pselect" id="p-exam">
-          <option value="geral">⭐ Geral (todos)</option>
-          <option value="obstetrico">🤰 Obstétrico</option>
-          <option value="abdome">🫀 Abdome</option>
-          <option value="endovaginal">🔬 Endovaginal</option>
-          <option value="tireoide">🦋 Tireoide</option>
-          <option value="urinario">💧 Urinário</option>
-          <option value="mamas">🎗️ Mamas</option>
-          <option value="prostata">🔵 Próstata</option>
-          <option value="cervical">🔴 Cervical</option>
-          <option value="partes_moles">🟡 Partes Moles</option>
-          <option value="parede_abdominal">🟢 Parede Abdominal</option>
-        </select>
-      </div>
-      <div class="pfield">
-        <label class="plabel">Instrução</label>
-        <textarea class="pinput" id="p-txt" rows="3" style="resize:vertical" placeholder="Ex: Sempre descrever localização e dimensões de nódulos..."></textarea>
-      </div>
-      <button class="gen-btn" onclick="addPrompt()" style="padding:10px;font-size:13px;">➕ Adicionar</button>
-    </div>
-  </div>
-  <div class="ccard">
-    <div class="ccard-title">📋 Instruções Salvas</div>
-    <div class="ccard-sub">Aplicadas automaticamente pela IA</div>
-    <div class="pi-list" id="pi-list"><div style="color:var(--muted);font-size:12px">Nenhuma instrução.</div></div>
-  </div>
-</div>
+</div><!-- /ws -->
 
 <!-- MOBILE NAV -->
-<div class="mobile-nav">
-  <button class="m-tab on" onclick="mNav('editor',this)"><span class="mi">📝</span>Editor</button>
-  <button class="m-tab" onclick="mNav('banco',this)"><span class="mi">🗂</span>Banco</button>
-  <button class="m-tab" onclick="mNav('config',this)"><span class="mi">⚙️</span>Config</button>
+<div class="mnav">
+  <button class="mtbnav on" onclick="mNav('editor',this)"><span class="mi">📝</span>Editor</button>
+  <button class="mtbnav" onclick="mNav('banco',this)"><span class="mi">🗂</span>Banco</button>
+  <button class="mtbnav" onclick="mNav('config',this)"><span class="mi">⚙️</span>Config</button>
 </div>
 
-<!-- API Key gerenciada no servidor -->
-
-<!-- MODAL: SALVAR -->
-<div class="overlay off" id="m-save">
+<!-- MODAL API KEY -->
+<div class="ov off" id="m-api">
   <div class="modal">
-    <div class="modal-title">💾 Salvar no Banco</div>
-    <div class="modal-sub">Classifique para treinar a IA</div>
-    <div class="pfield">
-      <label class="plabel">Classificação</label>
-      <select class="pselect" id="s-cls">
+    <div class="mtitle">🔑 Configurar API Key</div>
+    <div class="msub">Salva localmente (a chave principal está no servidor)</div>
+    <div class="fld">
+      <label class="flbl">Provedor</label>
+      <select class="fsel" id="mprov">
+        <option value="claude">Claude (Anthropic) — Padrão</option>
+        <option value="gpt">GPT-4 (OpenAI)</option>
+        <option value="deepseek">DeepSeek</option>
+      </select>
+    </div>
+    <div class="fld">
+      <label class="flbl">API Key (opcional — servidor já tem a chave do Claude)</label>
+      <input class="finp" type="password" id="makey" placeholder="sk-ant-...">
+    </div>
+    <div class="mbtns">
+      <button class="mmbtn" onclick="closeM('m-api')">Fechar</button>
+      <button class="mmbtn pr" onclick="saveKey()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SALVAR -->
+<div class="ov off" id="m-save">
+  <div class="modal">
+    <div class="mtitle">💾 Salvar no Banco</div>
+    <div class="msub">Classifique para treinar a IA</div>
+    <div class="fld">
+      <label class="flbl">Classificação</label>
+      <select class="fsel" id="scls">
         <option value="normal">✅ Normal</option>
         <option value="patologico">⚠️ Patológico</option>
       </select>
     </div>
-    <div class="pfield">
-      <label class="plabel">Observação (opcional)</label>
-      <input class="pinput" id="s-obs" placeholder="Ex: Cisto hepático 2cm">
+    <div class="fld">
+      <label class="flbl">Observação (opcional)</label>
+      <input class="finp" id="sobs" placeholder="Ex: Cisto hepático 2cm">
     </div>
     <div class="mbtns">
-      <button class="mbtn" onclick="closeM('m-save')">Cancelar</button>
-      <button class="mbtn primary" onclick="doSave()">Salvar</button>
+      <button class="mmbtn" onclick="closeM('m-save')">Cancelar</button>
+      <button class="mmbtn pr" onclick="doSave()">Salvar</button>
     </div>
   </div>
 </div>
@@ -530,22 +495,22 @@ textarea.iarea::placeholder{color:var(--muted);}
 <div class="toast" id="toast"></div>
 
 <script>
-// ──────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
 //  DADOS
-// ──────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
 const EXAMS_MAIN = [
-  {id:'obstetrico',   label:'Obstétrico',         icon:'🤰'},
-  {id:'abdome',       label:'Abdome Total',        icon:'🫀'},
-  {id:'endovaginal',  label:'Endovaginal',         icon:'🔬'},
-  {id:'tireoide',     label:'Tireoide c/ Doppler', icon:'🦋'},
+  {id:'obstetrico',   label:'Obstétrico',          icon:'🤰'},
+  {id:'abdome',       label:'Abdome Total',         icon:'🫀'},
+  {id:'endovaginal',  label:'Endovaginal',          icon:'🔬'},
+  {id:'tireoide',     label:'Tireoide c/ Doppler',  icon:'🦋'},
   {id:'urinario',     label:'Rins e Vias Urinárias',icon:'💧'},
-  {id:'mamas',        label:'Mamas',               icon:'🎗️'},
+  {id:'mamas',        label:'Mamas',                icon:'🎗️'},
 ];
 const EXAMS_EXTRA = [
-  {id:'prostata',         label:'Próstata',        icon:'🔵'},
-  {id:'cervical',         label:'Cervical',        icon:'🔴'},
-  {id:'partes_moles',     label:'Partes Moles',    icon:'🟡'},
-  {id:'parede_abdominal', label:'Parede Abdominal',icon:'🟢'},
+  {id:'prostata',         label:'Próstata',         icon:'🔵'},
+  {id:'cervical',         label:'Cervical',         icon:'🔴'},
+  {id:'partes_moles',     label:'Partes Moles',     icon:'🟡'},
+  {id:'parede_abdominal', label:'Parede Abdominal', icon:'🟢'},
 ];
 const ALL_EXAMS = [...EXAMS_MAIN, ...EXAMS_EXTRA];
 
@@ -661,11 +626,11 @@ Volume prostático estimado: ___ cm³ (normal até 30 cm³).
 Ecotextura homogênea, sem nodulações suspeitas ao ultrassom.
 Zona transicional sem alterações significativas.
 Vesículas seminais de aspecto normal.
-Bexiga em repleção, paredes finas, sem espessamentos.
+Bexiga em repleção, paredes finas.
 Resíduo pós-miccional: ___ mL.
 
 IMPRESSÃO DIAGNÓSTICA:
-- Próstata de volume ___, sem nodulações suspeitas ao ultrassom.
+- Próstata de volume ___, sem nodulações suspeitas.
 
 Dr. Roberto Freire Margotti | CRM-BA 26929 | RQE: 21367`,
 
@@ -718,610 +683,296 @@ Dr. Roberto Freire Margotti | CRM-BA 26929 | RQE: 21367`,
 const SYS = `Você é o assistente de laudos ultrassonográficos do Dr. Roberto Freire Margotti (CRM-BA 26929 | RQE: 21367), especialista com mais de 20 anos de experiência em Feira de Santana, Bahia.
 
 REGRAS:
-1. Ignore conversas informais — foque apenas nos achados/medidas do exame
-2. Se o dado for "normal", preencha o template com achados normais padrão
-3. Substitua "___" pelos valores fornecidos
+1. Ignore conversas informais — foque apenas nos achados e medidas
+2. Se o dado for "normal", preencha com achados normais padrão
+3. Substitua todos os "___" pelos valores fornecidos
 4. Use terminologia médica formal e objetiva
 5. Assine sempre: Dr. Roberto Freire Margotti | CRM-BA 26929 | RQE: 21367
-6. Mantenha a estrutura e estilo do template`;
+6. Mantenha a estrutura do template fornecido`;
 
-// ──────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
 //  ESTADO
-// ──────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
 let exam    = 'obstetrico';
 let mode    = 'text';
 let report  = '';
-let bFilter = 'todos';
+let bfilt   = 'todos';
 let banco   = JSON.parse(localStorage.getItem('mb') || '[]');
 let prompts = JSON.parse(localStorage.getItem('mp') || '[]');
 let recObj  = null;
 let isRec   = false;
+let fileList = [];
+let multiLaudos = [];
+let multiActive = 0;
 
-// ──────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
 //  INIT
-// ──────────────────────────────────────────────────────────────
-buildExamBar();
+// ═══════════════════════════════════════════════════════════
+buildEbar();
 loadApiStatus();
 renderBanco();
 loadPrompts();
 
-function buildExamBar() {
-  const bar = document.getElementById('exams-bar');
-  let html = '<span class="exam-label-group">Principais</span>';
-  EXAMS_MAIN.forEach(e => { html += chip(e); });
-  html += '<div class="exam-sep"></div><span class="exam-label-group">Complementares</span>';
-  EXAMS_EXTRA.forEach(e => { html += chip(e); });
-  bar.innerHTML = html;
-}
-function chip(e) {
-  return `<button class="exam-chip${e.id===exam?' on':''}" onclick="setExam('${e.id}',this)">
+function buildEbar() {
+  const bar = document.getElementById('ebar');
+  const chip = e => `<button class="echip${e.id===exam?' on':''}" onclick="setExam('${e.id}',this)">
     <span class="ei">${e.icon}</span>${e.label}</button>`;
+  bar.innerHTML =
+    `<span class="egl">Principais</span>` +
+    EXAMS_MAIN.map(chip).join('') +
+    `<div class="esep"></div><span class="egl">Complementares</span>` +
+    EXAMS_EXTRA.map(chip).join('');
 }
+
 function setExam(id, btn) {
   exam = id;
-  document.querySelectorAll('.exam-chip').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.echip').forEach(b => b.classList.remove('on'));
   btn.classList.add('on');
-  // Scroll o chip para ficar visível
   btn.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
 }
 
-// ──────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
 //  TABS
-// ──────────────────────────────────────────────────────────────
-function gotoTab(t, btn) {
-  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('on'));
+// ═══════════════════════════════════════════════════════════
+function goTab(t, btn) {
+  document.querySelectorAll('.ntab').forEach(b => b.classList.remove('on'));
   btn.classList.add('on');
-  document.getElementById('ws-editor').style.display = t==='editor' ? '' : 'none';
-  document.getElementById('ws-config').style.display = t==='config' ? 'block' : 'none';
-}
-function mNav(t, btn) {
-  document.querySelectorAll('.m-tab').forEach(b => b.classList.remove('on'));
-  btn.classList.add('on');
-  const ed = document.getElementById('ws-editor');
-  const cf = document.getElementById('ws-config');
-  const bz = document.getElementById('banco-zone');
-  if (t==='editor') {
-    ed.style.display=''; cf.style.display='none';
-    const bzone = document.getElementById('banco-zone');
-    if(bzone) bzone.classList.add('collapsed');
-  } else if(t==='banco') {
-    ed.style.display=''; cf.style.display='none';
-    const bzone = document.getElementById('banco-zone');
-    if(bzone) bzone.classList.remove('collapsed');
-    document.getElementById('banco-zone').scrollIntoView({behavior:'smooth'});
+  const ed = document.getElementById('pg-editor');
+  const cf = document.getElementById('pg-config');
+  const bz = document.getElementById('banco');
+  if (t === 'editor') {
+    ed.style.display = 'flex';
+    cf.style.display = 'none';
+    bz.style.display = 'flex';
   } else {
-    ed.style.display='none'; cf.style.display='block';
+    ed.style.display = 'none';
+    cf.style.display = 'block';
+    bz.style.display = 'none';
   }
 }
 
-// ──────────────────────────────────────────────────────────────
-//  INPUT MODES
-// ──────────────────────────────────────────────────────────────
+function mNav(t, btn) {
+  document.querySelectorAll('.mtbnav').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  const ed = document.getElementById('pg-editor');
+  const cf = document.getElementById('pg-config');
+  const bz = document.getElementById('banco');
+  if (t === 'editor') {
+    ed.style.display = 'flex'; cf.style.display = 'none'; bz.style.display = 'none';
+  } else if (t === 'banco') {
+    ed.style.display = 'none'; cf.style.display = 'none'; bz.style.display = 'flex';
+    bz.classList.remove('col');
+  } else {
+    ed.style.display = 'none'; cf.style.display = 'block'; bz.style.display = 'none';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  MODO DE ENTRADA
+// ═══════════════════════════════════════════════════════════
 function setMode(m, btn) {
   mode = m;
-  document.querySelectorAll('.mode-tab').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.mtab').forEach(b => b.classList.remove('on'));
   btn.classList.add('on');
-  ['text','voice','file'].forEach(x => {
-    document.getElementById('m-'+x).style.display = x===m ? '' : 'none';
-  });
+  ['text','voice','file'].forEach(x =>
+    document.getElementById('mm-'+x).style.display = x === m ? '' : 'none');
 }
+
 function getInput() {
-  if(mode==='text')  return document.getElementById('ti').value.trim();
-  if(mode==='voice') return document.getElementById('vi').value.trim();
-  if(mode==='file')  return document.getElementById('fti').value.trim();
+  if (mode === 'text')  return document.getElementById('ti').value.trim();
+  if (mode === 'voice') return document.getElementById('vi').value.trim();
+  if (mode === 'file')  return document.getElementById('fti').value.trim();
   return '';
 }
-function onFile(inp) {
-  const f = inp.files[0];
-  if(!f) return;
-  document.getElementById('fti').value = `Arquivo: ${f.name} — Descreva os achados abaixo.`;
-  toast('Arquivo carregado','inf');
-}
 
-// ──────────────────────────────────────────────────────────────
-//  API KEY
-// ──────────────────────────────────────────────────────────────
-function loadApiStatus() {
-  // Chave gerenciada no servidor via ANTHROPIC_API_KEY
-  document.getElementById('api-dot').classList.add('on');
-}
-function saveKey() {
-  const k = document.getElementById('akey').value.trim();
-  const p = document.getElementById('prov').value;
-  if(!k){toast('Digite a API Key','err');return;}
-  localStorage.setItem('mac', JSON.stringify({prov:p, key:k}));
-  document.getElementById('api-dot').classList.add('on');
-  document.getElementById('api-lbl').textContent = p==='claude'?'Claude':p==='gpt'?'GPT-4':'DeepSeek';
-  closeM('m-api');
-  toast('API Key salva!','ok');
-}
-
-// ──────────────────────────────────────────────────────────────
-//  GERAR LAUDO
-// ──────────────────────────────────────────────────────────────
-async function generate() {
-  const input = getInput();
-  if(!input){toast('Insira os dados do exame','err');return;}
-
-  const btn = document.getElementById('gen-btn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="dots"><span></span><span></span><span></span></span> Gerando...';
-
-  try {
-    // Referência de laudos anteriores
-    const prev = banco.filter(l => l.exam === exam);
-    let ref = '';
-    if(prev.length) {
-      const n = prev.filter(l=>l.cls==='normal').slice(0,2);
-      const p = prev.filter(l=>l.cls==='patologico').slice(0,2);
-      ref = '\n\n--- REFERÊNCIA DE LAUDOS ANTERIORES DO DR. ROBERTO ---\n';
-      if(n.length){ref+='\nNORMAIS:\n';n.forEach((r,i)=>{ref+=`[${i+1}]:\n${r.txt.slice(0,600)}\n\n`;});}
-      if(p.length){ref+='\nPATOLÓGICOS:\n';p.forEach((r,i)=>{ref+=`[${i+1}]:\n${r.txt.slice(0,600)}\n\n`;});}
-      ref += '--- FIM ---';
-    }
-    // Prompts personalizados
-    const pts = prompts.filter(p=>p.exam===exam||p.exam==='geral');
-    const pStr = pts.length ? '\n\nINSTRUÇÕES PERSONALIZADAS:\n'+pts.map(p=>'- '+p.txt).join('\n') : '';
-
-    const userMsg = `Tipo: ${exam}\nDados: ${input}\nTemplate:\n${TPL[exam]||''}${ref}${pStr}`;
-
-    // Chama Claude via servidor (chave protegida no Vercel)
-    // Se tiver fotos, incluir as imagens na requisição
-    const reqBody = {system: SYS, userMsg};
-    if(mode === 'file' && fileDataList.length) {
-      reqBody.images = fileDataList.map(f=>({base64:f.base64, type:f.type, name:f.name}));
-    }
-    const resp = await fetch('/api/generate', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(reqBody)
-    });
-    if(!resp.ok){const e=await resp.json();throw new Error(e.error||resp.statusText);}
-    const {content} = await resp.json();
-
-    report = content;
-    document.getElementById('laudo-text').value = content;
-    document.getElementById('laudo-text').setAttribute('readonly','');
-    document.getElementById('laudo-empty').style.display = 'none';
-    const la = document.getElementById('laudo-area');
-    la.style.display = 'flex';
-
-    toast('Laudo gerado!','ok');
-
-    // Auto-salva local
-    banco.unshift({id:Date.now(), exam, cls:'normal', obs:'', txt:content, dt:new Date().toLocaleDateString('pt-BR')});
-    localStorage.setItem('mb', JSON.stringify(banco));
-    renderBanco();
-
-    // Tenta sync Supabase
-    fetch('/api/db?path='+encodeURIComponent('/rest/v1/laudos'), {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({exam, exam_name:exam, classification:'normal', observation:'', report_text:content})
-    }).catch(()=>{});
-
-  } catch(e) {
-    toast('Erro: '+(e.message||'Verifique sua API Key'),'err');
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = '⚡ Gerar Laudo';
-  }
-}
-
-async function callClaude(key, sys, usr) {
-  const r = await fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2500,temperature:0.3,system:sys,messages:[{role:'user',content:usr}]})
-  });
-  if(!r.ok){const e=await r.json();throw new Error(e.error?.message||r.statusText);}
-  return (await r.json()).content[0].text;
-}
-async function callGPT(key, sys, usr) {
-  const r = await fetch('https://api.openai.com/v1/chat/completions',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
-    body:JSON.stringify({model:'gpt-4-turbo',max_tokens:2500,temperature:0.3,messages:[{role:'system',content:sys},{role:'user',content:usr}]})
-  });
-  if(!r.ok){const e=await r.json();throw new Error(e.error?.message||r.statusText);}
-  return (await r.json()).choices[0].message.content;
-}
-async function callDeepSeek(key, sys, usr) {
-  const r = await fetch('https://api.deepseek.com/v1/chat/completions',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
-    body:JSON.stringify({model:'deepseek-chat',max_tokens:2500,temperature:0.3,messages:[{role:'system',content:sys},{role:'user',content:usr}]})
-  });
-  if(!r.ok) throw new Error(r.statusText);
-  return (await r.json()).choices[0].message.content;
-}
-
-// ──────────────────────────────────────────────────────────────
-//  AÇÕES DO LAUDO
-// ──────────────────────────────────────────────────────────────
-function copyL() {
-  navigator.clipboard.writeText(document.getElementById('laudo-text').value||report);
-  toast('Copiado!','ok');
-}
-function editL() {
-  document.getElementById('laudo-text').removeAttribute('readonly');
-  document.getElementById('laudo-text').focus();
-  toast('Modo edição ativo','inf');
-}
-function pdfL() {
-  const txt = document.getElementById('laudo-text').value || report;
-  if(!txt){toast('Nenhum laudo','err');return;}
-  const ex = ALL_EXAMS.find(e=>e.id===exam);
-  const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Laudo</title>
-<style>body{font-family:Georgia,serif;max-width:720px;margin:40px auto;padding:20px 40px;font-size:13px;line-height:1.9;color:#111}
-.h{border-bottom:2px solid #111;padding-bottom:12px;margin-bottom:20px}
-.h h1{font-size:13px;font-weight:700;margin:0 0 3px;text-transform:uppercase;letter-spacing:1px}
-.h p{font-size:11px;color:#555;margin:0}pre{white-space:pre-wrap;font-family:Georgia,serif}
-.f{border-top:1px solid #ccc;margin-top:40px;padding-top:10px;font-size:10px;color:#999}
-@media print{body{margin:20px 30px}}</style></head><body>
-<div class="h"><h1>${ex?.label||exam}</h1>
-<p>Dr. Roberto Freire Margotti · CRM-BA 26929 · RQE: 21367 · ${new Date().toLocaleDateString('pt-BR')}</p></div>
-<pre>${txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>
-<div class="f">Gerado por Margotti AI · ${new Date().toLocaleDateString('pt-BR')}</div></body></html>`;
-  const a = Object.assign(document.createElement('a'),{
-    href:URL.createObjectURL(new Blob([html],{type:'text/html'})),
-    download:`laudo-${exam}-${Date.now()}.html`
-  });
-  a.click(); URL.revokeObjectURL(a.href);
-  toast('Baixado! Abra e imprima como PDF','ok');
-}
-
-// ──────────────────────────────────────────────────────────────
-//  BANCO
-// ──────────────────────────────────────────────────────────────
-function toggleBanco() {
-  document.getElementById('banco-zone').classList.toggle('collapsed');
-}
-function filtBanco(btn) {
-  document.querySelectorAll('.filt').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  bFilter = btn.dataset.f;
-  renderBanco();
-}
-function renderBanco() {
-  const lista = bFilter==='todos' ? banco : banco.filter(l=>l.cls===bFilter);
-  document.getElementById('banco-ct').textContent = banco.length;
-  if(!lista.length){
-    document.getElementById('banco-cards').innerHTML='<div class="banco-empty">Nenhum laudo.<br>Gere e salve para<br>construir seu banco.</div>';
-    return;
-  }
-  document.getElementById('banco-cards').innerHTML = lista.map(l=>`
-    <div class="lcard" onclick="viewL(${l.id})">
-      <div class="lcard-top">
-        <span class="tag ${l.cls==='normal'?'tag-n':'tag-p'}">${l.cls==='normal'?'✅ Normal':'⚠️ Patol.'}</span>
-        <span class="lcard-date">${l.dt}</span>
-      </div>
-      <div class="lcard-exam">${l.exam}</div>
-      ${l.obs?`<div class="lcard-obs">📌 ${l.obs}</div>`:''}
-      <div class="lcard-preview">${l.txt}</div>
-      <div class="lcard-btns">
-        <button class="lcbtn" onclick="event.stopPropagation();viewL(${l.id})">Ver</button>
-        <button class="lcbtn del" onclick="event.stopPropagation();delL(${l.id})">Excluir</button>
-      </div>
-    </div>`).join('');
-}
-function viewL(id) {
-  const l = banco.find(x=>x.id===id);
-  if(!l) return;
-  report = l.txt;
-  document.getElementById('laudo-text').value = l.txt;
-  document.getElementById('laudo-empty').style.display='none';
-  document.getElementById('laudo-area').style.display='flex';
-  toast('Laudo carregado','inf');
-}
-function delL(id) {
-  banco = banco.filter(l=>l.id!==id);
-  localStorage.setItem('mb', JSON.stringify(banco));
-  renderBanco();
-  toast('Removido','ok');
-  fetch('/api/db?path='+encodeURIComponent(`/rest/v1/laudos?id=eq.${id}`),{method:'DELETE'}).catch(()=>{});
-}
-function doSave() {
-  const cls = document.getElementById('s-cls').value;
-  const obs = document.getElementById('s-obs').value.trim();
-  const txt = document.getElementById('laudo-text').value || report;
-  if(!txt){toast('Nenhum laudo','err');return;}
-  const ex = banco.findIndex(l=>l.txt===txt);
-  if(ex>=0){banco[ex].cls=cls;banco[ex].obs=obs;}
-  else banco.unshift({id:Date.now(),exam,cls,obs,txt,dt:new Date().toLocaleDateString('pt-BR')});
-  localStorage.setItem('mb',JSON.stringify(banco));
-  renderBanco();
-  closeM('m-save');
-  document.getElementById('s-obs').value='';
-  toast('Salvo no banco!','ok');
-  fetch('/api/db?path='+encodeURIComponent('/rest/v1/laudos'),{
-    method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({exam,exam_name:exam,classification:cls,observation:obs,report_text:txt})
-  }).catch(()=>{});
-}
-
-// ──────────────────────────────────────────────────────────────
-//  BANCO COLLAPSE — clique no cartão vai para laudo
-// ──────────────────────────────────────────────────────────────
-
-// ──────────────────────────────────────────────────────────────
-//  VOZ
-// ──────────────────────────────────────────────────────────────
-function toggleRec() {
-  if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){toast('Use Chrome para voz','err');return;}
-  if(!isRec) {
-    const SR = window.webkitSpeechRecognition||window.SpeechRecognition;
-    recObj = new SR(); recObj.lang='pt-BR'; recObj.continuous=true; recObj.interimResults=true;
-    recObj.onstart=()=>{isRec=true;document.getElementById('rec-btn').classList.add('live');document.getElementById('rec-btn').textContent='⏹️';document.getElementById('rec-lbl').textContent='● Gravando...';document.getElementById('rec-lbl').classList.add('live');};
-    recObj.onresult=e=>{let t='';for(let i=e.resultIndex;i<e.results.length;i++)t+=e.results[i][0].transcript;document.getElementById('vi').value+=' '+t;};
-    recObj.onend=()=>{isRec=false;document.getElementById('rec-btn').classList.remove('live');document.getElementById('rec-btn').textContent='🎙️';document.getElementById('rec-lbl').textContent='Clique para gravar';document.getElementById('rec-lbl').classList.remove('live');};
-    recObj.start();
-  } else { recObj.stop(); }
-}
-
-// ──────────────────────────────────────────────────────────────
-//  PROMPTS
-// ──────────────────────────────────────────────────────────────
-function unlock() {
-  if(document.getElementById('pwd').value==='margotti'){
-    document.getElementById('lock-form').style.display='none';
-    document.getElementById('unlocked').style.display='';
-    toast('Desbloqueado!','ok');
-  } else {toast('Senha incorreta','err');document.getElementById('pwd').value='';}
-}
-async function addPrompt() {
-  const e=document.getElementById('p-exam').value;
-  const t=document.getElementById('p-txt').value.trim();
-  if(!t){toast('Digite a instrução','err');return;}
-  // Salva no Supabase
-  try {
-    const r = await fetch('/api/db?path='+encodeURIComponent('/rest/v1/instrucoes'), {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({exam:e, texto:t})
-    });
-    const data = await r.json();
-    const newId = Array.isArray(data) ? data[0].id : Date.now();
-    prompts.push({id:newId, exam:e, txt:t});
-  } catch {
-    prompts.push({id:Date.now(), exam:e, txt:t});
-  }
-  localStorage.setItem('mp',JSON.stringify(prompts));
-  document.getElementById('p-txt').value='';
-  renderPrompts();
-  toast('Instrução salva!','ok');
-}
-function delPrompt(id) {
-  prompts=prompts.filter(p=>p.id!==id);
-  localStorage.setItem('mp',JSON.stringify(prompts));
-  renderPrompts();
-  fetch('/api/db?path='+encodeURIComponent(`/rest/v1/instrucoes?id=eq.${id}`),{method:'DELETE'}).catch(()=>{});
-}
-async function loadPrompts() {
-  try {
-    const r = await fetch('/api/db?path='+encodeURIComponent('/rest/v1/instrucoes?select=*&order=created_at.asc'));
-    if(r.ok) {
-      const data = await r.json();
-      if(Array.isArray(data) && data.length) {
-        prompts = data.map(d=>({id:d.id, exam:d.exam, txt:d.texto}));
-        localStorage.setItem('mp', JSON.stringify(prompts));
-      }
-    }
-  } catch {
-    // fallback para localStorage
-    prompts = JSON.parse(localStorage.getItem('mp')||'[]');
-  }
-  renderPrompts();
-}
-
-function renderPrompts() {
-  const el=document.getElementById('pi-list');
-  if(!prompts.length){el.innerHTML='<div style="color:var(--muted);font-size:12px">Nenhuma instrução.</div>';return;}
-  el.innerHTML=prompts.map(p=>`<div class="pi-item"><div class="pi-text">${p.txt}</div><span class="pi-tag">${p.exam}</span><button class="pi-del" onclick="delPrompt(${p.id})">✕</button></div>`).join('');
-}
-
-// ──────────────────────────────────────────────────────────────
-//  MODAIS
-// ──────────────────────────────────────────────────────────────
-function openM(id){document.getElementById(id).classList.remove('off');}
-function closeM(id){document.getElementById(id).classList.add('off');}
-document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.add('off');}));
-
-// ──────────────────────────────────────────────────────────────
-//  MÚLTIPLAS FOTOS
-// ──────────────────────────────────────────────────────────────
-let fileDataList = []; // {name, base64, type}
-
+// ═══════════════════════════════════════════════════════════
+//  FOTOS
+// ═══════════════════════════════════════════════════════════
 function onFiles(input) {
   const files = Array.from(input.files);
-  if(!files.length) return;
-  fileDataList = [];
-  const previews = document.getElementById('file-previews');
-  previews.innerHTML = '';
-  previews.style.display = 'flex';
-
+  if (!files.length) return;
+  fileList = [];
+  const prev = document.getElementById('fprev');
+  prev.innerHTML = '';
   let loaded = 0;
-  files.forEach((f, i) => {
+  files.forEach(f => {
     const reader = new FileReader();
-    reader.onload = (e) => {
-      const base64 = e.target.result.split(',')[1];
-      fileDataList.push({name: f.name, base64, type: f.type});
-      // Mini preview
-      const div = document.createElement('div');
-      div.style.cssText = 'position:relative;width:60px;height:60px;border-radius:6px;overflow:hidden;border:1px solid var(--border2);flex-shrink:0;';
-      if(f.type.startsWith('image/')) {
-        div.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
-      } else {
-        div.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:20px;background:var(--card)">📄</div>`;
+    reader.onload = e => {
+      const b64 = e.target.result.split(',')[1];
+      fileList.push({name:f.name, base64:b64, type:f.type});
+      if (f.type.startsWith('image/')) {
+        const d = document.createElement('div');
+        d.className = 'fthumb';
+        d.innerHTML = `<img src="${e.target.result}">`;
+        prev.appendChild(d);
       }
-      previews.appendChild(div);
-      loaded++;
-      if(loaded === files.length) {
-        document.getElementById('fti').value = `${files.length} arquivo(s) carregado(s): ${files.map(f=>f.name).join(', ')}`;
-        toast(`${files.length} arquivo(s) prontos para análise`, 'ok');
+      if (++loaded === files.length) {
+        document.getElementById('fti').value = `${files.length} foto(s): ${files.map(f=>f.name).join(', ')}`;
+        toast(`${files.length} foto(s) prontas`, 'ok');
       }
     };
     reader.readAsDataURL(f);
   });
 }
 
-// Compatibilidade com função antiga
-function onFile(input) { onFiles(input); }
+// ═══════════════════════════════════════════════════════════
+//  API
+// ═══════════════════════════════════════════════════════════
+function loadApiStatus() {
+  document.getElementById('adot').classList.add('on');
+  document.getElementById('albl').textContent = 'Claude';
+}
+function saveKey() {
+  const k = document.getElementById('makey').value.trim();
+  const p = document.getElementById('mprov').value;
+  if (k) localStorage.setItem('mac', JSON.stringify({prov:p, key:k}));
+  closeM('m-api');
+  toast('Configurado!', 'ok');
+}
 
-// ──────────────────────────────────────────────────────────────
-//  MULTI-LAUDO INTELIGENTE
-// ──────────────────────────────────────────────────────────────
-let multiLaudos = []; // [{exam, label, icon, text}]
-let multiActive = 0;
+// ═══════════════════════════════════════════════════════════
+//  CHAMADA AO SERVIDOR
+// ═══════════════════════════════════════════════════════════
+async function callAI(system, userMsg, images) {
+  const body = {system, userMsg};
+  if (images && images.length) body.images = images;
+  const r = await fetch('/api/generate', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) { const e = await r.json(); throw new Error(e.error || r.statusText); }
+  const d = await r.json();
+  return d.content;
+}
 
+// ═══════════════════════════════════════════════════════════
+//  GERAR LAUDO SIMPLES
+// ═══════════════════════════════════════════════════════════
+async function generate() {
+  const input = getInput();
+  if (!input && !fileList.length) { toast('Insira os dados do exame', 'err'); return; }
+  const btn = document.getElementById('gbtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="dots"><span></span><span></span><span></span></span> Gerando...';
+  try {
+    const prev = banco.filter(l => l.exam === exam);
+    let ref = '';
+    if (prev.length) {
+      const n = prev.filter(l=>l.cls==='normal').slice(0,2);
+      const p = prev.filter(l=>l.cls==='patologico').slice(0,2);
+      ref = '\n\n--- REFERÊNCIA DO DR. ROBERTO ---\n';
+      if(n.length){ref+='NORMAIS:\n';n.forEach((r,i)=>{ref+=`[${i+1}]:\n${r.txt.slice(0,600)}\n\n`;});}
+      if(p.length){ref+='PATOLÓGICOS:\n';p.forEach((r,i)=>{ref+=`[${i+1}]:\n${r.txt.slice(0,600)}\n\n`;});}
+      ref += '--- FIM ---';
+    }
+    const pts = prompts.filter(p=>p.exam===exam||p.exam==='geral');
+    const pStr = pts.length ? '\n\nINSTRUÇÕES PERSONALIZADAS:\n'+pts.map(p=>'- '+p.txt).join('\n') : '';
+    const imgNote = fileList.length ? '\n\nAnalise as imagens, extraia todas as medidas visíveis e preencha o laudo.' : '';
+    const userMsg = `Tipo: ${exam}\nDados: ${input||'Analisar pelas imagens'}\nTemplate:\n${TPL[exam]||''}${ref}${pStr}${imgNote}`;
+
+    const content = await callAI(SYS, userMsg, mode==='file' ? fileList : []);
+    report = content;
+    document.getElementById('ltextarea').value = content;
+    document.getElementById('ltextarea').setAttribute('readonly','');
+    document.getElementById('lempty').style.display = 'none';
+    document.getElementById('mlarea').style.display = 'none';
+    const la = document.getElementById('larea');
+    la.style.display = 'flex';
+    toast('Laudo gerado!', 'ok');
+    autoSave(exam, content);
+  } catch(e) {
+    toast('Erro: ' + (e.message||'Verifique a conexão'), 'err');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '⚡ Gerar Laudo';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  MULTI-LAUDO
+// ═══════════════════════════════════════════════════════════
 async function generateMulti() {
   const input = getInput();
-  if(!input){toast('Insira os dados dos exames','err');return;}
-
-  const btn = document.getElementById('multi-btn');
+  if (!input && !fileList.length) { toast('Insira os dados', 'err'); return; }
+  const btn = document.getElementById('multibtn');
   btn.disabled = true;
-  btn.innerHTML = '<span class="dots"><span></span><span></span><span></span></span> Analisando...';
-
+  btn.innerHTML = '<span class="dots"><span></span><span></span><span></span></span> Detectando exames...';
   try {
-    // Passo 1: Claude identifica quais exames estão presentes
-    const detectMsg = `Analise este texto e identifique APENAS os tipos de exame ultrassonográfico presentes.
-Retorne SOMENTE um JSON array com os IDs dos exames encontrados, sem explicação.
+    // Detectar exames presentes
+    const detectMsg = `Analise este texto e retorne APENAS um JSON array com os IDs dos exames ultrassonográficos presentes.
 IDs válidos: obstetrico, abdome, endovaginal, tireoide, urinario, mamas, prostata, cervical, partes_moles, parede_abdominal
-
 Texto: "${input}"
+Responda SOMENTE com o array JSON. Exemplo: ["tireoide","mamas","abdome"]`;
 
-Exemplo de resposta: ["tireoide","mamas","abdome"]`;
+    const raw = await callAI('Você é um classificador de exames médicos. Responda APENAS com JSON array, sem explicação.', detectMsg, []);
+    const match = raw.match(/\[[\s\S]*?\]/);
+    if (!match) throw new Error('Não foi possível detectar os exames no texto');
+    const ids = JSON.parse(match[0]);
+    if (!ids.length) { toast('Nenhum exame detectado', 'err'); return; }
 
-    const detectResp = await fetch('/api/generate', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({system:'Você é um classificador de exames médicos. Responda APENAS com JSON array.', userMsg: detectMsg})
-    });
-    if(!detectResp.ok) throw new Error('Erro ao detectar exames');
-    const {content: detectRaw} = await detectResp.json();
+    toast(`${ids.length} exame(s) detectado(s) — gerando...`, 'inf');
+    btn.innerHTML = `<span class="dots"><span></span><span></span><span></span></span> Gerando ${ids.length} laudos...`;
 
-    // Extrair JSON da resposta
-    const jsonMatch = detectRaw.match(/\[.*?\]/s);
-    if(!jsonMatch) throw new Error('Não foi possível identificar os exames no texto');
-    const examIds = JSON.parse(jsonMatch[0]);
+    // Gerar todos em paralelo
+    const results = await Promise.all(ids.map(async id => {
+      const info = ALL_EXAMS.find(e=>e.id===id) || {id, label:id, icon:'📋'};
+      const pts = prompts.filter(p=>p.exam===id||p.exam==='geral');
+      const pStr = pts.length ? '\n\nINSTRUÇÕES:\n'+pts.map(p=>'- '+p.txt).join('\n') : '';
+      const prev = banco.filter(l=>l.exam===id).filter(l=>l.cls==='normal').slice(0,1);
+      const ref = prev.length ? `\n\n--- REFERÊNCIA ---\n${prev[0].txt.slice(0,400)}\n--- FIM ---` : '';
+      const imgNote = fileList.length ? '\n\nAnalise as imagens e extraia as medidas visíveis.' : '';
+      const userMsg = `Tipo: ${id}\nDados: ${input}\nTemplate:\n${TPL[id]||''}${ref}${pStr}${imgNote}`;
+      const txt = await callAI(SYS, userMsg, mode==='file' ? fileList : []);
+      return {exam:id, label:info.label, icon:info.icon, text:txt};
+    }));
 
-    if(!examIds.length) {
-      toast('Nenhum exame identificado no texto', 'err');
-      return;
-    }
-
-    toast(`${examIds.length} exame(s) identificado(s): ${examIds.join(', ')}`, 'inf');
-    btn.innerHTML = `<span class="dots"><span></span><span></span><span></span></span> Gerando ${examIds.length} laudos...`;
-
-    // Passo 2: Gerar cada laudo em paralelo
-    const promises = examIds.map(async (examId) => {
-      const examInfo = ALL_EXAMS.find(e => e.id === examId) || {id: examId, label: examId, icon: '📋'};
-      const prev = banco.filter(l => l.exam === examId);
-      let ref = '';
-      if(prev.length) {
-        const n = prev.filter(l=>l.cls==='normal').slice(0,1);
-        if(n.length){ref='
-
---- REFERÊNCIA ---
-'+n[0].txt.slice(0,400)+'
---- FIM ---';}
-      }
-      const pts = prompts.filter(p=>p.exam===examId||p.exam==='geral');
-      const pStr = pts.length ? '
-
-INSTRUÇÕES:
-'+pts.map(p=>'- '+p.txt).join('
-') : '';
-      const userMsg = `Tipo: ${examId}
-Dados: ${input}
-Template:
-${TPL[examId]||''}${ref}${pStr}`;
-
-      const r = await fetch('/api/generate', {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({system: SYS, userMsg})
-      });
-      if(!r.ok){const e=await r.json();throw new Error(e.error);}
-      const {content} = await r.json();
-      return {exam: examId, label: examInfo.label, icon: examInfo.icon, text: content};
-    });
-
-    multiLaudos = await Promise.all(promises);
+    multiLaudos = results;
     multiActive = 0;
 
-    // Mostrar área multi
-    document.getElementById('laudo-empty').style.display = 'none';
-    document.getElementById('laudo-area').style.display = 'none';
-    const ma = document.getElementById('multi-area');
-    ma.style.display = 'flex';
-
-    renderMultiTabs();
+    document.getElementById('lempty').style.display = 'none';
+    document.getElementById('larea').style.display = 'none';
+    document.getElementById('mlarea').style.display = 'flex';
+    renderMLTabs();
     toast(`${multiLaudos.length} laudos gerados!`, 'ok');
 
-    // Auto-salva todos no banco local
-    multiLaudos.forEach(l => {
-      banco.unshift({id:Date.now()+Math.random(), exam:l.exam, cls:'normal', obs:'', txt:l.text, dt:new Date().toLocaleDateString('pt-BR')});
-      fetch('/api/db?path='+encodeURIComponent('/rest/v1/laudos'), {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({exam:l.exam, exam_name:l.label, classification:'normal', observation:'', report_text:l.text})
-      }).catch(()=>{});
-    });
-    localStorage.setItem('mb', JSON.stringify(banco));
-    renderBanco();
+    // Salvar todos
+    multiLaudos.forEach(l => autoSave(l.exam, l.text));
 
   } catch(e) {
-    toast('Erro: '+e.message, 'err');
+    toast('Erro: ' + e.message, 'err');
   } finally {
     btn.disabled = false;
     btn.innerHTML = '🧩 Multi-Laudo';
   }
 }
 
-function renderMultiTabs() {
-  const tabs = document.getElementById('multi-tabs');
-  tabs.innerHTML = multiLaudos.map((l,i) =>
-    `<button class="multi-tab ${i===multiActive?'on':''}" onclick="switchMulti(${i})">
-      ${l.icon} ${l.label}
-    </button>`
+function renderMLTabs() {
+  document.getElementById('mltabs').innerHTML = multiLaudos.map((l,i) =>
+    `<button class="mltab${i===multiActive?' on':''}" onclick="switchML(${i})">${l.icon} ${l.label}</button>`
   ).join('');
-  document.getElementById('multi-text').value = multiLaudos[multiActive]?.text || '';
+  document.getElementById('mltextarea').value = multiLaudos[multiActive]?.text || '';
 }
 
-function switchMulti(i) {
+function switchML(i) {
   multiActive = i;
-  renderMultiTabs();
+  renderMLTabs();
 }
 
-function copyMulti() {
+function copyML() {
   navigator.clipboard.writeText(multiLaudos[multiActive]?.text || '');
   toast('Copiado!', 'ok');
 }
 
-function pdfMulti() {
+function pdfML() {
   const l = multiLaudos[multiActive];
-  if(!l) return;
-  const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Laudo</title>
-<style>body{font-family:Georgia,serif;max-width:720px;margin:40px auto;padding:20px 40px;font-size:13px;line-height:1.9;color:#111}
-.h{border-bottom:2px solid #111;padding-bottom:12px;margin-bottom:20px}.h h1{font-size:13px;font-weight:700;margin:0 0 3px;text-transform:uppercase;letter-spacing:1px}
-.h p{font-size:11px;color:#555;margin:0}pre{white-space:pre-wrap;font-family:Georgia,serif}
-.f{border-top:1px solid #ccc;margin-top:40px;padding-top:10px;font-size:10px;color:#999}
-@media print{body{margin:20px 30px}}</style></head><body>
-<div class="h"><h1>${l.icon} ${l.label}</h1>
-<p>Dr. Roberto Freire Margotti · CRM-BA 26929 · RQE: 21367 · ${new Date().toLocaleDateString('pt-BR')}</p></div>
-<pre>${l.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>
-<div class="f">Gerado por Margotti AI</div></body></html>`;
-  const a = Object.assign(document.createElement('a'),{
-    href:URL.createObjectURL(new Blob([html],{type:'text/html'})),
-    download:`laudo-${l.exam}-${Date.now()}.html`
-  });
-  a.click(); URL.revokeObjectURL(a.href);
-  toast('PDF gerado!', 'ok');
+  if (!l) return;
+  makePDF(l.label, l.exam, l.text);
 }
 
-function saveMultiAll() {
-  multiLaudos.forEach((l,i) => {
-    // Seleciona o laudo e abre modal de salvar para cada um
-    // Por simplicidade, salva todos como normal automaticamente
-    const exists = banco.findIndex(b=>b.txt===l.text);
-    if(exists < 0) {
-      banco.unshift({id:Date.now()+i, exam:l.exam, cls:'normal', obs:'', txt:l.text, dt:new Date().toLocaleDateString('pt-BR')});
+function saveAll() {
+  multiLaudos.forEach(l => {
+    if (!banco.find(b=>b.txt===l.text)) {
+      banco.unshift({id:Date.now()+Math.random(), exam:l.exam, cls:'normal', obs:'', txt:l.text, dt:new Date().toLocaleDateString('pt-BR')});
     }
   });
   localStorage.setItem('mb', JSON.stringify(banco));
@@ -1329,14 +980,256 @@ function saveMultiAll() {
   toast(`${multiLaudos.length} laudos salvos!`, 'ok');
 }
 
-// ──────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+//  AÇÕES DO LAUDO
+// ═══════════════════════════════════════════════════════════
+function copyL() {
+  navigator.clipboard.writeText(document.getElementById('ltextarea').value || report);
+  toast('Copiado!', 'ok');
+}
+function editL() {
+  document.getElementById('ltextarea').removeAttribute('readonly');
+  document.getElementById('ltextarea').focus();
+  toast('Modo edição ativo', 'inf');
+}
+function pdfL() {
+  const txt = document.getElementById('ltextarea').value || report;
+  const info = ALL_EXAMS.find(e=>e.id===exam);
+  makePDF(info?.label || exam, exam, txt);
+}
+function makePDF(label, examId, txt) {
+  if (!txt) { toast('Nenhum laudo', 'err'); return; }
+  const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Laudo</title>
+<style>body{font-family:Georgia,serif;max-width:720px;margin:40px auto;padding:20px 40px;font-size:13px;line-height:1.9;color:#111}
+.h{border-bottom:2px solid #111;padding-bottom:12px;margin-bottom:20px}
+.h h1{font-size:13px;font-weight:700;margin:0 0 3px;text-transform:uppercase;letter-spacing:1px}
+.h p{font-size:11px;color:#555;margin:0}
+pre{white-space:pre-wrap;font-family:Georgia,serif}
+.f{border-top:1px solid #ccc;margin-top:40px;padding-top:10px;font-size:10px;color:#999}
+@media print{body{margin:20px 30px}}</style></head><body>
+<div class="h"><h1>${label}</h1>
+<p>Dr. Roberto Freire Margotti · CRM-BA 26929 · RQE: 21367 · ${new Date().toLocaleDateString('pt-BR')}</p></div>
+<pre>${txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>
+<div class="f">Gerado por Margotti AI · ${new Date().toLocaleDateString('pt-BR')}</div></body></html>`;
+  const a = Object.assign(document.createElement('a'),{
+    href: URL.createObjectURL(new Blob([html],{type:'text/html'})),
+    download: `laudo-${examId}-${Date.now()}.html`
+  });
+  a.click(); URL.revokeObjectURL(a.href);
+  toast('Baixado! Abra e imprima como PDF', 'ok');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  BANCO
+// ═══════════════════════════════════════════════════════════
+function autoSave(examId, txt) {
+  if (!banco.find(b=>b.txt===txt)) {
+    banco.unshift({id:Date.now(), exam:examId, cls:'normal', obs:'', txt, dt:new Date().toLocaleDateString('pt-BR')});
+    localStorage.setItem('mb', JSON.stringify(banco));
+    renderBanco();
+  }
+  // Sync Supabase
+  fetch('/api/db?path='+encodeURIComponent('/rest/v1/laudos'), {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({exam:examId, exam_name:examId, classification:'normal', observation:'', report_text:txt})
+  }).catch(()=>{});
+}
+
+function toggleBanco() {
+  document.getElementById('banco').classList.toggle('col');
+}
+
+function filtB(btn) {
+  document.querySelectorAll('.bfilt').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  bfilt = btn.dataset.f;
+  renderBanco();
+}
+
+function renderBanco() {
+  const lista = bfilt==='todos' ? banco : banco.filter(l=>l.cls===bfilt);
+  document.getElementById('bct').textContent = banco.length;
+  if (!lista.length) {
+    document.getElementById('bcards').innerHTML = '<div class="bempty">Nenhum laudo.<br>Gere e salve para construir seu banco.</div>';
+    return;
+  }
+  document.getElementById('bcards').innerHTML = lista.map(l=>`
+    <div class="lcard" onclick="viewL(${l.id})">
+      <div class="lctop">
+        <span class="tag ${l.cls==='normal'?'tn':'tp'}">${l.cls==='normal'?'✅ Normal':'⚠️ Patol.'}</span>
+        <span class="lcdt">${l.dt}</span>
+      </div>
+      <div class="lcex">${l.exam}</div>
+      ${l.obs?`<div class="lcobs">📌 ${l.obs}</div>`:''}
+      <div class="lcprev">${l.txt}</div>
+      <div class="lcbtns">
+        <button class="lcbtn" onclick="event.stopPropagation();viewL(${l.id})">Ver</button>
+        <button class="lcbtn dl" onclick="event.stopPropagation();delL(${l.id})">Excluir</button>
+      </div>
+    </div>`).join('');
+}
+
+function viewL(id) {
+  const l = banco.find(x=>x.id===id);
+  if (!l) return;
+  report = l.txt;
+  document.getElementById('ltextarea').value = l.txt;
+  document.getElementById('lempty').style.display = 'none';
+  document.getElementById('mlarea').style.display = 'none';
+  document.getElementById('larea').style.display = 'flex';
+  toast('Laudo carregado', 'inf');
+}
+
+function delL(id) {
+  banco = banco.filter(l=>l.id!==id);
+  localStorage.setItem('mb', JSON.stringify(banco));
+  renderBanco();
+  toast('Removido', 'ok');
+  fetch('/api/db?path='+encodeURIComponent(`/rest/v1/laudos?id=eq.${id}`),{method:'DELETE'}).catch(()=>{});
+}
+
+function doSave() {
+  const cls = document.getElementById('scls').value;
+  const obs = document.getElementById('sobs').value.trim();
+  const txt = document.getElementById('ltextarea').value || report;
+  if (!txt) { toast('Nenhum laudo', 'err'); return; }
+  const ex = banco.findIndex(l=>l.txt===txt);
+  if (ex >= 0) { banco[ex].cls=cls; banco[ex].obs=obs; }
+  else banco.unshift({id:Date.now(), exam, cls, obs, txt, dt:new Date().toLocaleDateString('pt-BR')});
+  localStorage.setItem('mb', JSON.stringify(banco));
+  renderBanco();
+  closeM('m-save');
+  document.getElementById('sobs').value = '';
+  toast('Salvo!', 'ok');
+  fetch('/api/db?path='+encodeURIComponent('/rest/v1/laudos'),{
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({exam, exam_name:exam, classification:cls, observation:obs, report_text:txt})
+  }).catch(()=>{});
+}
+
+// ═══════════════════════════════════════════════════════════
+//  VOZ
+// ═══════════════════════════════════════════════════════════
+function toggleRec() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    toast('Use Chrome para gravação de voz', 'err'); return;
+  }
+  if (!isRec) {
+    const SR = window.webkitSpeechRecognition || window.SpeechRecognition;
+    recObj = new SR(); recObj.lang='pt-BR'; recObj.continuous=true; recObj.interimResults=true;
+    recObj.onstart = () => {
+      isRec = true;
+      document.getElementById('recbtn').classList.add('live');
+      document.getElementById('recbtn').textContent = '⏹️';
+      document.getElementById('reclbl').textContent = '● Gravando...';
+      document.getElementById('reclbl').classList.add('live');
+    };
+    recObj.onresult = e => {
+      let t = '';
+      for (let i=e.resultIndex; i<e.results.length; i++) t += e.results[i][0].transcript;
+      document.getElementById('vi').value += ' ' + t;
+    };
+    recObj.onend = () => {
+      isRec = false;
+      document.getElementById('recbtn').classList.remove('live');
+      document.getElementById('recbtn').textContent = '🎙️';
+      document.getElementById('reclbl').textContent = 'Clique para gravar';
+      document.getElementById('reclbl').classList.remove('live');
+    };
+    recObj.start();
+  } else { recObj.stop(); }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PROMPTS / INSTRUÇÕES
+// ═══════════════════════════════════════════════════════════
+function unlock() {
+  if (document.getElementById('pwdinp').value === 'margotti') {
+    document.getElementById('lockform').style.display = 'none';
+    document.getElementById('unlocked').style.display = '';
+    toast('Desbloqueado!', 'ok');
+  } else {
+    toast('Senha incorreta', 'err');
+    document.getElementById('pwdinp').value = '';
+  }
+}
+
+async function addPrompt() {
+  const e = document.getElementById('pexam').value;
+  const t = document.getElementById('ptxt').value.trim();
+  if (!t) { toast('Digite a instrução', 'err'); return; }
+  try {
+    const r = await fetch('/api/db?path='+encodeURIComponent('/rest/v1/instrucoes'), {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({exam:e, texto:t})
+    });
+    const data = await r.json();
+    const newId = Array.isArray(data) && data[0] ? data[0].id : Date.now();
+    prompts.push({id:newId, exam:e, txt:t});
+  } catch {
+    prompts.push({id:Date.now(), exam:e, txt:t});
+  }
+  localStorage.setItem('mp', JSON.stringify(prompts));
+  document.getElementById('ptxt').value = '';
+  renderPrompts();
+  toast('Instrução salva!', 'ok');
+}
+
+function delPrompt(id) {
+  prompts = prompts.filter(p=>p.id!==id);
+  localStorage.setItem('mp', JSON.stringify(prompts));
+  renderPrompts();
+  fetch('/api/db?path='+encodeURIComponent(`/rest/v1/instrucoes?id=eq.${id}`),{method:'DELETE'}).catch(()=>{});
+}
+
+async function loadPrompts() {
+  try {
+    const r = await fetch('/api/db?path='+encodeURIComponent('/rest/v1/instrucoes?select=*&order=created_at.asc'));
+    if (r.ok) {
+      const data = await r.json();
+      if (Array.isArray(data) && data.length) {
+        prompts = data.map(d=>({id:d.id, exam:d.exam, txt:d.texto}));
+        localStorage.setItem('mp', JSON.stringify(prompts));
+      }
+    }
+  } catch {
+    prompts = JSON.parse(localStorage.getItem('mp') || '[]');
+  }
+  renderPrompts();
+}
+
+function renderPrompts() {
+  const el = document.getElementById('pilist');
+  if (!prompts.length) {
+    el.innerHTML = '<div style="color:var(--mut);font-size:12px">Nenhuma instrução.</div>';
+    return;
+  }
+  el.innerHTML = prompts.map(p=>`
+    <div class="piitem">
+      <div class="pitxt">${p.txt}</div>
+      <span class="pitag">${p.exam}</span>
+      <button class="pidel" onclick="delPrompt(${p.id})">✕</button>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  MODAIS
+// ═══════════════════════════════════════════════════════════
+function openM(id) { document.getElementById(id).classList.remove('off'); }
+function closeM(id) { document.getElementById(id).classList.add('off'); }
+document.querySelectorAll('.ov').forEach(o =>
+  o.addEventListener('click', e => { if(e.target===o) o.classList.add('off'); }));
+
+// ═══════════════════════════════════════════════════════════
 //  TOAST
-// ──────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
 let tt;
-function toast(msg,type='inf'){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.className=`toast show ${type==='ok'?'ok':type==='err'?'err':'inf'}`;
-  clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),3000);
+function toast(msg, type='inf') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast show ${type==='ok'?'ok':type==='err'?'err':'inf'}`;
+  clearTimeout(tt);
+  tt = setTimeout(() => t.classList.remove('show'), 3500);
 }
 </script>
 </body>
