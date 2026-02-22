@@ -290,6 +290,10 @@ textarea.iarea::placeholder{color:var(--muted);}
 .dots span:nth-child(3){animation-delay:.3s;}
 @keyframes d{0%,80%,100%{transform:scale(.6);opacity:.4;}40%{transform:scale(1);opacity:1;}}
 
+.multi-tab{padding:5px 12px;border-radius:16px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border2);background:var(--card);color:var(--muted2);font-family:inherit;transition:all .2s;white-space:nowrap;}
+.multi-tab.on{background:linear-gradient(135deg,#7c3aed,#4f46e5);border-color:#7c3aed;color:#fff;}
+.multi-tab .mchk{margin-right:4px;}
+
 /* ═══════════════════════════════════════════════════
    MOBILE  ≤ 768px
 ═══════════════════════════════════════════════════ */
@@ -362,7 +366,10 @@ textarea.iarea::placeholder{color:var(--muted);}
       </div>
 
       <div id="m-text">
-        <textarea class="iarea" id="ti" rows="6" placeholder="Digite os achados do exame...&#10;&#10;Ex: abdome normal, fígado 14cm,&#10;vesícula sem cálculos"></textarea>
+        <div style="position:relative;">
+          <textarea class="iarea" id="ti" rows="6" placeholder="Digite os achados do exame...&#10;&#10;Ex: abdome normal, fígado 14cm,&#10;vesícula sem cálculos"></textarea>
+          <button onclick="document.getElementById('ti').value=''" style="position:absolute;top:6px;right:6px;background:var(--card2);border:1px solid var(--border2);color:var(--muted);border-radius:5px;padding:2px 7px;font-size:10px;cursor:pointer;font-family:inherit;" title="Limpar">✕</button>
+        </div>
       </div>
       <div id="m-voice" style="display:none">
         <div class="rec-center">
@@ -372,15 +379,17 @@ textarea.iarea::placeholder{color:var(--muted);}
         <textarea class="iarea" id="vi" rows="3" placeholder="Transcrição..."></textarea>
       </div>
       <div id="m-file" style="display:none">
-        <div class="drop-zone" onclick="document.getElementById('fi').click()">
-          <div style="font-size:28px;margin-bottom:6px">🖼️</div>
-          <div style="font-size:12px">Clique para enviar<br><span style="font-size:10px;color:var(--muted)">JPG · PNG · PDF</span></div>
-          <input type="file" id="fi" accept=".jpg,.jpeg,.png,.pdf" style="display:none" onchange="onFile(this)">
+        <div class="drop-zone" onclick="document.getElementById('fi').click()" id="drop-zone">
+          <div style="font-size:24px;margin-bottom:4px">🖼️</div>
+          <div style="font-size:12px">Clique para enviar fotos<br><span style="font-size:10px;color:var(--muted)">JPG · PNG · PDF · múltiplas</span></div>
+          <input type="file" id="fi" accept=".jpg,.jpeg,.png,.pdf" style="display:none" multiple onchange="onFiles(this)">
         </div>
-        <textarea class="iarea" id="fti" rows="2" placeholder="Arquivo carregado..." style="margin-top:8px" readonly></textarea>
+        <div id="file-previews" style="display:none;margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"></div>
+        <textarea class="iarea" id="fti" rows="2" placeholder="Fotos carregadas — clique em Gerar Laudo para extrair medidas..." style="margin-top:8px" readonly></textarea>
       </div>
 
       <button class="gen-btn" id="gen-btn" onclick="generate()">⚡ Gerar Laudo</button>
+      <button class="gen-btn" id="multi-btn" onclick="generateMulti()" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);box-shadow:0 4px 20px rgba(124,58,237,0.3);margin-top:6px;">🧩 Multi-Laudo</button>
     </div>
 
     <!-- LAUDO -->
@@ -389,6 +398,7 @@ textarea.iarea::placeholder{color:var(--muted);}
         <div class="empty-icon">🩻</div>
         <div class="empty-txt">Selecione o exame na barra acima,<br>insira os dados e clique em<br><strong>⚡ Gerar Laudo</strong></div>
       </div>
+      <!-- Laudo simples -->
       <div id="laudo-area" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
         <div class="laudo-toolbar">
           <div class="laudo-label">📄 Laudo</div>
@@ -400,6 +410,19 @@ textarea.iarea::placeholder{color:var(--muted);}
           </div>
         </div>
         <textarea id="laudo-text" readonly placeholder="Laudo aparecerá aqui..."></textarea>
+      </div>
+      <!-- Multi-Laudo com abas -->
+      <div id="multi-area" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
+        <div class="laudo-toolbar" style="flex-wrap:wrap;gap:6px;">
+          <div class="laudo-label">🧩 Multi-Laudo</div>
+          <div id="multi-tabs" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
+          <div class="laudo-actions">
+            <button class="act-btn" onclick="copyMulti()">📋 Copiar</button>
+            <button class="act-btn" onclick="pdfMulti()">📥 PDF</button>
+            <button class="act-btn save" onclick="saveMultiAll()">💾 Salvar Todos</button>
+          </div>
+        </div>
+        <textarea id="multi-text" readonly style="flex:1;width:100%;border:none;outline:none;resize:none;background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.9;padding:20px 24px;overflow-y:auto;"></textarea>
       </div>
     </div>
 
@@ -720,7 +743,7 @@ let isRec   = false;
 buildExamBar();
 loadApiStatus();
 renderBanco();
-renderPrompts();
+loadPrompts();
 
 function buildExamBar() {
   const bar = document.getElementById('exams-bar');
@@ -843,10 +866,15 @@ async function generate() {
     const userMsg = `Tipo: ${exam}\nDados: ${input}\nTemplate:\n${TPL[exam]||''}${ref}${pStr}`;
 
     // Chama Claude via servidor (chave protegida no Vercel)
+    // Se tiver fotos, incluir as imagens na requisição
+    const reqBody = {system: SYS, userMsg};
+    if(mode === 'file' && fileDataList.length) {
+      reqBody.images = fileDataList.map(f=>({base64:f.base64, type:f.type, name:f.name}));
+    }
     const resp = await fetch('/api/generate', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({system: SYS, userMsg})
+      body: JSON.stringify(reqBody)
     });
     if(!resp.ok){const e=await resp.json();throw new Error(e.error||resp.statusText);}
     const {content} = await resp.json();
@@ -1040,11 +1068,22 @@ function unlock() {
     toast('Desbloqueado!','ok');
   } else {toast('Senha incorreta','err');document.getElementById('pwd').value='';}
 }
-function addPrompt() {
+async function addPrompt() {
   const e=document.getElementById('p-exam').value;
   const t=document.getElementById('p-txt').value.trim();
   if(!t){toast('Digite a instrução','err');return;}
-  prompts.push({id:Date.now(),exam:e,txt:t});
+  // Salva no Supabase
+  try {
+    const r = await fetch('/api/db?path='+encodeURIComponent('/rest/v1/instrucoes'), {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({exam:e, texto:t})
+    });
+    const data = await r.json();
+    const newId = Array.isArray(data) ? data[0].id : Date.now();
+    prompts.push({id:newId, exam:e, txt:t});
+  } catch {
+    prompts.push({id:Date.now(), exam:e, txt:t});
+  }
   localStorage.setItem('mp',JSON.stringify(prompts));
   document.getElementById('p-txt').value='';
   renderPrompts();
@@ -1054,7 +1093,25 @@ function delPrompt(id) {
   prompts=prompts.filter(p=>p.id!==id);
   localStorage.setItem('mp',JSON.stringify(prompts));
   renderPrompts();
+  fetch('/api/db?path='+encodeURIComponent(`/rest/v1/instrucoes?id=eq.${id}`),{method:'DELETE'}).catch(()=>{});
 }
+async function loadPrompts() {
+  try {
+    const r = await fetch('/api/db?path='+encodeURIComponent('/rest/v1/instrucoes?select=*&order=created_at.asc'));
+    if(r.ok) {
+      const data = await r.json();
+      if(Array.isArray(data) && data.length) {
+        prompts = data.map(d=>({id:d.id, exam:d.exam, txt:d.texto}));
+        localStorage.setItem('mp', JSON.stringify(prompts));
+      }
+    }
+  } catch {
+    // fallback para localStorage
+    prompts = JSON.parse(localStorage.getItem('mp')||'[]');
+  }
+  renderPrompts();
+}
+
 function renderPrompts() {
   const el=document.getElementById('pi-list');
   if(!prompts.length){el.innerHTML='<div style="color:var(--muted);font-size:12px">Nenhuma instrução.</div>';return;}
@@ -1067,6 +1124,210 @@ function renderPrompts() {
 function openM(id){document.getElementById(id).classList.remove('off');}
 function closeM(id){document.getElementById(id).classList.add('off');}
 document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.add('off');}));
+
+// ──────────────────────────────────────────────────────────────
+//  MÚLTIPLAS FOTOS
+// ──────────────────────────────────────────────────────────────
+let fileDataList = []; // {name, base64, type}
+
+function onFiles(input) {
+  const files = Array.from(input.files);
+  if(!files.length) return;
+  fileDataList = [];
+  const previews = document.getElementById('file-previews');
+  previews.innerHTML = '';
+  previews.style.display = 'flex';
+
+  let loaded = 0;
+  files.forEach((f, i) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const base64 = e.target.result.split(',')[1];
+      fileDataList.push({name: f.name, base64, type: f.type});
+      // Mini preview
+      const div = document.createElement('div');
+      div.style.cssText = 'position:relative;width:60px;height:60px;border-radius:6px;overflow:hidden;border:1px solid var(--border2);flex-shrink:0;';
+      if(f.type.startsWith('image/')) {
+        div.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
+      } else {
+        div.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:20px;background:var(--card)">📄</div>`;
+      }
+      previews.appendChild(div);
+      loaded++;
+      if(loaded === files.length) {
+        document.getElementById('fti').value = `${files.length} arquivo(s) carregado(s): ${files.map(f=>f.name).join(', ')}`;
+        toast(`${files.length} arquivo(s) prontos para análise`, 'ok');
+      }
+    };
+    reader.readAsDataURL(f);
+  });
+}
+
+// Compatibilidade com função antiga
+function onFile(input) { onFiles(input); }
+
+// ──────────────────────────────────────────────────────────────
+//  MULTI-LAUDO INTELIGENTE
+// ──────────────────────────────────────────────────────────────
+let multiLaudos = []; // [{exam, label, icon, text}]
+let multiActive = 0;
+
+async function generateMulti() {
+  const input = getInput();
+  if(!input){toast('Insira os dados dos exames','err');return;}
+
+  const btn = document.getElementById('multi-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="dots"><span></span><span></span><span></span></span> Analisando...';
+
+  try {
+    // Passo 1: Claude identifica quais exames estão presentes
+    const detectMsg = `Analise este texto e identifique APENAS os tipos de exame ultrassonográfico presentes.
+Retorne SOMENTE um JSON array com os IDs dos exames encontrados, sem explicação.
+IDs válidos: obstetrico, abdome, endovaginal, tireoide, urinario, mamas, prostata, cervical, partes_moles, parede_abdominal
+
+Texto: "${input}"
+
+Exemplo de resposta: ["tireoide","mamas","abdome"]`;
+
+    const detectResp = await fetch('/api/generate', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({system:'Você é um classificador de exames médicos. Responda APENAS com JSON array.', userMsg: detectMsg})
+    });
+    if(!detectResp.ok) throw new Error('Erro ao detectar exames');
+    const {content: detectRaw} = await detectResp.json();
+
+    // Extrair JSON da resposta
+    const jsonMatch = detectRaw.match(/\[.*?\]/s);
+    if(!jsonMatch) throw new Error('Não foi possível identificar os exames no texto');
+    const examIds = JSON.parse(jsonMatch[0]);
+
+    if(!examIds.length) {
+      toast('Nenhum exame identificado no texto', 'err');
+      return;
+    }
+
+    toast(`${examIds.length} exame(s) identificado(s): ${examIds.join(', ')}`, 'inf');
+    btn.innerHTML = `<span class="dots"><span></span><span></span><span></span></span> Gerando ${examIds.length} laudos...`;
+
+    // Passo 2: Gerar cada laudo em paralelo
+    const promises = examIds.map(async (examId) => {
+      const examInfo = ALL_EXAMS.find(e => e.id === examId) || {id: examId, label: examId, icon: '📋'};
+      const prev = banco.filter(l => l.exam === examId);
+      let ref = '';
+      if(prev.length) {
+        const n = prev.filter(l=>l.cls==='normal').slice(0,1);
+        if(n.length){ref='
+
+--- REFERÊNCIA ---
+'+n[0].txt.slice(0,400)+'
+--- FIM ---';}
+      }
+      const pts = prompts.filter(p=>p.exam===examId||p.exam==='geral');
+      const pStr = pts.length ? '
+
+INSTRUÇÕES:
+'+pts.map(p=>'- '+p.txt).join('
+') : '';
+      const userMsg = `Tipo: ${examId}
+Dados: ${input}
+Template:
+${TPL[examId]||''}${ref}${pStr}`;
+
+      const r = await fetch('/api/generate', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({system: SYS, userMsg})
+      });
+      if(!r.ok){const e=await r.json();throw new Error(e.error);}
+      const {content} = await r.json();
+      return {exam: examId, label: examInfo.label, icon: examInfo.icon, text: content};
+    });
+
+    multiLaudos = await Promise.all(promises);
+    multiActive = 0;
+
+    // Mostrar área multi
+    document.getElementById('laudo-empty').style.display = 'none';
+    document.getElementById('laudo-area').style.display = 'none';
+    const ma = document.getElementById('multi-area');
+    ma.style.display = 'flex';
+
+    renderMultiTabs();
+    toast(`${multiLaudos.length} laudos gerados!`, 'ok');
+
+    // Auto-salva todos no banco local
+    multiLaudos.forEach(l => {
+      banco.unshift({id:Date.now()+Math.random(), exam:l.exam, cls:'normal', obs:'', txt:l.text, dt:new Date().toLocaleDateString('pt-BR')});
+      fetch('/api/db?path='+encodeURIComponent('/rest/v1/laudos'), {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({exam:l.exam, exam_name:l.label, classification:'normal', observation:'', report_text:l.text})
+      }).catch(()=>{});
+    });
+    localStorage.setItem('mb', JSON.stringify(banco));
+    renderBanco();
+
+  } catch(e) {
+    toast('Erro: '+e.message, 'err');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '🧩 Multi-Laudo';
+  }
+}
+
+function renderMultiTabs() {
+  const tabs = document.getElementById('multi-tabs');
+  tabs.innerHTML = multiLaudos.map((l,i) =>
+    `<button class="multi-tab ${i===multiActive?'on':''}" onclick="switchMulti(${i})">
+      ${l.icon} ${l.label}
+    </button>`
+  ).join('');
+  document.getElementById('multi-text').value = multiLaudos[multiActive]?.text || '';
+}
+
+function switchMulti(i) {
+  multiActive = i;
+  renderMultiTabs();
+}
+
+function copyMulti() {
+  navigator.clipboard.writeText(multiLaudos[multiActive]?.text || '');
+  toast('Copiado!', 'ok');
+}
+
+function pdfMulti() {
+  const l = multiLaudos[multiActive];
+  if(!l) return;
+  const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Laudo</title>
+<style>body{font-family:Georgia,serif;max-width:720px;margin:40px auto;padding:20px 40px;font-size:13px;line-height:1.9;color:#111}
+.h{border-bottom:2px solid #111;padding-bottom:12px;margin-bottom:20px}.h h1{font-size:13px;font-weight:700;margin:0 0 3px;text-transform:uppercase;letter-spacing:1px}
+.h p{font-size:11px;color:#555;margin:0}pre{white-space:pre-wrap;font-family:Georgia,serif}
+.f{border-top:1px solid #ccc;margin-top:40px;padding-top:10px;font-size:10px;color:#999}
+@media print{body{margin:20px 30px}}</style></head><body>
+<div class="h"><h1>${l.icon} ${l.label}</h1>
+<p>Dr. Roberto Freire Margotti · CRM-BA 26929 · RQE: 21367 · ${new Date().toLocaleDateString('pt-BR')}</p></div>
+<pre>${l.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>
+<div class="f">Gerado por Margotti AI</div></body></html>`;
+  const a = Object.assign(document.createElement('a'),{
+    href:URL.createObjectURL(new Blob([html],{type:'text/html'})),
+    download:`laudo-${l.exam}-${Date.now()}.html`
+  });
+  a.click(); URL.revokeObjectURL(a.href);
+  toast('PDF gerado!', 'ok');
+}
+
+function saveMultiAll() {
+  multiLaudos.forEach((l,i) => {
+    // Seleciona o laudo e abre modal de salvar para cada um
+    // Por simplicidade, salva todos como normal automaticamente
+    const exists = banco.findIndex(b=>b.txt===l.text);
+    if(exists < 0) {
+      banco.unshift({id:Date.now()+i, exam:l.exam, cls:'normal', obs:'', txt:l.text, dt:new Date().toLocaleDateString('pt-BR')});
+    }
+  });
+  localStorage.setItem('mb', JSON.stringify(banco));
+  renderBanco();
+  toast(`${multiLaudos.length} laudos salvos!`, 'ok');
+}
 
 // ──────────────────────────────────────────────────────────────
 //  TOAST
