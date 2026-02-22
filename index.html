@@ -730,7 +730,7 @@ let multiActive = 0;
 // ═══════════════════════════════════════════════════════════
 buildEbar();
 loadApiStatus();
-renderBanco();
+loadBanco(); // carrega laudos do Supabase
 loadPrompts();
 
 function buildEbar() {
@@ -1080,6 +1080,37 @@ function filtB(btn) {
   document.querySelectorAll('.bfilt').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
   bfilt = btn.dataset.f;
+  renderBanco();
+}
+
+async function loadBanco() {
+  try {
+    const r = await fetch('/api/db?path=' + encodeURIComponent('/rest/v1/laudos?select=*&order=created_at.desc&limit=100'));
+    if (r.ok) {
+      const data = await r.json();
+      if (Array.isArray(data) && data.length) {
+        // Mescla Supabase com localStorage, sem duplicar
+        const local = JSON.parse(localStorage.getItem('mb') || '[]');
+        const supaIds = new Set(data.map(d => String(d.id)));
+        // Mantém locais que não estão no Supabase ainda
+        const soLocal = local.filter(l => !supaIds.has(String(l.id)));
+        // Converte formato Supabase para formato local
+        const doBanco = data.map(d => ({
+          id: d.id,
+          exam: d.exam || '',
+          cls: d.classification || 'normal',
+          obs: d.observation || '',
+          txt: d.report_text || '',
+          dt: d.created_at ? new Date(d.created_at).toLocaleDateString('pt-BR') : ''
+        }));
+        banco = [...doBanco, ...soLocal];
+        localStorage.setItem('mb', JSON.stringify(banco));
+      }
+    }
+  } catch(e) {
+    // fallback localStorage
+    banco = JSON.parse(localStorage.getItem('mb') || '[]');
+  }
   renderBanco();
 }
 
