@@ -8,15 +8,15 @@ export default async function handler(req, res) {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const { path, method = 'GET', body } = req.method === 'GET' 
-    ? req.query 
-    : { path: req.query.path, method: req.method, body: req.body };
-
+  // Pegar o path da query string
+  const path = req.query.path;
   if (!path) return res.status(400).json({ error: 'path required' });
+
+  const method = req.method;
 
   try {
     const opts = {
-      method: method,
+      method,
       headers: {
         'apikey': SUPA_KEY,
         'Authorization': `Bearer ${SUPA_KEY}`,
@@ -24,13 +24,22 @@ export default async function handler(req, res) {
         'Prefer': method === 'POST' ? 'return=representation' : '',
       },
     };
-    if (body && method !== 'GET') opts.body = JSON.stringify(body);
+
+    // Para POST/DELETE, incluir o body
+    if (method === 'POST' && req.body) {
+      opts.body = JSON.stringify(req.body);
+    }
 
     const r = await fetch(SUPA_URL + path, opts);
     const text = await r.text();
-    const data = text ? JSON.parse(text) : null;
-    
+
+    // Retornar status e body do Supabase diretamente
+    let data;
+    try { data = text ? JSON.parse(text) : null; }
+    catch { data = { raw: text }; }
+
     return res.status(r.status).json(data);
+
   } catch (e) {
     return res.status(500).json({ error: e.message });
   }
