@@ -682,13 +682,33 @@ Dr. Roberto Freire Margotti | CRM-BA 26929 | RQE: 21367`,
 
 const SYS = `Você é o assistente de laudos ultrassonográficos do Dr. Roberto Freire Margotti (CRM-BA 26929 | RQE: 21367), especialista com mais de 20 anos de experiência em Feira de Santana, Bahia.
 
-REGRAS:
-1. Ignore conversas informais — foque apenas nos achados e medidas
-2. Se o dado for "normal", preencha com achados normais padrão
-3. Substitua todos os "___" pelos valores fornecidos
-4. Use terminologia médica formal e objetiva
-5. Assine sempre: Dr. Roberto Freire Margotti | CRM-BA 26929 | RQE: 21367
-6. Mantenha a estrutura do template fornecido`;
+COMO VOCÊ FUNCIONA — LEIA COM ATENÇÃO:
+
+Você recebe um banco de laudos reais do Dr. Roberto. Seu trabalho é APRENDER com esses laudos e aplicar o conhecimento no novo paciente.
+
+PROCESSO OBRIGATÓRIO:
+
+PASSO 1 — ANALISE O BANCO:
+- Leia cada laudo do banco
+- Identifique como o Dr. Roberto descreve cada achado (cisto, nódulo, cálculo, etc.)
+- Aprenda a estrutura, o vocabulário, as frases exatas que ele usa
+- Separe mentalmente: estrutura normal + cada achado patológico descrito
+
+PASSO 2 — ANALISE OS DADOS DO NOVO PACIENTE:
+- Identifique quais órgãos têm alterações
+- Identifique quais órgãos estão normais
+- Liste os achados patológicos com os dados fornecidos
+
+PASSO 3 — MONTE O LAUDO:
+- Para órgãos NORMAIS: use a descrição normal do Dr. Roberto (do banco ou template)
+- Para órgãos com ALTERAÇÃO: localize no banco como o Dr. Roberto descreve AQUELA alteração específica. Use exatamente o mesmo estilo, substituindo apenas os dados do paciente atual
+- Se o banco tem um laudo com "cisto hepático e cisto renal" e o paciente só tem cisto renal: pegue APENAS a parte do cisto renal, ignore o hepático
+- Se o banco não tem aquela alteração específica: descreva no estilo geral do Dr. Roberto
+
+REGRAS ABSOLUTAS:
+1. NUNCA invente medidas. Sem dado fornecido = "___" no laudo. Jamais.
+2. NUNCA copie dados de um paciente do banco para outro. Apenas o ESTILO é transferível.
+3. Assine sempre: Dr. Roberto Freire Margotti | CRM-BA 26929 | RQE: 21367`;
 
 // ═══════════════════════════════════════════════════════════
 //  ESTADO
@@ -858,17 +878,25 @@ async function generate() {
     const prev = banco.filter(l => l.exam === exam);
     let ref = '';
     if (prev.length) {
-      const n = prev.filter(l=>l.cls==='normal').slice(0,2);
-      const p = prev.filter(l=>l.cls==='patologico').slice(0,2);
-      ref = '\n\n--- REFERÊNCIA DO DR. ROBERTO ---\n';
-      if(n.length){ref+='NORMAIS:\n';n.forEach((r,i)=>{ref+=`[${i+1}]:\n${r.txt.slice(0,600)}\n\n`;});}
-      if(p.length){ref+='PATOLÓGICOS:\n';p.forEach((r,i)=>{ref+=`[${i+1}]:\n${r.txt.slice(0,600)}\n\n`;});}
-      ref += '--- FIM ---';
+      // Manda TODOS os laudos do exame — quanto mais exemplos, melhor aprende
+      const todos = prev.slice(0, 10); // máx 10 para não estourar o contexto
+      ref = '\n\n═══ BANCO DE LAUDOS DO DR. ROBERTO — ' + todos.length + ' LAUDOS ═══\n';
+      ref += 'Analise cada laudo, aprenda o estilo e extraia os padrões de descrição de cada achado.\n';
+      todos.forEach((l, i) => {
+        const tipo = l.cls === 'patologico' ? '⚠️ PATOLÓGICO' : '✅ NORMAL';
+        const obs = l.obs ? ` — ${l.obs}` : '';
+        ref += `\n[LAUDO ${i+1} | ${tipo}${obs} | ${l.dt}]:\n${l.txt}\n`;
+      });
+      ref += '\n═══ FIM DO BANCO ═══';
     }
     const pts = prompts.filter(p=>p.exam===exam||p.exam==='geral');
-    const pStr = pts.length ? '\n\nINSTRUÇÕES PERSONALIZADAS:\n'+pts.map(p=>'- '+p.txt).join('\n') : '';
-    const imgNote = fileList.length ? '\n\nAnalise as imagens, extraia todas as medidas visíveis e preencha o laudo.' : '';
-    const userMsg = `Tipo: ${exam}\nDados: ${input||'Analisar pelas imagens'}\nTemplate:\n${TPL[exam]||''}${ref}${pStr}${imgNote}`;
+    const pStr = pts.length ? '\n\nINSTRUÇÕES FIXAS DO DR. ROBERTO (SEMPRE APLICAR):\n'+pts.map(p=>'- '+p.txt).join('\n') : '';
+    const imgNote = fileList.length ? '\n\nFOTOS: Extraia APENAS medidas claramente visíveis nas imagens. Não invente nenhum valor.' : '';
+    const userMsg = `TIPO DE EXAME: ${exam}
+DADOS DO NOVO PACIENTE: ${input||'Ver imagens'}
+${ref}
+TEMPLATE BASE (usar só se banco estiver vazio):
+${TPL[exam]||''}${pStr}${imgNote}`;
 
     const content = await callAI(SYS, userMsg, mode==='file' ? fileList : []);
     report = content;
@@ -917,11 +945,20 @@ Responda SOMENTE com o array JSON. Exemplo: ["tireoide","mamas","abdome"]`;
     const results = await Promise.all(ids.map(async id => {
       const info = ALL_EXAMS.find(e=>e.id===id) || {id, label:id, icon:'📋'};
       const pts = prompts.filter(p=>p.exam===id||p.exam==='geral');
-      const pStr = pts.length ? '\n\nINSTRUÇÕES:\n'+pts.map(p=>'- '+p.txt).join('\n') : '';
-      const prev = banco.filter(l=>l.exam===id).filter(l=>l.cls==='normal').slice(0,1);
-      const ref = prev.length ? `\n\n--- REFERÊNCIA ---\n${prev[0].txt.slice(0,400)}\n--- FIM ---` : '';
-      const imgNote = fileList.length ? '\n\nAnalise as imagens e extraia as medidas visíveis.' : '';
-      const userMsg = `Tipo: ${id}\nDados: ${input}\nTemplate:\n${TPL[id]||''}${ref}${pStr}${imgNote}`;
+      const pStr = pts.length ? '\n\nINSTRUÇÕES PERSONALIZADAS:\n'+pts.map(p=>'- '+p.txt).join('\n') : '';
+      const prevAll = banco.filter(l=>l.exam===id).slice(0,8);
+      let mref = '';
+      if(prevAll.length) {
+        mref = '\n\n═══ BANCO DE LAUDOS DO DR. ROBERTO (' + prevAll.length + ' laudos) ═══\n';
+        prevAll.forEach((l,i) => {
+          const tipo = l.cls==='patologico' ? '⚠️ PATOLÓGICO' : '✅ NORMAL';
+          const obs = l.obs ? ` — ${l.obs}` : '';
+          mref += `\n[LAUDO ${i+1} | ${tipo}${obs}]:\n${l.txt}\n`;
+        });
+        mref += '\n═══ FIM ═══';
+      }
+      const imgNote = fileList.length ? '\n\nFOTOS: Extraia APENAS medidas claramente visíveis. Não invente valores.' : '';
+      const userMsg = `TIPO: ${id}\nDADOS DO PACIENTE: ${input}\n${mref}\nTEMPLATE BASE (usar só se banco vazio):\n${TPL[id]||''}${pStr}${imgNote}`;
       const txt = await callAI(SYS, userMsg, mode==='file' ? fileList : []);
       return {exam:id, label:info.label, icon:info.icon, text:txt};
     }));
