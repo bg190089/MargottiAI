@@ -9,8 +9,24 @@ export default async function handler(req, res) {
   if (!ANTHROPIC_KEY) return res.status(500).json({ error: 'API key não configurada no servidor' });
 
   try {
-    const { system, userMsg } = req.body;
+    const { system, userMsg, images } = req.body;
     if (!system || !userMsg) return res.status(400).json({ error: 'Campos obrigatórios: system, userMsg' });
+
+    // Montar conteúdo — com ou sem imagens
+    let userContent;
+    if (images && images.length > 0) {
+      userContent = [
+        // Imagens primeiro
+        ...images.map(img => ({
+          type: 'image',
+          source: { type: 'base64', media_type: img.type || 'image/jpeg', data: img.base64 }
+        })),
+        // Texto depois
+        { type: 'text', text: userMsg + '\n\nAnalise as imagens acima, extraia todas as medidas visíveis e preencha o laudo com os valores encontrados.' }
+      ];
+    } else {
+      userContent = userMsg;
+    }
 
     const r = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -24,7 +40,7 @@ export default async function handler(req, res) {
         max_tokens: 2500,
         temperature: 0.3,
         system,
-        messages: [{ role: 'user', content: userMsg }],
+        messages: [{ role: 'user', content: userContent }],
       }),
     });
 
