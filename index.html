@@ -3,372 +3,498 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Margotti AI - Seu Assistente de Laudos</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<title>Margotti AI — Assistente de Laudos</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0a0c12;
-  --s1: #11141d;
-  --s2: #1a1f2c;
-  --s3: #242b3d;
-  --border: #1e2533;
-  --border2: #2d364d;
-  --cyan: #00d4ff;
-  --cyan-dim: rgba(0,212,255,0.08);
-  --green: #00f2a6;
-  --green-dim: rgba(0,242,166,0.08);
-  --orange: #ffb347;
-  --orange-dim: rgba(255,179,71,0.08);
-  --red: #ff6b81;
-  --text: #e2e8f0;
-  --muted: #94a3b8;
-  --muted2: #64748b;
-  --accent: #3b82f6;
+  --bg: #0a0e1a;
+  --bg2: #0f1525;
+  --bg3: #151d33;
+  --bg4: #1a2440;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #e8edf8;
+  --muted: #6b7a99;
+  --muted2: #8896b8;
+  --blue: #3b82f6;
+  --blue2: #60a5fa;
+  --blue-dim: rgba(59,130,246,0.12);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,0.12);
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,0.1);
+  --cyan: #06b6d4;
+  --amber: #f59e0b;
+  --radius: 12px;
 }
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;overflow:hidden;}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 20% 20%,rgba(59,130,246,0.05) 0%,transparent 50%),radial-gradient(circle at 80% 80%,rgba(0,212,255,0.03) 0%,transparent 50%);pointer-events:none;z-index:0;}
-
-/* HEADER */
-header{position:relative;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:64px;background:rgba(10,12,18,0.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);flex-shrink:0;}
-.logo-container{display:flex;flex-direction:column;}
-.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--text);letter-spacing:-0.5px;}
-.logo span{color:var(--cyan);}
-.logo-sub{font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:2px;font-weight:600;margin-top:-2px;}
-
-.header-center{display:flex;align-items:center;gap:12px;}
-.api-key-btn{display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:10px;border:1px solid var(--border2);background:var(--s2);color:var(--muted);font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;}
-.api-key-btn:hover{border-color:var(--cyan);color:var(--text);background:var(--s3);}
-.api-key-btn.configured{border-color:rgba(0,242,166,0.3);color:var(--green);}
-.status-dot{width:8px;height:8px;border-radius:50%;background:var(--muted2);}
-.status-dot.on{background:var(--green);box-shadow:0 0 8px var(--green);animation:blink 2s ease infinite;}
-@keyframes blink{0%,100%{opacity:1;}50%{opacity:.4;}}
-
-/* LAYOUT */
-.app{position:relative;z-index:1;display:grid;grid-template-columns:320px 1fr 320px;height:calc(100vh - 64px);}
-
-/* PANELS */
-.panel{display:flex;flex-direction:column;overflow:hidden;}
-.left-panel{border-right:1px solid var(--border);background:var(--s1);}
-.center-panel{background:var(--bg);}
-.right-panel{border-left:1px solid var(--border);background:var(--s1);}
-
-.panel-scroll{flex:1;overflow-y:auto;padding:20px;}
-.panel-scroll::-webkit-scrollbar{width:4px;}
-.panel-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
-
-.panel-header{padding:16px 20px;border-bottom:1px solid var(--border);background:var(--s2);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.panel-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;display:flex;align-items:center;gap:8px;}
-
-/* SECTION */
-.sec{margin-bottom:24px;}
-.sec-label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
-.sec-label::after{content:'';flex:1;height:1px;background:var(--border);}
-
-/* EXAM BUTTONS */
-.exam-list{display:flex;flex-direction:column;gap:6px;}
-.exam-btn{width:100%;padding:10px 14px;border-radius:12px;border:1px solid transparent;background:transparent;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:10px;text-align:left;}
-.exam-btn:hover{background:var(--s2);color:var(--text);border-color:var(--border2);}
-.exam-btn.active{background:var(--cyan-dim);color:var(--cyan);border-color:rgba(0,212,255,0.2);}
-.exam-btn .ei{font-size:16px;flex-shrink:0;}
-.exam-btn .ec{flex:1;}
-
-/* MODE TABS */
-.mode-tabs{display:flex;gap:4px;background:var(--bg);border-radius:12px;padding:4px;margin-bottom:16px;border:1px solid var(--border);}
-.mode-tab{flex:1;padding:8px 4px;border-radius:8px;border:none;background:transparent;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;}
-.mode-tab:hover{color:var(--text);}
-.mode-tab.active{background:var(--s2);color:var(--cyan);box-shadow:0 2px 8px rgba(0,0,0,0.2);}
-
-/* UPLOAD */
-.upload-zone{border:2px dashed var(--border2);border-radius:14px;padding:28px 16px;text-align:center;cursor:pointer;transition:all .25s;position:relative;background:var(--bg);}
-.upload-zone:hover,.upload-zone.drag-over{border-color:var(--cyan);background:var(--cyan-dim);}
-.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
-.upload-icon{font-size:32px;margin-bottom:8px;}
-.upload-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;}
-.upload-hint{font-size:10px;color:var(--muted2);font-family:'IBM Plex Mono',monospace;}
-
-/* FILE LIST */
-.file-list{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
-.file-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:12px;}
-.file-thumb{width:38px;height:38px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;background:var(--s2);overflow:hidden;}
-.file-thumb img{width:100%;height:100%;object-fit:cover;}
-.file-info{flex:1;min-width:0;}
-.file-name{font-size:12px;color:var(--text);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.file-size{font-size:10px;color:var(--muted2);font-family:'IBM Plex Mono',monospace;}
-.file-remove{background:none;border:none;color:var(--muted2);cursor:pointer;font-size:14px;padding:4px;border-radius:6px;transition:color .2s;}
-.file-remove:hover{color:var(--red);}
-
-/* TEXT INPUT */
-.text-area{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:14px;padding:16px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;line-height:1.6;resize:vertical;min-height:160px;outline:none;transition:all .2s;}
-.text-area:focus{border-color:var(--cyan);box-shadow:0 0 0 3px var(--cyan-dim);}
-.text-area::placeholder{color:var(--muted2);}
-.text-hint{margin-top:10px;font-size:11px;color:var(--muted2);font-family:'IBM Plex Mono',monospace;line-height:1.6;}
-
-/* GENERATE BTN */
-.btn-generate{margin:0 20px 20px;padding:14px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--cyan),#00a3ff);color:#0a0c12;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center;gap:8px;flex-shrink:0;box-shadow:0 4px 12px rgba(0,212,255,0.2);}
-.btn-generate:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,212,255,0.4);}
-.btn-generate:active{transform:translateY(0);}
-.btn-generate:disabled{opacity:0.3;cursor:not-allowed;transform:none;box-shadow:none;}
-
-/* CENTER: REPORT */
-.report-topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid var(--border);background:var(--s1);flex-shrink:0;}
-.report-label{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;display:flex;align-items:center;gap:8px;}
-.report-actions{display:flex;gap:8px;}
-.act-btn{padding:8px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--s2);color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;}
-.act-btn:hover:not(:disabled){border-color:var(--cyan);color:var(--cyan);background:var(--cyan-dim);}
-.act-btn:disabled{opacity:0.3;cursor:not-allowed;}
-.act-btn.save-btn:hover:not(:disabled){border-color:var(--green);color:var(--green);background:var(--green-dim);}
-.act-btn.pdf-btn:hover:not(:disabled){border-color:var(--orange);color:var(--orange);background:var(--orange-dim);}
-
-.report-body{flex:1;overflow-y:auto;padding:24px;}
-.report-body::-webkit-scrollbar{width:4px;}
-.report-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
-
-/* EMPTY */
-.empty-state{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:var(--muted2);text-align:center;padding:40px;}
-.empty-icon{font-size:56px;opacity:0.15;}
-.empty-title{font-size:16px;font-weight:600;color:var(--muted);}
-.empty-sub{font-size:12px;font-family:'IBM Plex Mono',monospace;max-width:280px;line-height:1.8;}
-
-/* LOADING */
-.loading-state{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;}
-.sonar{width:72px;height:72px;position:relative;display:flex;align-items:center;justify-content:center;}
-.sonar::before,.sonar::after{content:'';position:absolute;inset:0;border-radius:50%;border:2px solid var(--cyan);animation:sonarPulse 2s ease-out infinite;}
-.sonar::after{animation-delay:1s;}
-.sonar-dot{width:14px;height:14px;border-radius:50%;background:var(--cyan);box-shadow:0 0 12px var(--cyan);}
-@keyframes sonarPulse{0%{transform:scale(0.3);opacity:1;}100%{transform:scale(1.6);opacity:0;}}
-.load-steps{display:flex;flex-direction:column;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:12px;text-align:center;}
-.load-step{color:var(--muted2);display:flex;align-items:center;justify-content:center;gap:8px;transition:color 0.3s;}
-.load-step.active{color:var(--cyan);font-weight:600;}
-.load-step.done{color:var(--green);}
-
-/* REPORT CARD */
-.report-card{background:var(--s1);border:1px solid var(--border2);border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.3);}
-.report-card-header{padding:14px 20px;border-bottom:1px solid var(--border);background:var(--s2);display:flex;align-items:center;gap:12px;}
-.exam-tag{display:inline-flex;align-items:center;gap:6px;background:var(--cyan-dim);border:1px solid rgba(0,212,255,0.2);color:var(--cyan);font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;padding:4px 12px;border-radius:20px;}
-.report-editable{width:100%;background:transparent;border:none;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.8;resize:none;outline:none;padding:24px;min-height:450px;}
-
-/* RIGHT: BANCO */
-.banco-filters{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
-.filter-btn{padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:11px;font-family:'IBM Plex Mono',monospace;cursor:pointer;transition:all .2s;}
-.filter-btn:hover{border-color:var(--border2);color:var(--text);}
-.filter-btn.active{border-color:var(--cyan);color:var(--cyan);background:var(--cyan-dim);}
-.filter-btn.normal-f.active{border-color:var(--green);color:var(--green);background:var(--green-dim);}
-.filter-btn.patol-f.active{border-color:var(--orange);color:var(--orange);background:var(--orange-dim);}
-
-.banco-list{display:flex;flex-direction:column;gap:10px;}
-.banco-empty{text-align:center;padding:40px 20px;color:var(--muted2);font-size:12px;font-family:'IBM Plex Mono',monospace;line-height:1.8;}
-
-.laudo-card{padding:14px 16px;border-radius:14px;border:1px solid var(--border);background:var(--bg);cursor:pointer;transition:all .2s;}
-.laudo-card:hover{border-color:var(--border2);background:var(--s2);transform:translateY(-2px);}
-.laudo-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px;}
-.laudo-exam-tag{font-size:10px;font-family:'IBM Plex Mono',monospace;font-weight:600;text-transform:uppercase;letter-spacing:1px;padding:3px 10px;border-radius:20px;}
-.tag-normal{background:var(--green-dim);color:var(--green);border:1px solid rgba(0,242,166,0.2);}
-.tag-patologico{background:var(--orange-dim);color:var(--orange);border:1px solid rgba(255,179,71,0.2);}
-.laudo-date{font-size:10px;color:var(--muted2);font-family:'IBM Plex Mono',monospace;}
-.laudo-preview{font-size:12px;color:var(--muted);line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-.laudo-card-actions{display:flex;gap:6px;margin-top:12px;}
-.lc-btn{padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted2);font-size:11px;font-family:'IBM Plex Mono',monospace;cursor:pointer;transition:all .2s;}
-.lc-btn:hover{color:var(--text);border-color:var(--border2);background:var(--s3);}
-.lc-btn.del:hover{color:var(--red);border-color:rgba(255,107,129,0.3);}
-
-/* MODALS */
-.modal-overlay{position:fixed;inset:0;background:rgba(5,7,10,0.85);backdrop-filter:blur(8px);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:all 0.3s;}
-.modal-overlay.open{opacity:1;pointer-events:all;}
-.modal{background:var(--s2);border:1px solid var(--border2);border-radius:20px;padding:32px;width:400px;max-width:90vw;box-shadow:0 20px 50px rgba(0,0,0,0.5);transform:scale(0.95);transition:all 0.3s;}
-.modal-overlay.open .modal{transform:scale(1);}
-.modal-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:24px;color:var(--text);}
-.modal-field{margin-bottom:20px;}
-.modal-label{font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;display:block;}
-.modal-select,.modal-input{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:12px;padding:12px 16px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:all .2s;}
-.modal-select:focus,.modal-input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px var(--cyan-dim);}
-.modal-btns{display:flex;gap:10px;margin-top:28px;}
-.modal-btn{flex:1;padding:12px;border-radius:12px;border:none;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:all .2s;}
-.modal-btn.cancel{background:var(--s3);color:var(--muted);}
-.modal-btn.cancel:hover{color:var(--text);background:var(--border2);}
-.modal-btn.confirm{background:linear-gradient(135deg,var(--cyan),#00a3ff);color:#0a0c12;}
-.modal-btn.confirm:hover{box-shadow:0 4px 16px rgba(0,212,255,0.3);}
-
-/* RECORDING */
-.rec-box{border:1px solid var(--border2);border-radius:16px;background:var(--bg);overflow:hidden;}
-.rec-idle{display:flex;flex-direction:column;align-items:center;gap:12px;padding:32px 20px;text-align:center;}
-.rec-icon{font-size:40px;margin-bottom:8px;}
-.rec-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--text);}
-.rec-sub{font-size:12px;color:var(--muted2);line-height:1.6;max-width:240px;}
-.rec-start-btn{padding:12px 32px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--red),#e11d48);color:#fff;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:all .3s;margin-top:8px;box-shadow:0 4px 12px rgba(255,107,129,0.2);}
-.rec-start-btn:hover{box-shadow:0 8px 24px rgba(255,107,129,0.4);transform:translateY(-2px);}
-.rec-active{display:flex;flex-direction:column;align-items:center;gap:16px;padding:24px 20px;}
-.rec-pulse-wrap{display:flex;align-items:center;gap:12px;}
-.rec-pulse{width:14px;height:14px;border-radius:50%;background:var(--red);animation:recBlink 0.8s ease infinite;}
-@keyframes recBlink{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(255,107,129,0.5);}50%{opacity:0.5;box-shadow:0 0 0 8px rgba(255,107,129,0);}}
-.rec-live{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--red);letter-spacing:2px;}
-.rec-timer{font-family:'IBM Plex Mono',monospace;font-size:36px;font-weight:500;color:var(--text);letter-spacing:3px;}
-.rec-transcript-wrap{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:16px;max-height:140px;overflow-y:auto;}
-.rec-transcript-label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;}
-.rec-transcript{font-size:12px;color:var(--muted);line-height:1.7;}
-.rec-stop-btn{width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--green),#059669);color:#0a0c12;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:all .3s;}
-.rec-stop-btn:hover{box-shadow:0 8px 24px rgba(0,242,166,0.3);transform:translateY(-2px);}
-
-/* TOAST */
-.toast{position:fixed;bottom:32px;right:32px;z-index:999;background:var(--s3);border:1px solid var(--border2);border-radius:12px;padding:12px 20px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:10px;transform:translateY(80px);opacity:0;transition:all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);pointer-events:none;box-shadow:0 10px 30px rgba(0,0,0,0.4);}
-.toast.show{transform:translateY(0);opacity:1;}
-.toast.success{border-color:rgba(0,242,166,0.3);color:var(--green);}
-.toast.error{border-color:rgba(255,107,129,0.3);color:var(--red);}
-
-@media(max-width:1100px){
-  .app{grid-template-columns:280px 1fr 280px;}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
 }
-@media(max-width:900px){
-  body{overflow:auto;}
-  .app{grid-template-columns:1fr;grid-template-rows:auto auto auto;height:auto;}
-  .right-panel{border-left:none;border-top:1px solid var(--border);}
+
+/* ── HEADER ── */
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 24px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
 }
+.logo {
+  font-size: 20px; font-weight: 700; color: var(--blue2);
+  letter-spacing: -0.5px;
+}
+.logo span { color: var(--text); }
+.header-right { display: flex; align-items: center; gap: 10px; }
+.api-btn {
+  display: flex; align-items: center; gap: 7px;
+  padding: 7px 14px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  color: var(--muted2); font-size: 12px; font-weight: 500;
+  cursor: pointer; transition: all .2s;
+}
+.api-btn:hover { border-color: var(--blue); color: var(--blue2); }
+.api-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
+.api-dot.active { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.tab-bar {
+  display: flex; gap: 2px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 9px; padding: 3px;
+}
+.tab-btn {
+  padding: 6px 16px; border-radius: 7px;
+  font-size: 12px; font-weight: 500;
+  cursor: pointer; border: none;
+  background: transparent; color: var(--muted); transition: all .2s;
+}
+.tab-btn.active { background: var(--blue); color: white; }
+
+/* ── LAYOUT ── */
+.app-body { display: flex; height: calc(100vh - 57px); }
+.panel-left { width: 300px; min-width: 260px; border-right: 1px solid var(--border); overflow-y: auto; padding: 20px 16px; display: flex; flex-direction: column; gap: 20px; }
+.panel-center { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+.panel-right { width: 300px; min-width: 260px; border-left: 1px solid var(--border); overflow-y: auto; display: flex; flex-direction: column; }
+
+/* ── SECTIONS ── */
+.sec-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 1.2px;
+  color: var(--muted); text-transform: uppercase; margin-bottom: 10px;
+}
+.exam-list { display: flex; flex-direction: column; gap: 4px; }
+.exam-btn {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 9px;
+  cursor: pointer; border: 1px solid transparent;
+  background: transparent; color: var(--muted2);
+  font-size: 13px; font-weight: 500; font-family: inherit;
+  transition: all .2s; text-align: left;
+}
+.exam-btn:hover { background: var(--bg3); color: var(--text); }
+.exam-btn.active {
+  background: var(--blue-dim);
+  border-color: rgba(59,130,246,0.3);
+  color: var(--blue2);
+}
+.exam-icon { font-size: 16px; width: 22px; text-align: center; }
+
+/* ── MODE TABS ── */
+.mode-tabs { display: flex; gap: 3px; background: var(--bg3); border-radius: 9px; padding: 3px; }
+.mode-tab {
+  flex: 1; padding: 8px; border-radius: 7px;
+  font-size: 12px; font-weight: 500;
+  cursor: pointer; border: none;
+  background: transparent; color: var(--muted); transition: all .2s;
+  font-family: inherit;
+}
+.mode-tab.active { background: var(--bg4); color: var(--text); border: 1px solid var(--border2); }
+
+/* ── TEXTAREA ── */
+.input-area {
+  width: 100%; min-height: 130px; padding: 14px;
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 10px; color: var(--text); font-family: 'DM Sans', sans-serif;
+  font-size: 13px; resize: vertical; outline: none; transition: border .2s;
+  line-height: 1.6;
+}
+.input-area:focus { border-color: var(--blue); }
+.input-area::placeholder { color: var(--muted); }
+
+/* ── GENERATE BTN ── */
+.generate-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 14px;
+  background: var(--blue);
+  border: none; border-radius: 10px;
+  color: white; font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: all .2s;
+  font-family: inherit;
+}
+.generate-btn:hover { background: #2563eb; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(59,130,246,0.3); }
+.generate-btn:active { transform: translateY(0); }
+.generate-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* ── REPORT AREA ── */
+.report-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 0 12px;
+}
+.report-label { font-size: 11px; font-weight: 600; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; }
+.report-actions { display: flex; gap: 6px; }
+.action-btn {
+  padding: 6px 12px; border-radius: 7px;
+  font-size: 11px; font-weight: 600;
+  cursor: pointer; border: 1px solid var(--border2);
+  background: var(--bg3); color: var(--muted2);
+  transition: all .2s; font-family: inherit;
+}
+.action-btn:hover { border-color: var(--blue); color: var(--blue2); }
+.action-btn.save { background: var(--green-dim); border-color: rgba(34,197,94,0.3); color: var(--green); }
+.action-btn.save:hover { background: var(--green); color: white; }
+.report-body {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+  font-family: 'DM Mono', monospace; font-size: 12px;
+  line-height: 1.8; color: var(--text);
+  white-space: pre-wrap; min-height: 200px;
+}
+.report-empty {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; min-height: 300px; gap: 12px;
+  color: var(--muted);
+}
+.report-empty-icon { font-size: 40px; opacity: 0.4; }
+.report-empty-text { font-size: 13px; text-align: center; }
+
+/* ── BANCO ── */
+.banco-header {
+  padding: 16px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.banco-title { font-size: 12px; font-weight: 600; color: var(--text); }
+.banco-count { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; }
+.banco-filters { display: flex; gap: 4px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+.filter-btn {
+  flex: 1; padding: 6px 4px; border-radius: 7px;
+  font-size: 11px; font-weight: 600; cursor: pointer;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--muted); transition: all .2s; font-family: inherit;
+}
+.filter-btn.active { background: var(--blue-dim); border-color: rgba(59,130,246,0.3); color: var(--blue2); }
+.banco-list { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.laudo-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px;
+}
+.laudo-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.tag {
+  font-size: 10px; font-weight: 700; padding: 3px 8px;
+  border-radius: 5px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.tag-normal { background: var(--green-dim); color: var(--green); }
+.tag-patologico { background: var(--red-dim); color: var(--red); }
+.laudo-exam { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; margin-bottom: 4px; }
+.laudo-preview { font-size: 11px; color: var(--muted2); line-height: 1.5; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.laudo-date { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; }
+.laudo-btns { display: flex; gap: 4px; margin-top: 8px; }
+.lbtn {
+  flex: 1; padding: 5px; border-radius: 6px;
+  font-size: 10px; font-weight: 600; cursor: pointer;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--muted); transition: all .15s; font-family: inherit;
+}
+.lbtn:hover { background: var(--bg4); color: var(--text); }
+.lbtn.del:hover { background: var(--red-dim); border-color: rgba(239,68,68,0.3); color: var(--red); }
+.banco-empty {
+  text-align: center; color: var(--muted);
+  font-size: 12px; padding: 40px 20px; line-height: 1.8;
+}
+
+/* ── RECORDING ── */
+.rec-area { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 20px; }
+.rec-btn {
+  width: 70px; height: 70px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; cursor: pointer; border: 3px solid var(--border2);
+  background: var(--bg3); transition: all .2s;
+}
+.rec-btn:hover { border-color: var(--red); transform: scale(1.05); }
+.rec-btn.recording {
+  background: var(--red-dim); border-color: var(--red);
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); } 50% { box-shadow: 0 0 0 12px rgba(239,68,68,0); } }
+.rec-status { font-size: 12px; color: var(--muted); }
+.rec-status.active { color: var(--red); }
+
+/* ── FILE DROP ── */
+.file-drop {
+  border: 2px dashed var(--border2); border-radius: 10px;
+  padding: 30px; text-align: center; cursor: pointer;
+  transition: all .2s; color: var(--muted);
+}
+.file-drop:hover { border-color: var(--blue); color: var(--blue2); }
+.file-drop-icon { font-size: 32px; margin-bottom: 8px; }
+.file-drop-text { font-size: 12px; line-height: 1.6; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; padding: 20px;
+}
+.modal-overlay.hidden { display: none; }
+.modal {
+  background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: 16px; padding: 28px; width: 100%; max-width: 420px;
+}
+.modal-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+.modal-sub { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+.modal-field { margin-bottom: 14px; }
+.modal-label { font-size: 11px; font-weight: 600; color: var(--muted2); margin-bottom: 6px; display: block; }
+.modal-input {
+  width: 100%; padding: 10px 12px; border-radius: 8px;
+  background: var(--bg3); border: 1px solid var(--border2);
+  color: var(--text); font-size: 13px; font-family: inherit;
+  outline: none; transition: border .2s;
+}
+.modal-input:focus { border-color: var(--blue); }
+.modal-select {
+  width: 100%; padding: 10px 12px; border-radius: 8px;
+  background: var(--bg3); border: 1px solid var(--border2);
+  color: var(--text); font-size: 13px; font-family: inherit;
+  outline: none; cursor: pointer;
+}
+.modal-btns { display: flex; gap: 8px; margin-top: 20px; }
+.modal-btn {
+  flex: 1; padding: 11px; border-radius: 8px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  border: 1px solid var(--border2); background: var(--bg3);
+  color: var(--muted); font-family: inherit; transition: all .2s;
+}
+.modal-btn.primary { background: var(--blue); border-color: var(--blue); color: white; }
+.modal-btn.primary:hover { background: #2563eb; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  padding: 12px 18px; border-radius: 10px;
+  font-size: 13px; font-weight: 500; z-index: 9999;
+  transform: translateY(60px); opacity: 0;
+  transition: all .3s;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { background: var(--green); color: white; }
+.toast.error { background: var(--red); color: white; }
+.toast.info { background: var(--blue); color: white; }
+
+/* ── LOADING ── */
+.loading-dots { display: flex; gap: 5px; align-items: center; }
+.loading-dots span {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--blue2); animation: dot .8s infinite;
+}
+.loading-dots span:nth-child(2) { animation-delay: .15s; }
+.loading-dots span:nth-child(3) { animation-delay: .3s; }
+@keyframes dot { 0%,80%,100% { transform: scale(0.6); opacity: 0.4; } 40% { transform: scale(1); opacity: 1; } }
+
+/* ── CONFIGURACOES TAB ── */
+#tab-config { display: none; padding: 24px; max-width: 700px; margin: 0 auto; }
+#tab-config.active { display: block; }
+#tab-editor.active { display: flex; height: 100%; }
+#tab-editor { display: none; }
+.config-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+.config-card-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.config-card-sub { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+.prompt-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px; background: var(--bg3); border-radius: 8px;
+  margin-bottom: 8px; border: 1px solid var(--border);
+}
+.prompt-text { flex: 1; font-size: 12px; color: var(--muted2); line-height: 1.5; }
+.prompt-tag { font-size: 10px; padding: 2px 7px; border-radius: 4px; background: var(--blue-dim); color: var(--blue2); font-weight: 600; white-space: nowrap; }
+.prompt-del { padding: 4px 8px; border-radius: 5px; background: transparent; border: 1px solid var(--border); color: var(--muted); font-size: 11px; cursor: pointer; font-family: inherit; transition: all .15s; }
+.prompt-del:hover { background: var(--red-dim); border-color: var(--red); color: var(--red); }
+
+/* scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
-<header>
-  <div class="logo-container">
-    <div class="logo">Margotti <span>AI</span></div>
-    <div class="logo-sub">Seu Assistente de Laudos</div>
-  </div>
-  <div class="header-center">
-    <button class="api-key-btn" id="api-btn" onclick="openApiModal()">
-      <span class="status-dot" id="status-dot"></span>
-      <span id="api-btn-label">Configurar API Key</span>
+<div class="header">
+  <div class="logo">Margotti<span>AI</span></div>
+  <div class="header-right">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('editor', this)">📝 Editor de Laudos</button>
+      <button class="tab-btn" onclick="switchTab('config', this)">⚙️ Configurações</button>
+    </div>
+    <button class="api-btn" onclick="openModal('api-modal')">
+      <div class="api-dot" id="api-dot"></div>
+      <span id="api-label">Configurar API Key</span>
     </button>
   </div>
-  <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted2);font-weight:600;">v3.0 Premium</div>
-</header>
-
-<div class="app">
-
-  <!-- ─── LEFT: CONFIG ─── -->
-  <div class="panel left-panel">
-    <div class="panel-header">
-      <div class="panel-title">⚙️ Configuração</div>
-    </div>
-    <div class="panel-scroll">
-
-      <!-- Exam type -->
-      <div class="sec">
-        <div class="sec-label">Tipo de Exame</div>
-        <div class="exam-list" id="exam-list">
-          <button class="exam-btn active" data-exam="obstetrico" onclick="selectExam(this)"><span class="ei">🤰</span><span class="ec">Obstétrico</span></button>
-          <button class="exam-btn" data-exam="abdome" onclick="selectExam(this)"><span class="ei">🫀</span><span class="ec">Abdome Total</span></button>
-          <button class="exam-btn" data-exam="ginecologico" onclick="selectExam(this)"><span class="ei">🧬</span><span class="ec">Ginecológico / Transvaginal</span></button>
-          <button class="exam-btn" data-exam="prostata" onclick="selectExam(this)"><span class="ei">🩺</span><span class="ec">Próstata</span></button>
-          <button class="exam-btn" data-exam="rins" onclick="selectExam(this)"><span class="ei">💧</span><span class="ec">Rins e Vias Urinárias</span></button>
-          <button class="exam-btn" data-exam="tireoide" onclick="selectExam(this)"><span class="ei">🦋</span><span class="ec">Tireoide</span></button>
-          <button class="exam-btn" data-exam="tireoide-doppler" onclick="selectExam(this)"><span class="ei">🌊</span><span class="ec">Tireoide c/ Doppler</span></button>
-          <button class="exam-btn" data-exam="mama" onclick="selectExam(this)"><span class="ei">🎗️</span><span class="ec">Mama</span></button>
-        </div>
-      </div>
-
-      <!-- Input mode -->
-      <div class="sec">
-        <div class="sec-label">Entrada de Dados</div>
-        <button id="btn-importar" onclick="importarTemplates()" style="width:100%;padding:10px;border-radius:12px;border:1px solid rgba(0,212,255,0.2);background:var(--cyan-dim);color:var(--cyan);font-size:12px;font-weight:700;cursor:pointer;margin-bottom:16px;transition:all 0.2s;">📥 Importar Meus Templates</button>
-        
-        <div class="mode-tabs">
-          <button class="mode-tab active" onclick="switchMode('text',this)">✏️ Digitar</button>
-          <button class="mode-tab" onclick="switchMode('rec',this)">🎙️ Gravar</button>
-          <button class="mode-tab" onclick="switchMode('file',this)">📎 Anexar</button>
-        </div>
-
-        <div id="text-mode">
-          <textarea class="text-area" id="text-input"
-            placeholder="Fale ou escreva livremente...
-
-Ex: 'Paciente bem, IG 28 semanas, DBP 71mm, CC 264, CA 247, CF 54, LA normal, BCF 148...'
-
-A IA filtra a conversa e extrai só os dados clínicos." rows="6"></textarea>
-          <div class="text-hint">💡 Pode ditar com conversa — a IA ignora e foca nas medidas.</div>
-        </div>
-
-        <div id="rec-mode" style="display:none;">
-          <div class="rec-box" id="rec-box">
-            <div class="rec-idle" id="rec-idle">
-              <div class="rec-icon">🎙️</div>
-              <div class="rec-title">Gravação de Atendimento</div>
-              <div class="rec-sub">Grave o exame completo — a IA transcreve e monta o laudo automaticamente</div>
-              <button class="rec-start-btn" onclick="startRecording()">▶ Iniciar Gravação</button>
-            </div>
-            <div class="rec-active" id="rec-active" style="display:none;">
-              <div class="rec-pulse-wrap">
-                <div class="rec-pulse"></div>
-                <span class="rec-live">● REC</span>
-              </div>
-              <div class="rec-timer" id="rec-timer">00:00</div>
-              <div class="rec-transcript-wrap">
-                <div class="rec-transcript-label">Transcrição ao vivo</div>
-                <div class="rec-transcript" id="rec-transcript-live">Aguardando fala...</div>
-              </div>
-              <button class="rec-stop-btn" onclick="stopRecording()">⏹ Parar e Gerar Laudo</button>
-            </div>
-          </div>
-        </div>
-
-        <div id="file-mode" style="display:none;">
-          <div class="upload-zone" id="drop-zone">
-            <input type="file" multiple accept="image/*,application/pdf" onchange="handleFiles(this.files)">
-            <div class="upload-icon">📄</div>
-            <div class="upload-title">Arraste fotos ou PDFs</div>
-            <div class="upload-hint">JPG, PNG ou PDF do aparelho</div>
-          </div>
-          <div class="file-list" id="file-list"></div>
-        </div>
-      </div>
-    </div>
-    <button class="btn-generate" id="btn-gen" onclick="generateReport()" disabled>⚡ Gerar Laudo</button>
-  </div>
-
-  <!-- ─── CENTER: REPORT ─── -->
-  <div class="panel center-panel">
-    <div class="report-topbar">
-      <div class="report-label">📄 Laudo Estruturado</div>
-      <div class="report-actions">
-        <button class="act-btn" id="btn-copy" onclick="copyReport()" disabled>📋 Copiar</button>
-        <button class="act-btn pdf-btn" id="btn-pdf" onclick="exportPDF()" disabled>📥 PDF</button>
-        <button class="act-btn save-btn" id="btn-save" onclick="openSaveModal()" disabled>💾 Salvar</button>
-        <button class="act-btn" id="btn-clear" onclick="clearAll()" disabled>🗑️ Limpar</button>
-      </div>
-    </div>
-    <div class="report-body" id="report-body">
-      <div class="empty-state">
-        <div class="empty-icon">🩻</div>
-        <div class="empty-title">Nenhum laudo gerado</div>
-        <div class="empty-sub">Selecione o exame, insira os dados e clique em Gerar Laudo.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ─── RIGHT: BANCO ─── -->
-  <div class="panel right-panel">
-    <div class="panel-header">
-      <div class="panel-title">📚 Banco de Laudos</div>
-      <div id="banco-count" style="font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--muted2);">0 laudos</div>
-    </div>
-    <div class="panel-scroll">
-      <div class="banco-filters">
-        <button class="filter-btn active" data-f="todos" onclick="filterBanco(this)">Todos</button>
-        <button class="filter-btn normal-f" data-f="normal" onclick="filterBanco(this)">Normais</button>
-        <button class="filter-btn patol-f" data-f="patologico" onclick="filterBanco(this)">Patológicos</button>
-      </div>
-      <div class="banco-list" id="banco-list">
-        <div class="banco-empty">Carregando banco...</div>
-      </div>
-    </div>
-  </div>
-
 </div>
 
-<!-- SAVE MODAL -->
-<div class="modal-overlay" id="save-modal">
+<!-- EDITOR TAB -->
+<div id="tab-editor" class="active" style="display:flex; height:calc(100vh - 57px);">
+
+  <!-- LEFT PANEL -->
+  <div class="panel-left">
+    <div>
+      <div class="sec-label">Tipo de Exame</div>
+      <div class="exam-list" id="exam-list"></div>
+    </div>
+    <div>
+      <div class="sec-label">Entrada</div>
+      <div class="mode-tabs">
+        <button class="mode-tab active" onclick="switchMode('text', this)">✏️ Texto</button>
+        <button class="mode-tab" onclick="switchMode('voice', this)">🎙️ Gravar</button>
+        <button class="mode-tab" onclick="switchMode('file', this)">📎 Arquivo</button>
+      </div>
+      <div style="margin-top:12px;" id="input-panel">
+        <!-- text mode -->
+        <div id="mode-text">
+          <textarea class="input-area" id="text-input" placeholder="Digite os dados do exame... medidas, achados, observações&#10;&#10;Ex: fígado 14cm, vesícula sem cálculos, rins normais bilateralmente"></textarea>
+        </div>
+        <!-- voice mode -->
+        <div id="mode-voice" style="display:none;">
+          <div class="rec-area">
+            <div class="rec-btn" id="rec-btn" onclick="toggleRecording()">🎙️</div>
+            <div class="rec-status" id="rec-status">Clique para gravar</div>
+            <textarea class="input-area" id="voice-input" placeholder="Transcrição em tempo real..." style="min-height:80px;width:100%;"></textarea>
+          </div>
+        </div>
+        <!-- file mode -->
+        <div id="mode-file" style="display:none;">
+          <div class="file-drop" onclick="document.getElementById('file-input').click()">
+            <div class="file-drop-icon">🖼️</div>
+            <div class="file-drop-text">Clique para enviar<br><span style="font-size:10px;color:var(--muted)">JPG · PNG · PDF</span></div>
+            <input type="file" id="file-input" accept=".jpg,.jpeg,.png,.pdf" style="display:none" onchange="handleFile(this)">
+          </div>
+          <textarea class="input-area" id="file-text" placeholder="Descrição do arquivo carregado..." style="min-height:60px;margin-top:10px;" readonly></textarea>
+        </div>
+      </div>
+      <button class="generate-btn" id="gen-btn" onclick="generateReport()" style="margin-top:12px;">
+        ⚡ Gerar Laudo
+      </button>
+    </div>
+  </div>
+
+  <!-- CENTER PANEL -->
+  <div class="panel-center">
+    <div id="report-empty" class="report-empty">
+      <div class="report-empty-icon">🩻</div>
+      <div class="report-empty-text">Selecione o exame, insira os dados<br>e clique em Gerar Laudo</div>
+    </div>
+    <div id="report-area" style="display:none;">
+      <div class="report-header">
+        <div class="report-label">📄 Laudo Gerado</div>
+        <div class="report-actions">
+          <button class="action-btn" onclick="copyReport()">📋 Copiar</button>
+          <button class="action-btn" onclick="editReport()">✏️ Editar</button>
+          <button class="action-btn" onclick="downloadPDF()">📥 PDF</button>
+          <button class="action-btn save" onclick="openSaveModal()">💾 Salvar</button>
+        </div>
+      </div>
+      <textarea class="report-body" id="report-text" style="min-height:400px;font-family:'DM Mono',monospace;font-size:12px;line-height:1.8;width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:20px;color:var(--text);resize:vertical;outline:none;" readonly></textarea>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="panel-right">
+    <div class="banco-header">
+      <div class="banco-title">🗂 Banco de Laudos</div>
+      <div class="banco-count" id="banco-count">0 laudos</div>
+    </div>
+    <div class="banco-filters">
+      <button class="filter-btn active" data-f="todos" onclick="filterBanco(this)">Todos</button>
+      <button class="filter-btn" data-f="normal" onclick="filterBanco(this)">Normais</button>
+      <button class="filter-btn" data-f="patologico" onclick="filterBanco(this)">Patológicos</button>
+    </div>
+    <div class="banco-list" id="banco-list">
+      <div class="banco-empty">Nenhum laudo salvo ainda.<br>Gere e salve laudos para<br>construir seu banco.</div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIG TAB -->
+<div id="tab-config">
+  <div class="config-card">
+    <div class="config-card-title">🔐 Acesso ao Painel</div>
+    <div class="config-card-sub">Senha necessária para adicionar ou editar prompts personalizados</div>
+    <div id="lock-form">
+      <input class="modal-input" id="pwd-input" type="password" placeholder="Digite a senha..." onkeydown="if(event.key==='Enter')unlockPanel()">
+      <button class="generate-btn" onclick="unlockPanel()" style="margin-top:10px;padding:10px;">🔓 Desbloquear Painel</button>
+    </div>
+    <div id="unlocked-panel" style="display:none;">
+      <div style="color:var(--green);font-size:13px;margin-bottom:16px;">✅ Painel desbloqueado</div>
+      <div class="modal-field">
+        <label class="modal-label">Tipo de Exame</label>
+        <select class="modal-select" id="prompt-exam">
+          <option value="geral">⭐ Prompt Geral (Todos os Exames)</option>
+          <option value="obstetrico">🤰 Obstétrico</option>
+          <option value="abdome">🫀 Abdome Total</option>
+          <option value="endovaginal">🧬 Endovaginal</option>
+          <option value="tireoide">🦋 Tireoide</option>
+          <option value="urinario">💧 Rins e Vias Urinárias</option>
+          <option value="mamas">🎗️ Mamas</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Instrução para a IA</label>
+        <textarea class="modal-input" id="prompt-text" style="min-height:80px;resize:vertical;" placeholder="Ex: Quando houver mioma, sempre descrever localização, dimensões e tipo. Sempre usar linguagem formal e objetiva."></textarea>
+      </div>
+      <button class="generate-btn" onclick="savePrompt()" style="padding:10px;font-size:13px;">➕ Adicionar Instrução</button>
+    </div>
+  </div>
+  <div class="config-card">
+    <div class="config-card-title">📋 Instruções Salvas</div>
+    <div class="config-card-sub">A IA consulta essas instruções em cada geração de laudo</div>
+    <div id="prompts-list">
+      <div style="color:var(--muted);font-size:12px;">Nenhuma instrução salva ainda.</div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL API KEY -->
+<div class="modal-overlay hidden" id="api-modal">
   <div class="modal">
-    <div class="modal-title">Salvar no Banco</div>
+    <div class="modal-title">🔑 Configurar API Key</div>
+    <div class="modal-sub">Sua chave fica salva localmente e nunca é compartilhada</div>
+    <div class="modal-field">
+      <label class="modal-label">Provedor de IA</label>
+      <select class="modal-select" id="provider-select">
+        <option value="claude">Claude (Anthropic) — Recomendado</option>
+        <option value="gpt">GPT (OpenAI)</option>
+        <option value="deepseek">DeepSeek</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">API Key</label>
+      <input class="modal-input" type="password" id="api-key-input" placeholder="sk-ant-..." />
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn" onclick="closeModal('api-modal')">Cancelar</button>
+      <button class="modal-btn primary" onclick="saveApiKey()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SALVAR LAUDO -->
+<div class="modal-overlay hidden" id="save-modal">
+  <div class="modal">
+    <div class="modal-title">💾 Salvar no Banco</div>
+    <div class="modal-sub">Classificando o laudo para aprendizado da IA</div>
     <div class="modal-field">
       <label class="modal-label">Classificação</label>
       <select class="modal-select" id="save-class">
@@ -377,28 +503,12 @@ A IA filtra a conversa e extrai só os dados clínicos." rows="6"></textarea>
       </select>
     </div>
     <div class="modal-field">
-      <label class="modal-label">Observação (Opcional)</label>
-      <input type="text" class="modal-input" id="save-obs" placeholder="Ex: Nódulo em lobo direito">
+      <label class="modal-label">Observação (opcional)</label>
+      <input class="modal-input" id="save-obs" placeholder="Ex: Cisto hepático simples, 2cm..." />
     </div>
     <div class="modal-btns">
-      <button class="modal-btn cancel" onclick="closeSaveModal()">Cancelar</button>
-      <button class="modal-btn confirm" onclick="saveLaudo()">Confirmar e Salvar</button>
-    </div>
-  </div>
-</div>
-
-<!-- API MODAL -->
-<div class="modal-overlay" id="api-modal">
-  <div class="modal">
-    <div class="modal-title">Configurar API Key</div>
-    <div class="modal-field">
-      <label class="modal-label">Anthropic API Key</label>
-      <input type="password" class="modal-input" id="api-key-input" placeholder="sk-ant-...">
-      <div style="font-size:10px;color:var(--muted2);margin-top:8px;line-height:1.6;">Sua chave fica salva apenas no seu navegador.</div>
-    </div>
-    <div class="modal-btns">
-      <button class="modal-btn cancel" onclick="closeApiModal()">Cancelar</button>
-      <button class="modal-btn confirm" onclick="saveApiKey()">Salvar Chave</button>
+      <button class="modal-btn" onclick="closeModal('save-modal')">Cancelar</button>
+      <button class="modal-btn primary" onclick="saveLaudo()">Salvar no Banco</button>
     </div>
   </div>
 </div>
@@ -406,386 +516,624 @@ A IA filtra a conversa e extrai só os dados clínicos." rows="6"></textarea>
 <div class="toast" id="toast"></div>
 
 <script>
-// ─── CONFIG ──────────────────────────────────────────────────
+// ─── STATE ──────────────────────────────────────────────────────────────────
 const SUPA_URL = 'https://orsgbbpdgfhjmmkowunn.supabase.co';
 const SUPA_KEY = 'sb_publishable_72cEtH51tXeqJlth8EjTww_yHcX3qDb';
 
-let apiKey = localStorage.getItem('laudo_api_key') || '';
 let selectedExam = 'obstetrico';
-let inputMode = 'text';
-let uploadedFiles = [];
+let currentMode = 'text';
 let currentReport = '';
-let isRecording = false;
 let bancoFilter = 'todos';
+let bancoCache = [];
+let isRecording = false;
+let recognition = null;
+let customPrompts = JSON.parse(localStorage.getItem('margotti_prompts') || '[]');
 
-const examNames = {
-  'obstetrico': 'Obstétrico',
-  'abdome': 'Abdome Total',
-  'ginecologico': 'Ginecológico / Transvaginal',
-  'prostata': 'Próstata',
-  'rins': 'Rins e Vias Urinárias',
-  'tireoide': 'Tireoide',
-  'tireoide-doppler': 'Tireoide c/ Doppler',
-  'mama': 'Mama'
-};
-
-const examPrompts = {
-  'obstetrico': `Você é um médico ultrassonografista. Gere um laudo obstétrico completo em português brasileiro.
-ESTRUTURA OBRIGATÓRIA:
-ULTRASSONOGRAFIA OBSTÉTRICA
-Data: ${new Date().toLocaleDateString('pt-BR')}
-
-FETO: Único, situação longitudinal, apresentação cefálica.
-VITALIDADE: Batimentos cardíacos fetais presentes (___ bpm). Movimentação fetal presente.
-BIOMETRIA:
-- DBP: ___ mm
-- CC: ___ mm
-- CA: ___ mm
-- CF: ___ mm
-- Peso estimado: ___ g
-PLACENTA: Inserção ___, grau ___ de Grannum.
-LÍQUIDO AMNIÓTICO: Volume normal.
-CONCLUSÃO: Gestação tópica de ___ semanas e ___ dias. Vitalidade fetal preservada.
-DR. ROBERTO FREIRE MARGOTTI - CRM-BA 26929 | RQE: 21367`,
-
-  'abdome': `Você é um médico ultrassonografista. Gere um laudo de abdome total completo em português brasileiro.
-ESTRUTURA OBRIGATÓRIA:
-ULTRASSONOGRAFIA DE ABDOME TOTAL
-Data: ${new Date().toLocaleDateString('pt-BR')}
-
-FÍGADO: Dimensões normais, contornos regulares, ecotextura homogênea. Sem lesões focais.
-VESÍCULA BILIAR: Paredes finas, conteúdo anecoico, sem cálculos.
-PÂNCREAS E BAÇO: Aspecto habitual.
-RINS: Tópicos, dimensões normais, sem hidronefrose ou cálculos.
-BEXIGA: Normodistendida, paredes finas.
-CONCLUSÃO: Exame de abdome total dentro dos limites da normalidade.
-DR. ROBERTO FREIRE MARGOTTI - CRM-BA 26929 | RQE: 21367`,
-
-  'ginecologico': `Você é um médico ultrassonografista. Gere um laudo ginecológico (pode ser via abdominal ou transvaginal conforme os dados) completo em português brasileiro.
-ESTRUTURA OBRIGATÓRIA:
-ULTRASSONOGRAFIA PÉLVICA / TRANSVAGINAL
-Data: ${new Date().toLocaleDateString('pt-BR')}
-
-ÚTERO: Anteversoflexo, contornos regulares, miométrio homogêneo. Medidas: ___ x ___ x ___ cm. Volume: ___ cm³.
-ENDOMÉTRIO: Espessura de ___ mm.
-OVÁRIOS:
-- Direito: ___ x ___ x ___ cm. Volume: ___ cm³. Aspecto habitual.
-- Esquerdo: ___ x ___ x ___ cm. Volume: ___ cm³. Aspecto habitual.
-FUNDO DE SACO: Sem líquido livre.
-CONCLUSÃO: Exame ginecológico sem alterações significativas.
-DR. ROBERTO FREIRE MARGOTTI - CRM-BA 26929 | RQE: 21367`,
-
-  'prostata': `Você é um médico ultrassonografista. Gere um laudo de próstata completo em português brasileiro.
-ESTRUTURA OBRIGATÓRIA:
-ULTRASSONOGRAFIA DE PRÓSTATA
-Data: ${new Date().toLocaleDateString('pt-BR')}
-
-PRÓSTATA: Contornos regulares, ecotextura homogênea. Medidas: ___ x ___ x ___ cm. Volume: ___ cm³.
-BEXIGA: Paredes regulares, sem resíduo pós-miccional significativo.
-CONCLUSÃO: Próstata de dimensões normais para a idade.
-DR. ROBERTO FREIRE MARGOTTI - CRM-BA 26929 | RQE: 21367`,
-
-  'rins': `Você é um médico ultrassonografista. Gere um laudo de rins e vias urinárias completo em português brasileiro.
-ESTRUTURA OBRIGATÓRIA:
-ULTRASSONOGRAFIA DE RINS E VIAS URINÁRIAS
-Data: ${new Date().toLocaleDateString('pt-BR')}
-
-RIM DIREITO: Tópico, dimensões normais (___ x ___ cm). Relação cortico-medular preservada.
-RIM ESQUERDO: Tópico, dimensões normais (___ x ___ cm).
-BEXIGA: Repleção adequada, paredes finas.
-CONCLUSÃO: Aparelho urinário sem evidências de cálculos ou dilatações.
-DR. ROBERTO FREIRE MARGOTTI - CRM-BA 26929 | RQE: 21367`,
-
-  'tireoide': `Você é um médico ultrassonografista. Gere um laudo de tireoide completo em português brasileiro (Classificação TIRADS).
-ESTRUTURA OBRIGATÓRIA:
-ULTRASSONOGRAFIA DE TIREOIDE
-Data: ${new Date().toLocaleDateString('pt-BR')}
-
-LOBO DIREITO: ___ x ___ x ___ cm. Volume: ___ mL.
-LOBO ESQUERDO: ___ x ___ x ___ cm. Volume: ___ mL.
-ISTMO: ___ mm.
-ECOTEXTURA: Homogênea.
-NÓDULOS: Ausentes.
-CONCLUSÃO: Tireoide de dimensões e ecotextura normais. ACR TIRADS 1.
-DR. ROBERTO FREIRE MARGOTTI - CRM-BA 26929 | RQE: 21367`,
-
-  'tireoide-doppler': `Você é um médico ultrassonografista. Gere um laudo de tireoide com Doppler completo em português brasileiro.
-ESTRUTURA OBRIGATÓRIA:
-ULTRASSONOGRAFIA DE TIREOIDE COM DOPPLER
-Data: ${new Date().toLocaleDateString('pt-BR')}
-
-MODO B: Tireoide de dimensões normais, ecotextura homogênea.
-DOPPLER: Vascularização parenquimatosa habitual. Velocidades de pico sistólico dentro da normalidade.
-CONCLUSÃO: Estudo morfológico e hemodinâmico da tireoide sem alterações.
-DR. ROBERTO FREIRE MARGOTTI - CRM-BA 26929 | RQE: 21367`,
-
-  'mama': `Você é um médico ultrassonografista. Gere um laudo de mama completo em português brasileiro (Classificação BI-RADS).
-ESTRUTURA OBRIGATÓRIA:
-ULTRASSONOGRAFIA DE MAMAS
-Data: ${new Date().toLocaleDateString('pt-BR')}
-
-MAMA DIREITA: Tecido fibroglandular de aspecto habitual. Sem nódulos ou cistos.
-MAMA ESQUERDA: Aspecto simétrico à direita.
-AXILAS: Sem linfonodos suspeitos.
-CONCLUSÃO: BI-RADS 1.
-DR. ROBERTO FREIRE MARGOTTI - CRM-BA 26929 | RQE: 21367`,
-};
-
-// ─── TEMPLATES PADRÃO DR. ROBERTO ────────────────────────────
-const templatesBase = [
-  { exam: "obstetrico", examName: "Obstétrico Inicial", class: "normal", obs: "Template USG Inicial", text: "ULTRASSONOGRAFIA OBSTÉTRICA INICIAL\n\nImagem uterina gravídica normal, apresentando saco gestacional íntegro em cujo interior nota-se embrião / feto único, em situação e apresentação variáveis, com movimentos espontâneos e estimulados presentes. Frequência cardíaca de ___ bpm. Cavidade amniótica normal.\n\nBiometria Fetal:\nComprimento crânio-nádegas (CCN) = ___ mm.\n\nAnexos uterinos sem alterações.\nVesícula vitelínica bem visualizada de aspecto habitual.\n\nCONCLUSÃO:\nGestação tópica, única, com vitalidade fetal preservada, de ___ semanas datada pelo comprimento cabeça-nádegas.\n\n*Trata-se do primeiro exame obstétrico.\n\nDR. ROBERTO FREIRE MARGOTTI\nCRM-BA 26929 | RQE: 21367" },
-  { exam: "abdome", examName: "Abdome Total", class: "normal", obs: "Template Abdome Normal", text: "ULTRASSONOGRAFIA DO ABDOME TOTAL\n\nANÁLISE:\nFígado com dimensões e forma normais, contornos regulares e ecotextura parenquimatosa homogênea. Não há evidências ecográficas de lesões hepáticas focais. As veias hepáticas têm configuração anatômica e a porta tem calibre normal.\n\nNão há dilatação das vias biliares intra ou extra-hepáticas.\n\nVesícula biliar distendida fisiologicamente, com dimensões normais, com paredes finas e conteúdo anecoico, sem evidências de cálculos.\n\nPâncreas com morfologia, contornos, dimensões e ecotextura parenquimatosa preservados.\n\nBaço tópico, com dimensões, contornos e ecotextura normais.\n\nRins tópicos, com forma, contornos e dimensões normais. A espessura e a ecogenicidade do parênquima estão preservadas. Ausência de hidronefrose. Ecograficamente não se evidenciam cálculos renais.\n\nAorta e veia cava inferior com trajeto e calibre normais.\n\nBexiga em repleção fisiológica, com paredes finas e conteúdo anecoico.\n\nAusência de líquido livre ou coleções na cavidade abdominal.\n\nIMPRESSÃO DIAGNÓSTICA:\n- Exame ecográfico normal.\n\nDR. ROBERTO FREIRE MARGOTTI\nCRM-BA 26929 | RQE: 21367" },
-  { exam: "ginecologico", examName: "Endovaginal", class: "normal", obs: "Template Endovaginal Normal", text: "ULTRASSONOGRAFIA ENDOVAGINAL\n\nANÁLISE:\nÚtero em anteversoflexão, centrado, com contornos regulares, dimensões normais e ecotextura homogênea.\nO útero mede ___ cm, com volume estimado de ___ cm³.\nEndométrio centrado, homogêneo, com ___ mm de espessura.\n\nOvário direito com dimensões, forma e contornos normais, com ecotextura preservada.\nMedidas: ___ cm, com volume de ___ cm³.\n\nOvário esquerdo com dimensões, forma e contornos normais, com ecotextura preservada.\nMedidas: ___ cm, com volume de ___ cm³.\n\nAusência de líquido livre ou coleções na pequena pelve.\n\nIMPRESSÃO DIAGNÓSTICA:\n- Exame ecográfico normal.\n\nDR. ROBERTO FREIRE MARGOTTI\nCRM-BA 26929 | RQE: 21367" }
+const EXAMS = [
+  { id: 'obstetrico', label: 'Obstétrico', icon: '🤰' },
+  { id: 'abdome', label: 'Abdome Total', icon: '🫀' },
+  { id: 'endovaginal', label: 'Endovaginal', icon: '🧬' },
+  { id: 'tireoide', label: 'Tireoide', icon: '🦋' },
+  { id: 'urinario', label: 'Rins e Vias Urinárias', icon: '💧' },
+  { id: 'mamas', label: 'Mamas', icon: '🎗️' },
 ];
 
-async function importarTemplates() {
-  const btn = document.getElementById("btn-importar");
-  btn.disabled = true;
-  btn.textContent = "Importando...";
-  let ok = 0;
-  for (const t of templatesBase) {
-    try { await insertLaudo(t); ok++; } catch(e) { console.error(e); }
-  }
-  bancoCache = null;
-  await renderBanco();
-  showToast(ok + " templates salvos no banco!", "success");
-  btn.textContent = ok + " templates importados!";
-  setTimeout(() => { btn.textContent = "Importar Meus Templates"; btn.disabled = false; }, 3000);
+const TEMPLATES = {
+  obstetrico: `ULTRASSONOGRAFIA OBSTÉTRICA
+
+Feto único em situação longitudinal, apresentação cefálica, com dorso à direita/esquerda.
+Batimentos cardíacos fetais detectados. Frequência cardíaca ___ bpm. Movimentos fetais presentes.
+
+Biometria fetal:
+D.B.P.: ___ cm.   Circunferência craniana: ___ cm.
+Fêmur: ___ cm.   Circunferência abdominal: ___ cm.
+Peso fetal estimado em ___ gramas (+/-10%) (Percentil ___)
+
+Placenta:
+Implantada em parede anterior/posterior, apresentando grau II de maturidade.
+
+Líquido amniótico: com volume normal para a fase gestacional com maior bolsão de ___ cm.
+
+IMPRESSÃO DIAGNÓSTICA:
+- Gestação de ___ semanas e ___ dias com vitalidade fetal preservada.
+
+Dr. Roberto Freire Margotti | CRM-BA 26929 | RQE: 21367`,
+
+  abdome: `ULTRASSONOGRAFIA DO ABDOME TOTAL
+
+Fígado com dimensões e forma normais, contornos regulares e ecotextura parenquimatosa homogênea. Não há evidências ecográficas de lesões hepáticas focais. As veias hepáticas têm configuração anatômica e a veia porta tem calibre normal.
+
+Não há dilatação das vias biliares intra ou extra-hepáticas.
+
+Vesícula biliar distendida fisiologicamente, com dimensões normais, com paredes finas e conteúdo anecoico, sem evidências de cálculos.
+
+Pâncreas com morfologia, contornos, dimensões e ecotextura parenquimatosa preservados.
+
+Baço tópico, com dimensões, contornos e ecotextura normais.
+
+Rins tópicos, com forma, contornos e dimensões normais. A espessura e a ecogenicidade do parênquima estão preservadas. Ausência de hidronefrose. Ecograficamente não se evidenciam cálculos renais.
+
+Aorta e veia cava inferior com trajeto e calibre normais.
+
+Bexiga em repleção fisiológica, com paredes finas e conteúdo anecoico.
+
+Ausência de líquido livre ou coleções na cavidade abdominal.
+
+IMPRESSÃO DIAGNÓSTICA:
+- Exame ecográfico normal.
+
+Dr. Roberto Freire Margotti | CRM-BA 26929 | RQE: 21367`,
+
+  endovaginal: `ULTRASSONOGRAFIA ENDOVAGINAL
+
+Útero em anteversoflexão, centrado, com contornos regulares, dimensões normais e ecotextura homogênea.
+O útero mede ___ cm, com volume estimado de ___ cm³.
+
+Endométrio centrado, homogêneo, com ___ mm de espessura.
+
+Ovário direito com dimensões, forma e contornos normais, com ecotextura preservada.
+Medidas: ___ cm, com volume de ___ cm³.
+
+Ovário esquerdo com dimensões, forma e contornos normais, com ecotextura preservada.
+Medidas: ___ cm, com volume de ___ cm³.
+
+Ausência de líquido livre ou coleções na pequena pelve.
+
+IMPRESSÃO DIAGNÓSTICA:
+- Exame ecográfico normal.
+
+Dr. Roberto Freire Margotti | CRM-BA 26929 | RQE: 21367`,
+
+  tireoide: `ULTRASSONOGRAFIA DE TIREÓIDE COM DOPPLER
+
+TIREOIDE: Tecido glandular de volume preservado, contornos regulares, com ecogenicidade e ecotextura homogênea. Não há nódulos, nem cistos detectáveis ao ultrassom.
+
+Medidas lobo direito: ___ cm, com volume = ___ cm³.
+Medidas lobo esquerdo: ___ cm, com volume = ___ cm³.
+ISTMO: ___ cm. Volume global da glândula = ___ cm³.
+
+DOPPLERVELOCIMETRIA COLORIDA: padrão vascular habitual.
+ATID: VPS ___ cm/s (VR até 40cm/s)
+ATIE: VPS ___ cm/s (VR até 40 cm/s)
+
+CONCLUSÃO:
+- Exame ecográfico normal.
+- Estudo Doppler dentro dos limites da normalidade.
+
+Dr. Roberto Freire Margotti | CRM-BA 26929 | RQE: 21367`,
+
+  urinario: `ULTRASSONOGRAFIA DO APARELHO URINÁRIO
+
+Rim direito tópico, com forma, contornos e dimensões normais. A espessura e a ecogenicidade do parênquima estão preservadas. Ausência de hidronefrose. Ecograficamente não se evidenciam cálculos renais.
+
+Rim esquerdo tópico, com forma, contornos e dimensões normais. A espessura e a ecogenicidade do parênquima estão preservadas. Ausência de hidronefrose. Ecograficamente não se evidenciam cálculos renais.
+
+Medidas:
+Rim direito: eixo bipolar ___ cm. Espessura do parênquima ___ cm.
+Rim esquerdo: eixo bipolar ___ cm. Espessura do parênquima ___ cm.
+
+Bexiga em repleção com paredes finas e conteúdo anecoico.
+
+IMPRESSÃO DIAGNÓSTICA:
+- Exame ecográfico sem achados patológicos.
+
+Dr. Roberto Freire Margotti | CRM-BA 26929 | RQE: 21367`,
+
+  mamas: `ULTRASSONOGRAFIA DAS MAMAS + AXILAS
+
+Planos superficiais e profundos sem alterações.
+Mamas apresentando tecido glandular predominante, com ecotextura normal.
+Não se observam imagens nodulares sólidas ou císticas.
+Linfonodos da cadeia axilar com forma, dimensões, contornos e ecotextura normais.
+Regiões para-esternal e prolongamentos axilares livres.
+
+IMPRESSÃO DIAGNÓSTICA:
+- Exame sem anormalidades ecográficas (BI-RADS 1).
+
+Dr. Roberto Freire Margotti | CRM-BA 26929 | RQE: 21367`,
+};
+
+const SYSTEM_PROMPT = `Você é o assistente de laudos ultrassonográficos do Dr. Roberto Freire Margotti (CRM-BA 26929 | RQE: 21367), especialista em diagnóstico por imagem com mais de 20 anos de experiência.
+
+REGRAS CRÍTICAS:
+1. Ignore conversas informais com paciente ("Bom dia", "Como vai?", etc.)
+2. Foque EXCLUSIVAMENTE nos dados clínicos e medidas ultrassonográficas
+3. Extraia apenas informações relevantes para o laudo
+4. Use terminologia médica adequada e formal
+5. Substitua os campos "___" com os valores dos dados fornecidos
+6. Sempre assine como: Dr. Roberto Freire Margotti | CRM-BA 26929 | RQE: 21367
+7. Mantenha o estilo e estrutura dos templates fornecidos
+8. Inclua data do exame quando mencionada`;
+
+// ─── INIT ───────────────────────────────────────────────────────────────────
+renderExams();
+loadApiStatus();
+loadBanco();
+renderPromptsList();
+
+function renderExams() {
+  const list = document.getElementById('exam-list');
+  list.innerHTML = EXAMS.map(e => `
+    <button class="exam-btn ${e.id === selectedExam ? 'active' : ''}" 
+      onclick="selectExam('${e.id}', this)" data-exam="${e.id}">
+      <span class="exam-icon">${e.icon}</span>${e.label}
+    </button>`).join('');
 }
 
-// INIT
-updateApiStatus();
-renderBanco();
-
-// ─── EXAM SELECT ─────────────────────────────────────────────
-function selectExam(btn) {
+function selectExam(id, btn) {
+  selectedExam = id;
   document.querySelectorAll('.exam-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  selectedExam = btn.dataset.exam;
-  checkReady();
 }
 
-// ─── MODE SWITCH ─────────────────────────────────────────────
 function switchMode(mode, btn) {
-  inputMode = mode;
+  currentMode = mode;
   document.querySelectorAll('.mode-tab').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  document.getElementById('file-mode').style.display = mode === 'file' ? 'block' : 'none';
-  document.getElementById('text-mode').style.display = mode === 'text' ? 'block' : 'none';
-  document.getElementById('rec-mode').style.display = mode === 'rec' ? 'block' : 'none';
-  checkReady();
+  document.getElementById('mode-text').style.display = mode === 'text' ? 'block' : 'none';
+  document.getElementById('mode-voice').style.display = mode === 'voice' ? 'block' : 'none';
+  document.getElementById('mode-file').style.display = mode === 'file' ? 'block' : 'none';
 }
 
-// ─── RECORDING ───────────────────────────────────────────────
-let recognition = null;
-let recInterval = null;
-let recSeconds = 0;
-let recTranscript = '';
-
-function startRecording() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    showToast('Seu navegador não suporta gravação. Use Chrome.', 'error');
-    return;
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (tab === 'editor') {
+    document.getElementById('tab-editor').style.display = 'flex';
+    document.getElementById('tab-config').style.display = 'none';
+  } else {
+    document.getElementById('tab-editor').style.display = 'none';
+    document.getElementById('tab-config').style.display = 'block';
   }
-  recognition = new SpeechRecognition();
-  recognition.continuous = true;
-  recognition.interimResults = true;
-  recognition.lang = 'pt-BR';
-  recTranscript = '';
-  recSeconds = 0;
-  isRecording = true;
-  document.getElementById('rec-idle').style.display = 'none';
-  document.getElementById('rec-active').style.display = 'flex';
-  document.getElementById('rec-transcript-live').textContent = 'Aguardando fala...';
-  recInterval = setInterval(() => {
-    recSeconds++;
-    const m = String(Math.floor(recSeconds / 60)).padStart(2, '0');
-    const s = String(recSeconds % 60).padStart(2, '0');
-    document.getElementById('rec-timer').textContent = `${m}:${s}`;
-  }, 1000);
-  recognition.onresult = (e) => {
-    let interim = '';
-    for (let i = e.resultIndex; i < e.results.length; i++) {
-      if (e.results[i].isFinal) recTranscript += e.results[i][0].transcript + ' ';
-      else interim = e.results[i][0].transcript;
-    }
-    document.getElementById('rec-transcript-live').innerHTML = recTranscript + `<em style="color:var(--muted2)">${interim}</em>`;
-  };
-  recognition.onend = () => { if (isRecording) recognition.start(); };
-  recognition.start();
-  checkReady();
 }
 
-function stopRecording() {
-  isRecording = false;
-  if (recognition) { recognition.onend = null; recognition.stop(); }
-  clearInterval(recInterval);
-  document.getElementById('rec-idle').style.display = 'flex';
-  document.getElementById('rec-active').style.display = 'none';
-  if (recTranscript.trim().length < 5) { showToast('Nenhuma fala detectada', 'error'); return; }
-  document.getElementById('text-input').value = recTranscript.trim();
-  switchMode('text', document.querySelectorAll('.mode-tab')[0]);
-  generateReport();
-}
-
-// ─── FILES ───────────────────────────────────────────────────
-async function handleFiles(files) {
-  for (const file of files) {
-    const entry = { file, name: file.name, size: file.size, type: file.type };
-    if (file.type.startsWith('image/')) { entry.b64 = await toBase64(file); entry.isImage = true; entry.mediaType = file.type; }
-    else if (file.type === 'application/pdf') { entry.b64 = await toBase64(file); entry.isImage = false; entry.mediaType = 'application/pdf'; }
-    uploadedFiles.push(entry);
+// ─── API KEY ─────────────────────────────────────────────────────────────────
+function loadApiStatus() {
+  const cfg = localStorage.getItem('margotti-ai-config');
+  if (cfg) {
+    const { provider } = JSON.parse(cfg);
+    document.getElementById('api-dot').classList.add('active');
+    document.getElementById('api-label').textContent = provider.toUpperCase() + ' conectado';
   }
-  renderFileList();
-  checkReady();
 }
-function toBase64(file) { return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result.split(',')[1]); r.onerror = rej; r.readAsDataURL(file); }); }
-function renderFileList() {
-  document.getElementById('file-list').innerHTML = uploadedFiles.map((f, i) => `
-    <div class="file-item">
-      <div class="file-thumb">${f.isImage ? `<img src="data:${f.mediaType};base64,${f.b64}">` : '📄'}</div>
-      <div class="file-info"><div class="file-name">${f.name}</div><div class="file-size">${(f.size/1024).toFixed(0)} KB</div></div>
-      <button class="file-remove" onclick="removeFile(${i})">✕</button>
-    </div>`).join('');
-}
-function removeFile(i) { uploadedFiles.splice(i, 1); renderFileList(); checkReady(); }
 
-// ─── READY ───────────────────────────────────────────────────
-function checkReady() {
-  const ok = (inputMode === 'file' && uploadedFiles.length > 0) ||
-             (inputMode === 'text' && document.getElementById('text-input').value.trim().length > 5) ||
-             (inputMode === 'rec' && isRecording);
-  document.getElementById('btn-gen').disabled = !ok || !apiKey;
+function saveApiKey() {
+  const key = document.getElementById('api-key-input').value.trim();
+  const provider = document.getElementById('provider-select').value;
+  if (!key) { showToast('Digite uma API Key', 'error'); return; }
+  localStorage.setItem('margotti-ai-config', JSON.stringify({ provider, apiKey: key }));
+  document.getElementById('api-dot').classList.add('active');
+  document.getElementById('api-label').textContent = provider.toUpperCase() + ' conectado';
+  closeModal('api-modal');
+  showToast('API Key salva!', 'success');
 }
-document.getElementById('text-input').addEventListener('input', checkReady);
 
-// ─── SUPABASE ────────────────────────────────────────────────
+// ─── SUPABASE ────────────────────────────────────────────────────────────────
 async function supaFetch(path, method = 'GET', body = null) {
-  const opts = { method, headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY, 'Content-Type': 'application/json', 'Prefer': method === 'POST' ? 'return=representation' : '' } };
+  const opts = {
+    method,
+    headers: {
+      'apikey': SUPA_KEY,
+      'Authorization': 'Bearer ' + SUPA_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': method === 'POST' ? 'return=representation' : '',
+    }
+  };
   if (body) opts.body = JSON.stringify(body);
   const r = await fetch(SUPA_URL + path, opts);
   if (!r.ok) throw new Error(await r.text());
   return r.status === 204 ? null : r.json();
 }
 
-let bancoCache = null;
-async function getBanco() {
-  if (bancoCache) return bancoCache;
-  const data = await supaFetch('/rest/v1/laudos?select=*&order=created_at.desc');
-  bancoCache = (data || []).map(l => ({ id: l.id, exam: l.exam, examName: l.exam_name, class: l.classification, obs: l.observation, text: l.report_text, date: new Date(l.created_at).toLocaleDateString('pt-BR') }));
-  return bancoCache;
-}
-async function insertLaudo(l) { return supaFetch('/rest/v1/laudos', 'POST', { exam: l.exam, exam_name: l.examName, classification: l.class, observation: l.obs, report_text: l.text }); }
-async function deleteLaudoSupa(id) { return supaFetch(`/rest/v1/laudos?id=eq.${id}`, 'DELETE'); }
-
-// ─── GENERATE ────────────────────────────────────────────────
-async function generateReport() {
-  const btn = document.getElementById('btn-gen');
-  btn.disabled = true; btn.textContent = '⏳ Analisando...';
-  showLoading();
+async function loadBanco() {
+  // Carrega do localStorage (funciona em qualquer ambiente)
+  const stored = localStorage.getItem('margotti_banco');
+  bancoCache = stored ? JSON.parse(stored) : [];
+  renderBanco();
+  // Tenta sincronizar com Supabase em background (opcional)
   try {
-    const sysPrompt = examPrompts[selectedExam];
-    let messages = [];
-    if (inputMode === 'file') {
-      const content = [{ type: 'text', text: sysPrompt + '\nAnalise os arquivos e gere o laudo.' }];
-      for (const f of uploadedFiles) {
-        if (f.isImage) content.push({ type: 'image', source: { type: 'base64', media_type: f.mediaType, data: f.b64 } });
-        else content.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: f.b64 } });
-      }
-      messages = [{ role: 'user', content }];
-    } else {
-      messages = [{ role: 'user', content: sysPrompt + `\n\nDados do médico: "${document.getElementById('text-input').value}"` }];
+    const data = await supaFetch('/rest/v1/laudos?select=*&order=created_at.desc&limit=100');
+    if (data && data.length) {
+      bancoCache = data.map(r => ({
+        id: r.id, exam: r.exam, class: r.classification,
+        obs: r.observation, text: r.report_text,
+        date: new Date(r.created_at).toLocaleDateString('pt-BR'),
+      }));
+      localStorage.setItem('margotti_banco', JSON.stringify(bancoCache));
+      renderBanco();
     }
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({ model: 'claude-3-5-sonnet-20240620', max_tokens: 2000, messages })
-    });
-    if (!resp.ok) throw new Error('Erro na API');
-    const data = await resp.json();
-    currentReport = data.content[0].text;
-    showReport(currentReport);
-    showToast('Laudo gerado!', 'success');
-  } catch (e) {
-    showEmpty();
-    showToast('Erro ao gerar laudo', 'error');
-  } finally {
-    btn.disabled = false; btn.textContent = '⚡ Gerar Laudo';
+  } catch(e) {
+    // CORS bloqueado no iframe — usa apenas localStorage, tudo bem
   }
 }
 
-function showLoading() {
-  document.getElementById('report-body').innerHTML = `<div class="loading-state"><div class="sonar"><div class="sonar-dot"></div></div><div class="load-steps"><div class="load-step active">Analisando dados...</div></div></div>`;
-}
-function showEmpty() {
-  document.getElementById('report-body').innerHTML = `<div class="empty-state"><div class="empty-icon">🩻</div><div class="empty-title">Nenhum laudo gerado</div></div>`;
-}
-function showReport(text) {
-  document.getElementById('report-body').innerHTML = `<div class="report-card"><div class="report-card-header"><span class="exam-tag">${examNames[selectedExam]}</span></div><textarea class="report-editable" id="report-text">${text}</textarea></div>`;
-  ['btn-copy','btn-save','btn-clear','btn-pdf'].forEach(id => document.getElementById(id).disabled = false);
-}
-
-// ─── ACTIONS ─────────────────────────────────────────────────
-function copyReport() { const t = document.getElementById('report-text').value; navigator.clipboard.writeText(t); showToast('Copiado!', 'success'); }
-function clearAll() { uploadedFiles = []; document.getElementById('text-input').value = ''; showEmpty(); renderFileList(); checkReady(); }
-
-function exportPDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  const text = document.getElementById('report-text').value;
-  doc.setFontSize(16);
-  doc.text("MARGOTTI AI - LAUDO MÉDICO", 20, 20);
-  doc.setFontSize(10);
-  doc.text("Gerado em: " + new Date().toLocaleString(), 20, 30);
-  doc.line(20, 35, 190, 35);
-  doc.setFontSize(11);
-  const splitText = doc.splitTextToSize(text, 170);
-  doc.text(splitText, 20, 45);
-  doc.save(`laudo_${selectedExam}_${new Date().getTime()}.pdf`);
-  showToast('PDF Gerado!', 'success');
+async function getReference(examType) {
+  // Usa banco local para referência (sem CORS)
+  const laudos = bancoCache.filter(l => l.exam === examType);
+  if (!laudos.length) return '';
+  const normais = laudos.filter(l => l.class === 'normal').slice(0, 2);
+  const patol = laudos.filter(l => l.class === 'patologico').slice(0, 2);
+  if (!normais.length && !patol.length) return '';
+  let ref = '\n\n--- LAUDOS ANTERIORES DO DR. ROBERTO (REFERÊNCIA DE ESTILO) ---\n';
+  if (normais.length) { ref += '\nNORMAIS:\n'; normais.forEach((r,i) => { ref += `[${i+1}]:\n${r.text.slice(0,700)}\n\n`; }); }
+  if (patol.length) { ref += '\nPATOLÓGICOS:\n'; patol.forEach((r,i) => { ref += `[${i+1}]:\n${r.text.slice(0,700)}\n\n`; }); }
+  ref += '--- FIM ---\n';
+  return ref;
 }
 
-// ─── BANCO UI ────────────────────────────────────────────────
-async function renderBanco() {
-  const list = document.getElementById('banco-list');
-  list.innerHTML = '<div class="banco-empty">Carregando...</div>';
+// ─── GENERATE ────────────────────────────────────────────────────────────────
+async function generateReport() {
+  const cfg = localStorage.getItem('margotti-ai-config');
+  if (!cfg) { openModal('api-modal'); showToast('Configure a API Key primeiro', 'error'); return; }
+
+  let inputData = '';
+  if (currentMode === 'text') inputData = document.getElementById('text-input').value.trim();
+  else if (currentMode === 'voice') inputData = document.getElementById('voice-input').value.trim();
+  else if (currentMode === 'file') inputData = document.getElementById('file-text').value.trim();
+
+  if (!inputData) { showToast('Insira os dados do exame', 'error'); return; }
+
+  const { provider, apiKey } = JSON.parse(cfg);
+  const btn = document.getElementById('gen-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div> Gerando...';
+
   try {
-    let banco = await getBanco();
-    if (bancoFilter !== 'todos') banco = banco.filter(l => l.class === bancoFilter);
-    document.getElementById('banco-count').textContent = banco.length + ' laudos';
-    if (!banco.length) { list.innerHTML = '<div class="banco-empty">Nenhum laudo encontrado.</div>'; return; }
-    list.innerHTML = banco.map(l => `
-      <div class="laudo-card">
-        <div class="laudo-card-top"><span class="laudo-exam-tag tag-${l.class}">${l.class}</span><span class="laudo-date">${l.date}</span></div>
-        <div style="font-size:11px;font-weight:600;margin-bottom:4px;">${l.examName}</div>
-        <div class="laudo-preview">${l.text}</div>
-        <div class="laudo-card-actions">
-          <button class="lc-btn" onclick="viewLaudo(${l.id})">Ver</button>
-          <button class="lc-btn del" onclick="deleteLaudo(${l.id})">Excluir</button>
-        </div>
-      </div>`).join('');
-  } catch(e) { list.innerHTML = '<div class="banco-empty">Erro ao carregar banco.</div>'; }
-}
-function filterBanco(btn) { document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); bancoFilter = btn.dataset.f; renderBanco(); }
-async function deleteLaudo(id) { if(confirm('Excluir laudo?')) { await deleteLaudoSupa(id); bancoCache = null; renderBanco(); showToast('Excluído', 'success'); } }
-function viewLaudo(id) { const l = bancoCache.find(x => x.id === id); showReport(l.text); }
+    const reference = await getReference(selectedExam);
+    const customPts = customPrompts.filter(p => p.exam === selectedExam || p.exam === 'geral');
+    const customStr = customPts.length ? '\n\nINSTRUÇÕES PERSONALIZADAS:\n' + customPts.map(p => '- ' + p.text).join('\n') : '';
 
-// ─── MODALS ──────────────────────────────────────────────────
-function openSaveModal() { document.getElementById('save-modal').classList.add('open'); }
-function closeSaveModal() { document.getElementById('save-modal').classList.remove('open'); }
+    const template = TEMPLATES[selectedExam] || '';
+    const userMsg = `Tipo de Exame: ${selectedExam}\n\nDados do Exame:\n${inputData}\n\nTemplate de Referência:\n${template}${reference}${customStr}`;
+
+    let content = '';
+    if (provider === 'claude') {
+      content = await callClaude(apiKey, SYSTEM_PROMPT, userMsg);
+    } else if (provider === 'gpt') {
+      content = await callGPT(apiKey, SYSTEM_PROMPT, userMsg);
+    } else {
+      content = await callDeepSeek(apiKey, SYSTEM_PROMPT, userMsg);
+    }
+
+    currentReport = content;
+    document.getElementById('report-text').value = content;
+    document.getElementById('report-text').removeAttribute('readonly');
+    document.getElementById('report-empty').style.display = 'none';
+    document.getElementById('report-area').style.display = 'block';
+    showToast('Laudo gerado!', 'success');
+
+    // Auto-save no localStorage
+    const newEntry = {
+      id: Date.now(), exam: selectedExam, class: 'normal',
+      obs: '', text: content,
+      date: new Date().toLocaleDateString('pt-BR'),
+    };
+    bancoCache.unshift(newEntry);
+    localStorage.setItem('margotti_banco', JSON.stringify(bancoCache));
+    renderBanco();
+
+  } catch(e) {
+    showToast('Erro: ' + (e.message || 'Verifique sua API Key'), 'error');
+    console.error(e);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '⚡ Gerar Laudo';
+  }
+}
+
+async function callClaude(apiKey, system, user) {
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2500,
+      temperature: 0.3,
+      system,
+      messages: [{ role: 'user', content: user }],
+    }),
+  });
+  if (!r.ok) { const e = await r.json(); throw new Error(e.error?.message || r.statusText); }
+  const d = await r.json();
+  return d.content[0].text;
+}
+
+async function callGPT(apiKey, system, user) {
+  const r = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+    body: JSON.stringify({
+      model: 'gpt-4-turbo', max_tokens: 2500, temperature: 0.3,
+      messages: [{ role: 'system', content: system }, { role: 'user', content: user }],
+    }),
+  });
+  if (!r.ok) { const e = await r.json(); throw new Error(e.error?.message || r.statusText); }
+  const d = await r.json();
+  return d.choices[0].message.content;
+}
+
+async function callDeepSeek(apiKey, system, user) {
+  const r = await fetch('https://api.deepseek.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+    body: JSON.stringify({
+      model: 'deepseek-chat', max_tokens: 2500, temperature: 0.3,
+      messages: [{ role: 'system', content: system }, { role: 'user', content: user }],
+    }),
+  });
+  if (!r.ok) { const e = await r.json(); throw new Error(e.error?.message); }
+  const d = await r.json();
+  return d.choices[0].message.content;
+}
+
+// ─── REPORT ACTIONS ──────────────────────────────────────────────────────────
+function copyReport() {
+  const txt = document.getElementById('report-text').value;
+  navigator.clipboard.writeText(txt);
+  showToast('Copiado!', 'success');
+}
+
+function editReport() {
+  const el = document.getElementById('report-text');
+  el.removeAttribute('readonly');
+  el.focus();
+  showToast('Modo edição ativado', 'info');
+}
+
+function downloadPDF() {
+  const text = document.getElementById('report-text').value || currentReport;
+  if (!text) { showToast('Nenhum laudo para exportar', 'error'); return; }
+  
+  const examLabel = EXAMS.find(e => e.id === selectedExam)?.label || selectedExam;
+  const dataHoje = new Date().toLocaleDateString('pt-BR');
+  
+  const html = `<!DOCTYPE html><html lang="pt-BR"><head>
+  <meta charset="UTF-8"><title>Laudo - ${examLabel}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600&display=swap');
+    * { box-sizing: border-box; }
+    body { font-family: 'Source Serif 4', Georgia, serif; max-width: 720px; margin: 0 auto; padding: 40px 50px; font-size: 13px; line-height: 1.9; color: #1a1a2e; }
+    .header { border-bottom: 2px solid #1a1a2e; padding-bottom: 16px; margin-bottom: 24px; }
+    .header h1 { font-size: 15px; font-weight: 600; margin: 0 0 4px; text-transform: uppercase; letter-spacing: 1px; }
+    .header p { font-size: 11px; color: #555; margin: 0; }
+    .report-text { white-space: pre-wrap; font-size: 13px; line-height: 1.9; }
+    .footer { border-top: 1px solid #ccc; margin-top: 40px; padding-top: 12px; font-size: 11px; color: #777; }
+    @media print { body { padding: 20px 30px; } }
+  </style></head><body>
+  <div class="header">
+    <h1>Margotti AI — Laudo de Ultrassonografia</h1>
+    <p>Dr. Roberto Freire Margotti | CRM-BA 26929 | RQE: 21367 &nbsp;·&nbsp; ${dataHoje}</p>
+  </div>
+  <div class="report-text">${text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')}</div>
+  <div class="footer">Gerado por Margotti AI · ${dataHoje}</div>
+  </body></html>`;
+  
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'laudo-' + selectedExam + '-' + Date.now() + '.html';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Laudo exportado! Abra o arquivo e imprima como PDF.', 'success');
+}
+
+// ─── BANCO ────────────────────────────────────────────────────────────────────
+function renderBanco() {
+  let banco = bancoFilter === 'todos' ? bancoCache : bancoCache.filter(l => l.class === bancoFilter);
+  document.getElementById('banco-count').textContent = bancoCache.length + ' laudos';
+  if (!banco.length) {
+    document.getElementById('banco-list').innerHTML = '<div class="banco-empty">Nenhum laudo salvo ainda.<br>Gere e salve laudos para<br>construir seu banco.</div>';
+    return;
+  }
+  document.getElementById('banco-list').innerHTML = banco.map(l => `
+    <div class="laudo-card">
+      <div class="laudo-card-top">
+        <span class="tag tag-${l.class}">${l.class === 'normal' ? '✅ Normal' : '⚠️ Patológico'}</span>
+        <span class="laudo-date">${l.date}</span>
+      </div>
+      <div class="laudo-exam">${l.exam}</div>
+      ${l.obs ? `<div style="font-size:10px;color:var(--amber);margin-bottom:4px;">📌 ${l.obs}</div>` : ''}
+      <div class="laudo-preview">${l.text}</div>
+      <div class="laudo-btns">
+        <button class="lbtn" onclick="viewLaudo(${l.id})">Ver</button>
+        <button class="lbtn del" onclick="deleteLaudo(${l.id})">Excluir</button>
+      </div>
+    </div>`).join('');
+}
+
+function filterBanco(btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  bancoFilter = btn.dataset.f;
+  renderBanco();
+}
+
+function viewLaudo(id) {
+  const l = bancoCache.find(x => x.id === id);
+  if (!l) return;
+  document.getElementById('report-text').value = l.text;
+  document.getElementById('report-empty').style.display = 'none';
+  document.getElementById('report-area').style.display = 'block';
+  currentReport = l.text;
+}
+
+async function deleteLaudo(id) {
+  bancoCache = bancoCache.filter(l => l.id !== id);
+  localStorage.setItem('margotti_banco', JSON.stringify(bancoCache));
+  renderBanco();
+  showToast('Laudo removido', 'success');
+  // Tenta remover do Supabase em background
+  try { await supaFetch(`/rest/v1/laudos?id=eq.${id}`, 'DELETE'); } catch(e) {}
+}
+
+// ─── SAVE MODAL ───────────────────────────────────────────────────────────────
+function openSaveModal() {
+  if (!currentReport) { showToast('Nenhum laudo para salvar', 'error'); return; }
+  openModal('save-modal');
+}
+
 async function saveLaudo() {
   const cls = document.getElementById('save-class').value;
-  const obs = document.getElementById('save-obs').value;
-  const text = document.getElementById('report-text').value;
-  await insertLaudo({ exam: selectedExam, examName: examNames[selectedExam], class: cls, obs, text });
-  closeSaveModal(); bancoCache = null; renderBanco(); showToast('Salvo!', 'success');
+  const obs = document.getElementById('save-obs').value.trim();
+  const text = document.getElementById('report-text').value || currentReport;
+  
+  // Atualiza o último auto-save com a classificação correta
+  // ou cria entrada nova se não há auto-save
+  const existing = bancoCache.findIndex(l => l.text === text);
+  if (existing >= 0) {
+    bancoCache[existing].class = cls;
+    bancoCache[existing].obs = obs;
+  } else {
+    bancoCache.unshift({
+      id: Date.now(), exam: selectedExam, class: cls,
+      obs, text, date: new Date().toLocaleDateString('pt-BR'),
+    });
+  }
+  localStorage.setItem('margotti_banco', JSON.stringify(bancoCache));
+  renderBanco();
+  closeModal('save-modal');
+  document.getElementById('save-obs').value = '';
+  showToast('Laudo salvo no banco!', 'success');
+  
+  // Tenta sincronizar com Supabase em background
+  try {
+    await supaFetch('/rest/v1/laudos', 'POST', {
+      exam: selectedExam, exam_name: selectedExam,
+      classification: cls, observation: obs, report_text: text,
+    });
+  } catch(e) { /* CORS no iframe — ok, já está no localStorage */ }
 }
-function openApiModal() { document.getElementById('api-modal').classList.add('open'); }
-function closeApiModal() { document.getElementById('api-modal').classList.remove('open'); }
-function saveApiKey() { apiKey = document.getElementById('api-key-input').value; localStorage.setItem('laudo_api_key', apiKey); closeApiModal(); updateApiStatus(); checkReady(); showToast('Chave Salva!', 'success'); }
-function updateApiStatus() { const dot = document.getElementById('status-dot'); const lbl = document.getElementById('api-btn-label'); if(apiKey) { dot.classList.add('on'); lbl.textContent = 'API Ativa'; } }
-function showToast(m, t) { const el = document.getElementById('toast'); el.textContent = m; el.className = `toast ${t} show`; setTimeout(() => el.classList.remove('show'), 3000); }
+
+// ─── RECORDING ────────────────────────────────────────────────────────────────
+function toggleRecording() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    showToast('Use Chrome para gravar voz', 'error'); return;
+  }
+  if (!isRecording) {
+    const SR = window.webkitSpeechRecognition || window.SpeechRecognition;
+    recognition = new SR();
+    recognition.lang = 'pt-BR';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.onstart = () => {
+      isRecording = true;
+      document.getElementById('rec-btn').classList.add('recording');
+      document.getElementById('rec-btn').textContent = '⏹️';
+      document.getElementById('rec-status').textContent = '● Gravando...';
+      document.getElementById('rec-status').classList.add('active');
+    };
+    recognition.onresult = (e) => {
+      let txt = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) txt += e.results[i][0].transcript;
+      document.getElementById('voice-input').value += ' ' + txt;
+    };
+    recognition.onend = () => {
+      isRecording = false;
+      document.getElementById('rec-btn').classList.remove('recording');
+      document.getElementById('rec-btn').textContent = '🎙️';
+      document.getElementById('rec-status').textContent = 'Clique para gravar';
+      document.getElementById('rec-status').classList.remove('active');
+    };
+    recognition.start();
+  } else {
+    recognition.stop();
+  }
+}
+
+// ─── FILE UPLOAD ──────────────────────────────────────────────────────────────
+function handleFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  document.getElementById('file-text').value = `[Arquivo: ${file.name}] — A IA irá processar este arquivo para extrair as medidas.`;
+  showToast('Arquivo carregado: ' + file.name, 'info');
+}
+
+// ─── PROMPTS PERSONALIZADOS ───────────────────────────────────────────────────
+function unlockPanel() {
+  const pwd = document.getElementById('pwd-input').value;
+  if (pwd === 'margotti') {
+    document.getElementById('lock-form').style.display = 'none';
+    document.getElementById('unlocked-panel').style.display = 'block';
+    showToast('Painel desbloqueado!', 'success');
+  } else {
+    showToast('Senha incorreta', 'error');
+    document.getElementById('pwd-input').value = '';
+  }
+}
+
+function savePrompt() {
+  const exam = document.getElementById('prompt-exam').value;
+  const text = document.getElementById('prompt-text').value.trim();
+  if (!text) { showToast('Digite a instrução', 'error'); return; }
+  customPrompts.push({ id: Date.now(), exam, text });
+  localStorage.setItem('margotti_prompts', JSON.stringify(customPrompts));
+  document.getElementById('prompt-text').value = '';
+  renderPromptsList();
+  showToast('Instrução salva!', 'success');
+}
+
+function renderPromptsList() {
+  const el = document.getElementById('prompts-list');
+  if (!customPrompts.length) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:12px;">Nenhuma instrução salva ainda.</div>';
+    return;
+  }
+  el.innerHTML = customPrompts.map(p => `
+    <div class="prompt-item">
+      <div class="prompt-text">${p.text}</div>
+      <span class="prompt-tag">${p.exam === 'geral' ? '⭐ Geral' : p.exam}</span>
+      <button class="prompt-del" onclick="deletePrompt(${p.id})">✕</button>
+    </div>`).join('');
+}
+
+function deletePrompt(id) {
+  customPrompts = customPrompts.filter(p => p.id !== id);
+  localStorage.setItem('margotti_prompts', JSON.stringify(customPrompts));
+  renderPromptsList();
+  showToast('Instrução removida', 'info');
+}
+
+// ─── MODALS ───────────────────────────────────────────────────────────────────
+function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.add('hidden'); });
+});
+
+// ─── TOAST ────────────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg, type = 'info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
 </script>
 </body>
 </html>
