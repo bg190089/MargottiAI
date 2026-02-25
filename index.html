@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Margotti AI</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 :root{
   --bg:#080d18;--surf:#0d1426;--card:#111b30;--card2:#162038;
@@ -13,8 +14,7 @@
   --blue:#4f8ef7;--blue2:#7eb3ff;--bdim:rgba(79,142,247,.13);
   --grn:#34d399;--gdim:rgba(52,211,153,.13);
   --red:#f87171;--rdim:rgba(248,113,113,.13);
-  --amb:#fbbf24;--pur:#7c3aed;
-  --r:10px;
+  --amb:#fbbf24;--pur:#7c3aed;--r:10px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;}
@@ -22,20 +22,19 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--txt);font-si
 
 /* HEADER */
 .hdr{height:52px;display:flex;align-items:center;justify-content:space-between;
-  padding:0 16px;background:var(--surf);border-bottom:1px solid var(--bdr);z-index:20;flex-shrink:0;}
+  padding:0 16px;background:var(--surf);border-bottom:1px solid var(--bdr);flex-shrink:0;}
 .logo{font-size:17px;font-weight:700;letter-spacing:-.5px;}
 .logo span{color:var(--blue2);}
 .logo b{color:var(--txt);}
 .hdr-r{display:flex;align-items:center;gap:8px;}
 .nav{display:flex;gap:2px;background:var(--card);border:1px solid var(--bdr);border-radius:8px;padding:3px;}
-.ntab{padding:5px 14px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:none;
-  background:transparent;color:var(--mut);font-family:inherit;transition:all .2s;white-space:nowrap;}
+.ntab{padding:5px 14px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;
+  border:none;background:transparent;color:var(--mut);font-family:inherit;transition:all .2s;white-space:nowrap;}
 .ntab.on{background:var(--blue);color:#fff;}
 .apill{display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--card);
-  border:1px solid var(--bdr2);border-radius:8px;color:var(--mut2);font-size:11px;font-weight:600;
-  cursor:pointer;transition:border-color .2s;font-family:inherit;}
-.apill:hover{border-color:var(--blue);}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--mut);flex-shrink:0;transition:all .3s;}
+  border:1px solid var(--bdr2);border-radius:8px;color:var(--mut2);font-size:11px;
+  font-weight:600;cursor:pointer;font-family:inherit;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--mut);flex-shrink:0;}
 .dot.on{background:var(--grn);box-shadow:0 0 8px var(--grn);}
 
 /* EXAM BAR */
@@ -43,9 +42,6 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--txt);font-si
   background:var(--surf);border-bottom:1px solid var(--bdr);
   overflow-x:auto;overflow-y:hidden;scrollbar-width:none;flex-shrink:0;}
 .ebar::-webkit-scrollbar{display:none;}
-.esep{width:1px;height:22px;background:var(--bdr2);flex-shrink:0;margin:0 4px;}
-.egl{font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
-  color:var(--mut);white-space:nowrap;flex-shrink:0;}
 .echip{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:18px;
   border:1px solid var(--bdr2);background:transparent;color:var(--mut2);font-size:11px;
   font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap;
@@ -53,62 +49,94 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--txt);font-si
 .echip:hover{background:var(--bdim);color:var(--blue2);}
 .echip.on{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600;}
 
-/* MAIN */
+/* LAYOUT */
 .main{display:flex;flex-direction:column;height:calc(100vh - 104px);overflow:hidden;}
 .editor{display:flex;flex:1;overflow:hidden;min-height:0;}
 
-/* INPUT */
-.ipanel{width:275px;flex-shrink:0;border-right:1px solid var(--bdr);
-  display:flex;flex-direction:column;padding:12px;gap:10px;overflow-y:auto;}
-.mtabs{display:flex;gap:2px;background:var(--card);border-radius:8px;padding:3px;flex-shrink:0;}
-.mtab{flex:1;padding:6px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;
-  border:none;background:transparent;color:var(--mut);font-family:inherit;transition:all .2s;text-align:center;}
-.mtab.on{background:var(--card2);color:var(--txt);border:1px solid var(--bdr2);}
-.iarea{width:100%;padding:10px 12px;border-radius:8px;background:var(--card);
-  border:1px solid var(--bdr2);color:var(--txt);font-family:'Sora',sans-serif;
-  font-size:12px;line-height:1.6;resize:none;outline:none;transition:border-color .2s;}
-.iarea:focus{border-color:var(--blue);}
+/* INPUT PANEL */
+.ipanel{width:280px;flex-shrink:0;border-right:1px solid var(--bdr);
+  display:flex;flex-direction:column;padding:12px;gap:9px;overflow-y:auto;}
+
+/* PACIENTE */
+.pac-box{background:var(--card);border:1px solid var(--bdr2);border-radius:10px;padding:10px;
+  display:flex;flex-direction:column;gap:7px;}
+.pac-title{font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--mut);}
+.pac-row{display:flex;gap:6px;}
+.pac-field{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0;}
+.pac-lbl{font-size:9px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.8px;}
+.pac-inp{width:100%;padding:6px 9px;border-radius:7px;background:var(--card2);
+  border:1px solid var(--bdr2);color:var(--txt);font-size:12px;font-family:inherit;
+  outline:none;transition:border-color .2s;}
+.pac-inp:focus{border-color:var(--blue);}
+.pac-inp::placeholder{color:var(--mut);}
+
+/* INPUT UNIFICADO */
+.input-box{background:var(--card);border:1px solid var(--bdr2);border-radius:10px;
+  display:flex;flex-direction:column;flex:1;min-height:120px;transition:border-color .2s;}
+.input-box:focus-within{border-color:var(--blue);}
+.input-top{display:flex;align-items:flex-start;flex:1;}
+.iarea{flex:1;padding:10px 12px;border:none;outline:none;resize:none;background:transparent;
+  color:var(--txt);font-family:'Sora',sans-serif;font-size:12px;line-height:1.6;min-height:80px;}
 .iarea::placeholder{color:var(--mut);}
-.clr-btn{position:absolute;top:6px;right:6px;background:var(--card2);border:1px solid var(--bdr2);
-  color:var(--mut);border-radius:5px;padding:2px 7px;font-size:10px;cursor:pointer;
+.vozbtn{width:34px;height:34px;margin:7px 7px 0 0;border-radius:8px;border:1px solid var(--bdr2);
+  background:transparent;color:var(--mut2);font-size:14px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+.vozbtn:hover{background:var(--bdim);border-color:var(--blue);}
+.vozbtn.live{background:var(--rdim);border-color:var(--red);color:var(--red);
+  animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(248,113,113,.4);}50%{box-shadow:0 0 0 8px rgba(248,113,113,0);}}
+
+/* VOZ PREVIEW */
+.voz-preview{padding:4px 10px;font-size:10px;color:var(--amb);font-style:italic;
+  border-top:1px solid var(--bdr);display:none;}
+.voz-preview.show{display:block;}
+.voz-filter-status{padding:4px 10px;font-size:10px;color:var(--grn);display:none;}
+.voz-filter-status.show{display:block;}
+
+.input-bottom{border-top:1px solid var(--bdr);padding:7px 10px;
+  display:flex;align-items:center;gap:7px;}
+.attach-btn{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:7px;
+  border:1px solid var(--bdr2);background:transparent;color:var(--mut2);font-size:11px;
+  font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;white-space:nowrap;}
+.attach-btn:hover{background:var(--bdim);border-color:var(--blue);color:var(--blue2);}
+.attach-ct{background:var(--blue);color:#fff;font-size:9px;font-weight:700;
+  padding:1px 5px;border-radius:8px;font-family:'JetBrains Mono',monospace;}
+.clr-btn{margin-left:auto;padding:3px 8px;border-radius:5px;background:transparent;
+  border:1px solid var(--bdr);color:var(--mut);font-size:10px;cursor:pointer;
   font-family:inherit;transition:all .15s;}
 .clr-btn:hover{color:var(--red);border-color:var(--red);}
-.gbtn{width:100%;padding:12px;border-radius:10px;
-  background:linear-gradient(135deg,var(--blue),#6366f1);
-  border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;
-  font-family:inherit;transition:all .2s;box-shadow:0 4px 18px rgba(79,142,247,.3);}
-.gbtn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 24px rgba(79,142,247,.45);}
-.gbtn:disabled{opacity:.5;cursor:not-allowed;}
-.mbtn{width:100%;padding:11px;border-radius:10px;
-  background:linear-gradient(135deg,#7c3aed,#4f46e5);
-  border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;
-  font-family:inherit;transition:all .2s;box-shadow:0 4px 18px rgba(124,58,237,.28);}
-.mbtn:hover:not(:disabled){transform:translateY(-1px);}
-.mbtn:disabled{opacity:.5;cursor:not-allowed;}
 
-/* RAG indicator */
-.rag-pill{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:7px;
-  background:var(--gdim);border:1px solid rgba(52,211,153,.25);font-size:10px;
-  font-weight:600;color:var(--grn);display:none;}
+/* THUMBNAILS */
+.thumbs{display:flex;gap:5px;flex-wrap:wrap;padding:0 10px 8px;}
+.thumb{position:relative;width:52px;height:52px;border-radius:7px;overflow:hidden;
+  border:1px solid var(--bdr2);background:var(--card2);
+  display:flex;align-items:center;justify-content:center;font-size:18px;}
+.thumb img{width:100%;height:100%;object-fit:cover;}
+.thumb-del{position:absolute;top:2px;right:2px;width:16px;height:16px;border-radius:50%;
+  background:rgba(0,0,0,.8);border:none;color:#fff;font-size:9px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;}
+.thumb-name{position:absolute;bottom:0;left:0;right:0;font-size:8px;color:#fff;
+  background:rgba(0,0,0,.7);padding:2px 3px;text-align:center;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* RAG */
+.rag-pill{display:none;align-items:center;gap:5px;padding:5px 10px;border-radius:7px;
+  background:var(--gdim);border:1px solid rgba(52,211,153,.25);font-size:10px;font-weight:600;color:var(--grn);}
 .rag-pill.show{display:flex;}
 
-/* VOZ */
-.recarea{display:flex;flex-direction:column;align-items:center;gap:8px;padding:6px;}
-.recbtn{width:52px;height:52px;border-radius:50%;border:2px solid var(--bdr2);
-  background:var(--card);font-size:20px;cursor:pointer;transition:all .2s;
-  display:flex;align-items:center;justify-content:center;}
-.recbtn.live{background:var(--rdim);border-color:var(--red);animation:pulse 1.5s infinite;}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(248,113,113,.4);}50%{box-shadow:0 0 0 10px rgba(248,113,113,0);}}
-.reclbl{font-size:11px;color:var(--mut);}
-.reclbl.live{color:var(--red);}
-
-/* FOTOS */
-.dropzone{border:2px dashed var(--bdr2);border-radius:8px;padding:14px;text-align:center;
-  cursor:pointer;color:var(--mut);transition:all .2s;}
-.dropzone:hover{border-color:var(--blue);color:var(--blue2);}
-.fprev{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;}
-.fthumb{width:52px;height:52px;border-radius:6px;overflow:hidden;border:1px solid var(--bdr2);}
-.fthumb img{width:100%;height:100%;object-fit:cover;}
+/* BOTÕES */
+.gbtn{width:100%;padding:12px;border-radius:10px;
+  background:linear-gradient(135deg,var(--blue),#6366f1);border:none;color:#fff;
+  font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;
+  transition:all .2s;box-shadow:0 4px 18px rgba(79,142,247,.3);}
+.gbtn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 24px rgba(79,142,247,.45);}
+.gbtn:disabled{opacity:.5;cursor:not-allowed;transform:none !important;}
+.mbtn-gen{width:100%;padding:11px;border-radius:10px;
+  background:linear-gradient(135deg,#7c3aed,#4f46e5);border:none;color:#fff;
+  font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;
+  transition:all .2s;box-shadow:0 4px 18px rgba(124,58,237,.28);}
+.mbtn-gen:hover:not(:disabled){transform:translateY(-1px);}
+.mbtn-gen:disabled{opacity:.5;cursor:not-allowed;transform:none !important;}
 
 /* LAUDO */
 .lpanel{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
@@ -126,8 +154,8 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--txt);font-si
 .eico{font-size:44px;opacity:.12;}
 .etxt{font-size:13px;text-align:center;line-height:1.9;color:var(--mut);}
 #lta{flex:1;width:100%;border:none;outline:none;resize:none;background:var(--bg);
-  color:var(--txt);font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.9;
-  padding:20px 24px;overflow-y:auto;}
+  color:var(--txt);font-family:'JetBrains Mono',monospace;font-size:13px;
+  line-height:1.9;padding:20px 24px;overflow-y:auto;}
 .mltab{padding:5px 12px;border-radius:16px;font-size:11px;font-weight:600;cursor:pointer;
   border:1px solid var(--bdr2);background:var(--card);color:var(--mut2);
   font-family:inherit;transition:all .2s;white-space:nowrap;}
@@ -144,13 +172,18 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--txt);font-si
   padding:2px 8px;border-radius:10px;font-family:'JetBrains Mono',monospace;}
 .btog{font-size:11px;color:var(--mut);transition:transform .25s;}
 .banco.col .btog{transform:rotate(180deg);}
-.bfilts{display:flex;gap:4px;padding:7px 14px;border-bottom:1px solid var(--bdr);flex-shrink:0;}
+.bbar{display:flex;align-items:center;gap:6px;padding:7px 14px;border-bottom:1px solid var(--bdr);flex-shrink:0;}
+.bsearch{flex:1;padding:5px 10px;border-radius:7px;background:var(--card);
+  border:1px solid var(--bdr2);color:var(--txt);font-size:11px;font-family:inherit;
+  outline:none;transition:border-color .2s;min-width:80px;}
+.bsearch:focus{border-color:var(--blue);}
+.bsearch::placeholder{color:var(--mut);}
 .bflt{padding:4px 11px;border-radius:14px;font-size:10px;font-weight:700;cursor:pointer;
   border:1px solid var(--bdr);background:transparent;color:var(--mut);font-family:inherit;transition:all .2s;}
 .bflt.on{background:var(--bdim);border-color:rgba(79,142,247,.35);color:var(--blue2);}
 .bcards{flex:1;overflow-x:auto;overflow-y:hidden;display:flex;gap:10px;
   padding:10px 14px;scrollbar-width:thin;scrollbar-color:var(--bdr2) transparent;}
-.lcard{flex-shrink:0;width:205px;background:var(--card);border:1px solid var(--bdr);
+.lcard{flex-shrink:0;width:210px;background:var(--card);border:1px solid var(--bdr);
   border-radius:var(--r);padding:11px;cursor:pointer;transition:border-color .18s;}
 .lcard:hover{border-color:var(--blue);}
 .lctop{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
@@ -169,11 +202,37 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--txt);font-si
 .lcbtn.dl:hover{background:var(--rdim);border-color:rgba(248,113,113,.3);color:var(--red);}
 .bempty{padding:20px;color:var(--mut);font-size:12px;text-align:center;line-height:1.8;}
 
+/* DASHBOARD */
+.dashpage{display:none;flex:1;overflow-y:auto;padding:20px 24px;}
+.dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.dcard{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:16px;}
+.dcard-val{font-size:28px;font-weight:700;font-family:'JetBrains Mono',monospace;margin-bottom:2px;}
+.dcard-lbl{font-size:11px;color:var(--mut);font-weight:600;}
+.dcard.blue .dcard-val{color:var(--blue2);}
+.dcard.grn  .dcard-val{color:var(--grn);}
+.dcard.red  .dcard-val{color:var(--red);}
+.dcard.amb  .dcard-val{color:var(--amb);}
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.chart-card{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:16px;}
+.chart-card.full{grid-column:1/-1;}
+.chart-title{font-size:12px;font-weight:700;color:var(--mut2);margin-bottom:14px;
+  text-transform:uppercase;letter-spacing:.8px;}
+.chart-wrap{position:relative;height:200px;}
+.top-list{display:flex;flex-direction:column;gap:8px;}
+.top-item{display:flex;align-items:center;gap:10px;}
+.top-lbl{font-size:11px;color:var(--mut2);width:140px;flex-shrink:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.top-bar-wrap{flex:1;height:8px;background:var(--card2);border-radius:4px;overflow:hidden;}
+.top-bar{height:100%;background:var(--blue);border-radius:4px;transition:width .6s;}
+.top-val{font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;
+  color:var(--blue2);width:28px;text-align:right;flex-shrink:0;}
+
 /* CONFIG */
 .cfgpage{display:none;flex:1;overflow-y:auto;padding:24px;}
-.ccard{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:20px;margin-bottom:16px;max-width:640px;}
+.ccard{background:var(--card);border:1px solid var(--bdr);border-radius:14px;
+  padding:20px;margin-bottom:16px;max-width:640px;}
 .cctitle{font-size:14px;font-weight:700;margin-bottom:4px;}
-.ccsub{font-size:12px;color:var(--mut);margin-bottom:16px;}
+.ccsub{font-size:12px;color:var(--mut);margin-bottom:16px;line-height:1.6;}
 .flbl{font-size:11px;font-weight:600;color:var(--mut2);margin-bottom:5px;display:block;}
 .finp{width:100%;padding:9px 12px;border-radius:8px;background:var(--card2);
   border:1px solid var(--bdr2);color:var(--txt);font-size:13px;font-family:inherit;outline:none;}
@@ -198,7 +257,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--txt);font-si
 .modal{background:var(--card);border:1px solid var(--bdr2);border-radius:16px;
   padding:24px;width:100%;max-width:380px;}
 .mtitle{font-size:16px;font-weight:700;margin-bottom:4px;}
-.msub{font-size:12px;color:var(--mut);margin-bottom:18px;}
+.msub{font-size:12px;color:var(--mut);margin-bottom:18px;line-height:1.6;}
 .mbtns{display:flex;gap:8px;margin-top:18px;}
 .mbtn{flex:1;padding:10px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;
   border:1px solid var(--bdr2);background:var(--card2);color:var(--mut);font-family:inherit;transition:all .2s;}
@@ -218,8 +277,6 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--txt);font-si
 .dots span:nth-child(2){animation-delay:.15s;}
 .dots span:nth-child(3){animation-delay:.3s;}
 @keyframes dd{0%,80%,100%{opacity:.3;transform:scale(.7);}40%{opacity:1;transform:scale(1);}}
-
-/* SCROLLBAR */
 ::-webkit-scrollbar{width:3px;height:3px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:4px;}
@@ -227,6 +284,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--txt);font-si
 /* MOBILE */
 .mnav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surf);
   border-top:1px solid var(--bdr);height:52px;z-index:100;}
+.mntabs{display:flex;height:100%;}
 .mntab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:1px;font-size:9px;font-weight:600;color:var(--mut);cursor:pointer;border:none;
   background:transparent;font-family:inherit;}
@@ -244,8 +302,12 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--txt);font-si
   .bcards{flex-direction:column;overflow-x:hidden;overflow-y:auto;max-height:55vh;}
   .lcard{width:100%;}
   .nav{display:none;}
-  .mnav{display:flex;}
+  .mnav{display:block;}
   body{padding-bottom:52px;}
+  .dash-grid{grid-template-columns:repeat(2,1fr);}
+  .charts-row{grid-template-columns:1fr;}
+  .chart-card.full{grid-column:auto;}
+  .dashpage{padding:14px;}
 }
 </style>
 </head>
@@ -256,12 +318,12 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--txt);font-si
   <div class="logo"><span>Margotti</span><b>AI</b></div>
   <div class="hdr-r">
     <div class="nav">
-      <button class="ntab on" onclick="goTab('editor',this)">📝 Editor</button>
-      <button class="ntab" onclick="goTab('config',this)">⚙️ Config</button>
+      <button class="ntab on"  onclick="goTab('editor',this)">Editor</button>
+      <button class="ntab"     onclick="goTab('dash',this)">Dashboard</button>
+      <button class="ntab"     onclick="goTab('config',this)">Config</button>
     </div>
-    <button class="apill" onclick="openM('m-api')">
-      <span class="dot on" id="adot"></span>
-      <span id="albl">Claude</span>
+    <button class="apill">
+      <span class="dot on"></span><span>Claude</span>
     </button>
   </div>
 </div>
@@ -277,80 +339,85 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--txt);font-si
 
     <!-- INPUT PANEL -->
     <div class="ipanel">
-      <div class="mtabs">
-        <button class="mtab on" onclick="setMode('text',this)">✏️ Texto</button>
-        <button class="mtab" onclick="setMode('voice',this)">🎙️ Voz</button>
-        <button class="mtab" onclick="setMode('file',this)">📎 Fotos</button>
-      </div>
 
-      <!-- TEXTO -->
-      <div id="mm-text" style="position:relative;">
-        <textarea class="iarea" id="ti" rows="7"
-          placeholder="Descreva os achados...&#10;&#10;Ex: hemangioma hepático 3,2x1,5cm&#10;Ex: cálculo vesicular 8mm&#10;Ex: abdome normal"></textarea>
-        <button class="clr-btn" onclick="clearInput()">✕</button>
-      </div>
-
-      <!-- VOZ -->
-      <div id="mm-voice" style="display:none;">
-        <div class="recarea">
-          <div class="recbtn" id="recbtn" onclick="toggleRec()">🎙️</div>
-          <div class="reclbl" id="reclbl">Clique para gravar</div>
+      <!-- DADOS DO PACIENTE -->
+      <div class="pac-box">
+        <div class="pac-title">Dados do Paciente</div>
+        <div class="pac-field">
+          <div class="pac-lbl">Nome</div>
+          <input class="pac-inp" id="pac-nome" type="text" placeholder="Nome completo" autocomplete="off">
         </div>
-        <div style="position:relative;">
-          <textarea class="iarea" id="vi" rows="4" placeholder="Transcrição em tempo real..."></textarea>
-          <button class="clr-btn" onclick="document.getElementById('vi').value=''">✕</button>
+        <div class="pac-row">
+          <div class="pac-field">
+            <div class="pac-lbl">Idade</div>
+            <input class="pac-inp" id="pac-idade" type="text" placeholder="Ex: 45a">
+          </div>
+          <div class="pac-field">
+            <div class="pac-lbl">Data</div>
+            <input class="pac-inp" id="pac-data" type="date" style="color-scheme:dark;">
+          </div>
         </div>
       </div>
 
-      <!-- FOTOS -->
-      <div id="mm-file" style="display:none;">
-        <div class="dropzone" onclick="document.getElementById('fi').click()">
-          <div style="font-size:22px;margin-bottom:4px">🖼️</div>
-          <div style="font-size:12px;">Enviar fotos do exame<br>
-            <span style="font-size:10px;color:var(--mut)">JPG · PNG · múltiplas</span></div>
-          <input type="file" id="fi" accept="image/*" style="display:none" multiple onchange="onFiles(this)">
+      <!-- INPUT UNIFICADO -->
+      <div class="input-box">
+        <div class="input-top">
+          <textarea class="iarea" id="ti" rows="6"
+            placeholder="Descreva os achados ou grave a consulta...&#10;&#10;Ex: hemangioma hep&#225;tico 3,2x1,5cm&#10;Ex: c&#225;lculo vesicular 8mm&#10;Ex: abdome normal"></textarea>
+          <button class="vozbtn" id="vozbtn" onclick="toggleRec()" title="Gravar voz">&#x1F399;&#xFE0F;</button>
         </div>
-        <div class="fprev" id="fprev"></div>
-        <textarea class="iarea" id="fti" rows="2" placeholder="Fotos carregadas..." style="margin-top:8px" readonly></textarea>
+
+        <!-- Preview de voz em tempo real -->
+        <div class="voz-preview" id="voz-preview"></div>
+        <div class="voz-filter-status" id="voz-filter-status"></div>
+
+        <!-- Thumbnails -->
+        <div class="thumbs" id="thumbs" style="display:none;"></div>
+
+        <div class="input-bottom">
+          <button class="attach-btn" onclick="document.getElementById('fi').click()">
+            &#x1F4CE; Anexar
+            <span class="attach-ct" id="attach-ct" style="display:none;">0</span>
+          </button>
+          <input type="file" id="fi" accept="image/*,application/pdf" multiple
+            style="display:none" onchange="onFiles(this)">
+          <span style="font-size:10px;color:var(--mut);">JPG &middot; PNG &middot; PDF</span>
+          <button class="clr-btn" onclick="clearAll()">&#x2715; Limpar</button>
+        </div>
       </div>
 
-      <!-- RAG indicator -->
-      <div class="rag-pill" id="rag-pill">
-        <span>🎯</span><span id="rag-txt">Base encontrada no banco</span>
-      </div>
+      <div class="rag-pill" id="rag-pill">&#x1F3AF; <span id="rag-txt">Base encontrada</span></div>
 
-      <button class="gbtn" id="gbtn" onclick="generate()">⚡ Gerar Laudo</button>
-      <button class="mbtn" id="mbtn" onclick="generateMulti()">🧩 Multi-Laudo</button>
+      <button class="gbtn" id="gbtn" onclick="generate()">&#x26A1; Gerar Laudo</button>
+      <button class="mbtn-gen" id="mbtn" onclick="generateMulti()">&#x1F9E9; Multi-Laudo</button>
     </div>
 
     <!-- LAUDO PANEL -->
     <div class="lpanel">
       <div id="lempty">
-        <div class="eico">🩻</div>
-        <div class="etxt">Selecione o exame na barra acima,<br>insira os achados e clique em<br><strong>⚡ Gerar Laudo</strong></div>
+        <div class="eico">&#x1FA7B;</div>
+        <div class="etxt">Selecione o exame na barra acima,<br>insira os achados e clique em<br><strong>&#x26A1; Gerar Laudo</strong></div>
       </div>
-      <!-- Laudo simples -->
       <div id="larea" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
         <div class="ltbar">
-          <div class="ltlbl">📄 Laudo</div>
+          <div class="ltlbl">Laudo</div>
           <div class="lacts">
-            <button class="abtn" onclick="copyL()">📋 Copiar</button>
-            <button class="abtn" onclick="editL()">✏️ Editar</button>
-            <button class="abtn" onclick="pdfL()">📥 PDF</button>
-            <button class="abtn sv" onclick="openM('m-save')">💾 Salvar</button>
+            <button class="abtn" onclick="copyL()">Copiar</button>
+            <button class="abtn" onclick="editL()">Editar</button>
+            <button class="abtn" onclick="pdfL()">PDF</button>
+            <button class="abtn sv" onclick="openM('m-save')">Salvar</button>
           </div>
         </div>
         <textarea id="lta" readonly placeholder="Laudo aparecerá aqui..."></textarea>
       </div>
-      <!-- Multi-laudo -->
       <div id="mlarea" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
         <div class="ltbar">
-          <div class="ltlbl">🧩 Multi-Laudo</div>
+          <div class="ltlbl">Multi-Laudo</div>
           <div id="mltabs" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
           <div class="lacts">
-            <button class="abtn" onclick="copyML()">📋 Copiar</button>
-            <button class="abtn" onclick="pdfML()">📥 PDF</button>
-            <button class="abtn sv" onclick="saveAll()">💾 Salvar Todos</button>
+            <button class="abtn" onclick="copyML()">Copiar</button>
+            <button class="abtn" onclick="pdfML()">PDF</button>
+            <button class="abtn sv" onclick="saveAll()">Salvar Todos</button>
           </div>
         </div>
         <textarea id="mlta" readonly style="flex:1;width:100%;border:none;outline:none;resize:none;
@@ -359,48 +426,77 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--txt);font-si
       </div>
     </div>
 
-  </div><!-- /editor -->
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="dashpage" id="pg-dash">
+    <div class="dash-grid">
+      <div class="dcard blue"><div class="dcard-val" id="d-total">0</div><div class="dcard-lbl">Total Laudos</div></div>
+      <div class="dcard grn"> <div class="dcard-val" id="d-norm">0</div> <div class="dcard-lbl">Normais</div></div>
+      <div class="dcard red"> <div class="dcard-val" id="d-pat">0</div>  <div class="dcard-lbl">Patol&#243;gicos</div></div>
+      <div class="dcard amb"> <div class="dcard-val" id="d-tipos">0</div><div class="dcard-lbl">Tipos de Exame</div></div>
+    </div>
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-title">Normal vs Patol&#243;gico</div>
+        <div class="chart-wrap"><canvas id="chartDonut"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Laudos por M&#234;s</div>
+        <div class="chart-wrap"><canvas id="chartLine"></canvas></div>
+      </div>
+      <div class="chart-card full">
+        <div class="chart-title">Por Tipo de Exame</div>
+        <div class="chart-wrap" style="height:180px;"><canvas id="chartBar"></canvas></div>
+      </div>
+    </div>
+    <div class="chart-card" style="margin-bottom:16px;">
+      <div class="chart-title">Ranking de Exames</div>
+      <div class="top-list" id="toplist"></div>
+    </div>
+  </div>
 
   <!-- CONFIG -->
   <div class="cfgpage" id="pg-config">
     <div class="ccard">
-      <div class="cctitle">🔐 Instruções Personalizadas</div>
-      <div class="ccsub">Aplicadas em toda geração. Ficam salvas no Supabase — disponíveis em qualquer dispositivo. Senha: <code>margotti</code></div>
+      <div class="cctitle">Instru&#231;&#245;es Personalizadas</div>
+      <div class="ccsub">Aplicadas em toda gera&#231;&#227;o. Salvas no Supabase &mdash; dispon&#237;veis em qualquer dispositivo.<br>Senha: <code>margotti</code></div>
       <div id="lockform">
         <input class="finp" id="pwdinp" type="password" placeholder="Senha..."
           onkeydown="if(event.key==='Enter')unlock()">
-        <button class="gbtn" onclick="unlock()" style="margin-top:10px;padding:10px;font-size:13px;">🔓 Desbloquear</button>
+        <button class="gbtn" onclick="unlock()" style="margin-top:10px;padding:10px;font-size:13px;">Desbloquear</button>
       </div>
       <div id="unlocked" style="display:none;">
-        <div style="color:var(--grn);font-size:12px;margin-bottom:14px;">✅ Painel desbloqueado</div>
+        <div style="color:var(--grn);font-size:12px;margin-bottom:14px;">Painel desbloqueado</div>
         <div class="fld">
           <label class="flbl">Exame</label>
           <select class="fsel" id="pexam">
-            <option value="geral">⭐ Geral (todos os exames)</option>
-            <option value="obstetrico">🤰 Obstétrico</option>
-            <option value="abdome">🫀 Abdome Total</option>
-            <option value="endovaginal">🔬 Endovaginal</option>
-            <option value="tireoide">🦋 Tireoide</option>
-            <option value="urinario">💧 Urinário</option>
-            <option value="mamas">🎗️ Mamas</option>
-            <option value="prostata">🔵 Próstata</option>
-            <option value="cervical">🔴 Cervical</option>
-            <option value="partes_moles">🟡 Partes Moles</option>
-            <option value="parede_abdominal">🟢 Parede Abdominal</option>
+            <option value="geral">Geral (todos os exames)</option>
+            <option value="obstetrico">Obst&#233;trico</option>
+            <option value="abdome">Abdome Total</option>
+            <option value="endovaginal">Endovaginal</option>
+            <option value="tireoide">Tireoide</option>
+            <option value="urinario">Urin&#225;rio</option>
+            <option value="mamas">Mamas</option>
+            <option value="vascular">Vascular</option>
+            <option value="prostata">Pr&#243;stata</option>
+            <option value="cervical">Cervical</option>
+            <option value="partes_moles">Partes Moles</option>
+            <option value="parede_abdominal">Parede Abdominal</option>
           </select>
         </div>
         <div class="fld">
-          <label class="flbl">Instrução</label>
+          <label class="flbl">Instru&#231;&#227;o</label>
           <textarea class="finp" id="ptxt" rows="3" style="resize:vertical;"
             placeholder="Ex: Quando houver colelitíase, use a frase: Vesícula biliar com imagem hiperecogênica de ___ mm com sombra acústica posterior..."></textarea>
         </div>
-        <button class="gbtn" onclick="addPrompt()" style="padding:10px;font-size:13px;">➕ Adicionar Instrução</button>
+        <button class="gbtn" onclick="addPrompt()" style="padding:10px;font-size:13px;">Adicionar Instru&#231;&#227;o</button>
       </div>
     </div>
     <div class="ccard">
-      <div class="cctitle">📋 Instruções Salvas</div>
+      <div class="cctitle">Instru&#231;&#245;es Salvas</div>
       <div class="ccsub">Carregadas do Supabase em qualquer dispositivo</div>
-      <div class="pilist" id="pilist"><div style="color:var(--mut);font-size:12px;">Nenhuma instrução salva.</div></div>
+      <div class="pilist" id="pilist"><div style="color:var(--mut);font-size:12px;">Nenhuma instru&#231;&#227;o salva.</div></div>
     </div>
   </div>
 
@@ -408,73 +504,49 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--txt);font-si
   <div class="banco col" id="banco">
     <div class="bhdr" onclick="toggleBanco()">
       <div style="display:flex;align-items:center;gap:8px;">
-        <span>🗂</span>
         <span class="btitle">Banco de Laudos</span>
         <span class="bbadge" id="bct">0</span>
       </div>
-      <div style="display:flex;align-items:center;gap:10px;" onclick="event.stopPropagation()">
-        <div class="bfilts">
-          <button class="bflt on" data-f="todos" onclick="filtB(this)">Todos</button>
-          <button class="bflt" data-f="normal" onclick="filtB(this)">Normais</button>
-          <button class="bflt" data-f="patologico" onclick="filtB(this)">Patol.</button>
-        </div>
-        <span class="btog">▼</span>
+      <div style="display:flex;align-items:center;gap:6px;" onclick="event.stopPropagation()">
+        <input class="bsearch" id="bsearch" placeholder="Buscar..." oninput="renderBanco()">
+        <button class="bflt on" data-f="todos"      onclick="filtB(this)">Todos</button>
+        <button class="bflt"    data-f="normal"     onclick="filtB(this)">Normais</button>
+        <button class="bflt"    data-f="patologico" onclick="filtB(this)">Patol.</button>
+        <span class="btog">&#x25BC;</span>
       </div>
     </div>
-    <div class="bfilts" style="display:none;"></div>
     <div class="bcards" id="bcards">
       <div class="bempty">Nenhum laudo ainda.<br>Gere e salve para construir seu banco.</div>
     </div>
   </div>
 
-</div><!-- /main -->
+</div>
 
 <!-- MOBILE NAV -->
 <div class="mnav">
-  <button class="mntab on" onclick="mNav('editor',this)"><span class="mi">📝</span>Editor</button>
-  <button class="mntab" onclick="mNav('banco',this)"><span class="mi">🗂</span>Banco</button>
-  <button class="mntab" onclick="mNav('config',this)"><span class="mi">⚙️</span>Config</button>
-</div>
-
-<!-- MODAL API -->
-<div class="ov off" id="m-api">
-  <div class="modal">
-    <div class="mtitle">🔑 API Key</div>
-    <div class="msub">A chave do Claude está no servidor. Configure aqui apenas se quiser usar outro provedor.</div>
-    <div class="fld">
-      <label class="flbl">Provedor</label>
-      <select class="fsel" id="mprov">
-        <option value="server">Claude — Servidor (padrão)</option>
-        <option value="gpt">GPT-4 (OpenAI)</option>
-        <option value="deepseek">DeepSeek</option>
-      </select>
-    </div>
-    <div class="fld" id="keyfield">
-      <label class="flbl">API Key</label>
-      <input class="finp" type="password" id="makey" placeholder="sk-...">
-    </div>
-    <div class="mbtns">
-      <button class="mbtn" onclick="closeM('m-api')">Fechar</button>
-      <button class="mbtn pr" onclick="saveKey()">Salvar</button>
-    </div>
+  <div class="mntabs">
+    <button class="mntab on" onclick="mNav('editor',this)"><span class="mi">&#x1F4DD;</span>Editor</button>
+    <button class="mntab"    onclick="mNav('dash',this)">  <span class="mi">&#x1F4CA;</span>Stats</button>
+    <button class="mntab"    onclick="mNav('banco',this)"> <span class="mi">&#x1F5C2;</span>Banco</button>
+    <button class="mntab"    onclick="mNav('config',this)"><span class="mi">&#x2699;&#xFE0F;</span>Config</button>
   </div>
 </div>
 
 <!-- MODAL SALVAR -->
 <div class="ov off" id="m-save">
   <div class="modal">
-    <div class="mtitle">💾 Salvar no Banco</div>
-    <div class="msub">O banco alimenta o aprendizado da IA</div>
+    <div class="mtitle">Salvar no Banco</div>
+    <div class="msub">O banco alimenta o aprendizado da IA nas pr&#243;ximas gera&#231;&#245;es</div>
     <div class="fld">
-      <label class="flbl">Classificação</label>
+      <label class="flbl">Classifica&#231;&#227;o</label>
       <select class="fsel" id="scls">
-        <option value="normal">✅ Normal</option>
-        <option value="patologico">⚠️ Patológico</option>
+        <option value="normal">Normal</option>
+        <option value="patologico">Patol&#243;gico</option>
       </select>
     </div>
     <div class="fld">
-      <label class="flbl">Observação (opcional — ajuda a IA a encontrar)</label>
-      <input class="finp" id="sobs" placeholder="Ex: hemangioma hepático, cisto renal, colelitíase...">
+      <label class="flbl">Observa&#231;&#227;o (ajuda a IA a encontrar)</label>
+      <input class="finp" id="sobs" placeholder="Ex: hemangioma hep&#225;tico, colelitíase 8mm...">
     </div>
     <div class="mbtns">
       <button class="mbtn" onclick="closeM('m-save')">Cancelar</button>
@@ -487,23 +559,21 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--txt);font-si
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  EXAMES
+//  EXAMES — lista flat
 // ═══════════════════════════════════════════════════════════
-const EXAMS_MAIN = [
-  {id:'obstetrico',   label:'Obstétrico',           icon:'🤰'},
-  {id:'abdome',       label:'Abdome Total',          icon:'🫀'},
-  {id:'endovaginal',  label:'Endovaginal',           icon:'🔬'},
-  {id:'tireoide',     label:'Tireoide c/ Doppler',   icon:'🦋'},
-  {id:'urinario',     label:'Rins e Vias Urinárias', icon:'💧'},
-  {id:'mamas',        label:'Mamas',                 icon:'🎗️'},
+const ALL_EXAMS = [
+  {id:'obstetrico',       label:'Obstétrico',           icon:'🤰'},
+  {id:'abdome',           label:'Abdome Total',          icon:'🫀'},
+  {id:'endovaginal',      label:'Endovaginal',           icon:'🔬'},
+  {id:'tireoide',         label:'Tireoide c/ Doppler',   icon:'🦋'},
+  {id:'urinario',         label:'Rins e Vias Urinárias', icon:'💧'},
+  {id:'mamas',            label:'Mamas',                 icon:'🎗️'},
+  {id:'vascular',         label:'Vascular',              icon:'🩸'},
+  {id:'prostata',         label:'Próstata',              icon:'🔵'},
+  {id:'cervical',         label:'Cervical',              icon:'🔴'},
+  {id:'partes_moles',     label:'Partes Moles',          icon:'🟡'},
+  {id:'parede_abdominal', label:'Parede Abdominal',      icon:'🟢'},
 ];
-const EXAMS_EXTRA = [
-  {id:'prostata',         label:'Próstata',         icon:'🔵'},
-  {id:'cervical',         label:'Cervical',         icon:'🔴'},
-  {id:'partes_moles',     label:'Partes Moles',     icon:'🟡'},
-  {id:'parede_abdominal', label:'Parede Abdominal', icon:'🟢'},
-];
-const ALL_EXAMS = [...EXAMS_MAIN, ...EXAMS_EXTRA];
 
 // ═══════════════════════════════════════════════════════════
 //  TEMPLATES
@@ -546,7 +616,7 @@ Dr. Roberto Freire Margotti | CRM-BA 26929 | RQE: 21367`,
 endovaginal:`ULTRASSONOGRAFIA ENDOVAGINAL
 
 Útero em anteversoflexão, centrado, contornos regulares, ecotextura homogênea.
-Útero: ___ cm. Volume: ___ cm³. Endométrio: ___ mm.
+Útero: ___ cm. Volume: ___ cm³.  Endométrio: ___ mm.
 
 Ovário direito: normal. Medidas: ___ cm. Volume: ___ cm³.
 Ovário esquerdo: normal. Medidas: ___ cm. Volume: ___ cm³.
@@ -599,10 +669,31 @@ IMPRESSÃO DIAGNÓSTICA:
 
 Dr. Roberto Freire Margotti | CRM-BA 26929 | RQE: 21367`,
 
+vascular:`ULTRASSONOGRAFIA VASCULAR COM DOPPLER
+
+Artérias carótidas comuns, internas e externas bilaterais com fluxo laminar, paredes regulares, sem placas ateromatosas ou estenoses hemodinamicamente significativas ao Doppler colorido e pulsado.
+
+CARÓTIDA DIREITA:
+ACC: VPS ___ cm/s | IPS ___
+ACI: VPS ___ cm/s | IPS ___
+ACE: VPS ___ cm/s | IPS ___
+
+CARÓTIDA ESQUERDA:
+ACC: VPS ___ cm/s | IPS ___
+ACI: VPS ___ cm/s | IPS ___
+ACE: VPS ___ cm/s | IPS ___
+
+Artérias vertebrais com fluxo anterógrado e velocidades dentro dos limites da normalidade bilateralmente.
+
+IMPRESSÃO DIAGNÓSTICA:
+- Exame Doppler vascular sem alterações hemodinamicamente significativas.
+
+Dr. Roberto Freire Margotti | CRM-BA 26929 | RQE: 21367`,
+
 prostata:`ULTRASSONOGRAFIA DA PRÓSTATA
 
 Próstata tópica, forma e contornos regulares.
-Dimensões: ___ x ___ x ___ cm. Volume: ___ cm³ (normal ≤ 30 cm³).
+Dimensões: ___ x ___ x ___ cm. Volume: ___ cm³ (normal até 30 cm³).
 Ecotextura homogênea, sem nodulações suspeitas.
 Vesículas seminais de aspecto normal.
 Bexiga em repleção, paredes finas.
@@ -656,32 +747,33 @@ Dr. Roberto Freire Margotti | CRM-BA 26929 | RQE: 21367`,
 // ═══════════════════════════════════════════════════════════
 //  ESTADO
 // ═══════════════════════════════════════════════════════════
-let curExam  = 'abdome';
-let curMode  = 'text';
-let report   = '';
-let bfilt    = 'todos';
-let banco    = [];
-let prompts  = [];
-let fileList = [];
-let multiLaudos  = [];
-let multiActive  = 0;
-let recObj   = null;
-let isRec    = false;
+let curExam     = 'abdome';
+let report      = '';
+let bfilt       = 'todos';
+let banco       = [];
+let prompts     = [];
+let fileList    = [];
+let multiLaudos = [];
+let multiActive = 0;
+let recObj      = null;
+let isRec       = false;
+let recFinal    = '';
+let charts      = {};
 
 // ═══════════════════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════════════════
 buildEbar();
+document.getElementById('pac-data').value = new Date().toISOString().split('T')[0];
 loadBanco();
 loadPrompts();
 
 function buildEbar() {
   const bar = document.getElementById('ebar');
-  const chip = e => `<button class="echip${e.id===curExam?' on':''}"
-    onclick="setExam('${e.id}',this)"><span style="font-size:13px">${e.icon}</span>${e.label}</button>`;
-  bar.innerHTML =
-    `<span class="egl">Principais</span>` + EXAMS_MAIN.map(chip).join('') +
-    `<div class="esep"></div><span class="egl">Complementares</span>` + EXAMS_EXTRA.map(chip).join('');
+  bar.innerHTML = ALL_EXAMS.map(e =>
+    `<button class="echip${e.id===curExam?' on':''}" onclick="setExam('${e.id}',this)">
+       <span style="font-size:13px">${e.icon}</span>${e.label}</button>`
+  ).join('');
 }
 
 function setExam(id, btn) {
@@ -692,141 +784,278 @@ function setExam(id, btn) {
   document.getElementById('rag-pill').classList.remove('show');
 }
 
+function getPaciente() {
+  return {
+    nome:  document.getElementById('pac-nome').value.trim(),
+    idade: document.getElementById('pac-idade').value.trim(),
+    data:  document.getElementById('pac-data').value
+  };
+}
+
+function formatDataBR(iso) {
+  if (!iso) return '';
+  const [y, m, d] = iso.split('-');
+  return d && m && y ? `${d}/${m}/${y}` : iso;
+}
+
 // ═══════════════════════════════════════════════════════════
-//  TABS DESKTOP
+//  TABS
 // ═══════════════════════════════════════════════════════════
 function goTab(t, btn) {
   document.querySelectorAll('.ntab').forEach(b => b.classList.remove('on'));
   btn.classList.add('on');
-  const ed  = document.getElementById('pg-editor');
-  const cfg = document.getElementById('pg-config');
-  const bz  = document.getElementById('banco');
-  if (t === 'editor') {
-    ed.style.display  = 'flex';
-    cfg.style.display = 'none';
-    bz.style.display  = 'flex';
-  } else {
-    ed.style.display  = 'none';
-    cfg.style.display = 'block';
-    bz.style.display  = 'none';
-  }
+  document.getElementById('pg-editor').style.display = t==='editor' ? 'flex'  : 'none';
+  document.getElementById('pg-dash').style.display   = t==='dash'   ? 'block' : 'none';
+  document.getElementById('pg-config').style.display = t==='config' ? 'block' : 'none';
+  document.getElementById('banco').style.display     = t==='editor' ? 'flex'  : 'none';
+  if (t === 'dash') renderDash();
 }
 
-// ═══════════════════════════════════════════════════════════
-//  TABS MOBILE
-// ═══════════════════════════════════════════════════════════
 function mNav(t, btn) {
   document.querySelectorAll('.mntab').forEach(b => b.classList.remove('on'));
   btn.classList.add('on');
-  const ed  = document.getElementById('pg-editor');
-  const cfg = document.getElementById('pg-config');
-  const bz  = document.getElementById('banco');
+  ['pg-editor','pg-dash','pg-config','banco'].forEach(id =>
+    document.getElementById(id).style.display = 'none');
   if (t === 'editor') {
-    ed.style.display  = 'flex';
-    cfg.style.display = 'none';
-    bz.style.display  = 'none';
+    document.getElementById('pg-editor').style.display = 'flex';
+    document.getElementById('banco').style.display     = 'flex';
+  } else if (t === 'dash') {
+    document.getElementById('pg-dash').style.display = 'block'; renderDash();
   } else if (t === 'banco') {
-    ed.style.display  = 'none';
-    cfg.style.display = 'none';
-    bz.style.display  = 'flex';
-    bz.classList.remove('col');
+    document.getElementById('banco').style.display = 'flex';
+    document.getElementById('banco').classList.remove('col');
   } else {
-    ed.style.display  = 'none';
-    cfg.style.display = 'block';
-    bz.style.display  = 'none';
+    document.getElementById('pg-config').style.display = 'block';
   }
 }
 
 // ═══════════════════════════════════════════════════════════
-//  MODO DE ENTRADA
+//  INPUT & ARQUIVOS
 // ═══════════════════════════════════════════════════════════
-function setMode(m, btn) {
-  curMode = m;
-  document.querySelectorAll('.mtab').forEach(b => b.classList.remove('on'));
-  btn.classList.add('on');
-  ['text','voice','file'].forEach(x =>
-    document.getElementById('mm-'+x).style.display = x === m ? '' : 'none');
-}
+function getInput() { return document.getElementById('ti').value.trim(); }
 
-function getInput() {
-  if (curMode === 'text')  return document.getElementById('ti').value.trim();
-  if (curMode === 'voice') return document.getElementById('vi').value.trim();
-  if (curMode === 'file')  return document.getElementById('fti').value.trim();
-  return '';
-}
-
-function clearInput() {
+function clearAll() {
   document.getElementById('ti').value = '';
+  fileList = [];
+  renderThumbs();
   document.getElementById('rag-pill').classList.remove('show');
+  document.getElementById('voz-preview').classList.remove('show');
+  document.getElementById('voz-filter-status').classList.remove('show');
 }
 
-// ═══════════════════════════════════════════════════════════
-//  FOTOS
-// ═══════════════════════════════════════════════════════════
 function onFiles(input) {
   const files = Array.from(input.files);
   if (!files.length) return;
-  fileList = [];
-  const prev = document.getElementById('fprev');
-  prev.innerHTML = '';
   let loaded = 0;
   files.forEach(f => {
+    if (fileList.find(x => x.name === f.name)) { loaded++; return; }
     const reader = new FileReader();
     reader.onload = e => {
-      fileList.push({name:f.name, base64:e.target.result.split(',')[1], type:f.type});
-      if (f.type.startsWith('image/')) {
-        const d = document.createElement('div');
-        d.className = 'fthumb';
-        d.innerHTML = `<img src="${e.target.result}">`;
-        prev.appendChild(d);
-      }
+      fileList.push({
+        name:    f.name,
+        base64:  e.target.result.split(',')[1],
+        type:    f.type,
+        preview: f.type.startsWith('image/') ? e.target.result : null
+      });
       if (++loaded === files.length) {
-        document.getElementById('fti').value = `${files.length} foto(s) carregada(s)`;
-        toast(`${files.length} foto(s) pronta(s)`, 'ok');
+        renderThumbs();
+        toast(`${fileList.length} arquivo(s) pronto(s)`, 'ok');
       }
     };
     reader.readAsDataURL(f);
   });
+  input.value = '';
+}
+
+function removeFile(idx) { fileList.splice(idx, 1); renderThumbs(); }
+
+function renderThumbs() {
+  const ct  = document.getElementById('attach-ct');
+  const box = document.getElementById('thumbs');
+  if (!fileList.length) {
+    ct.style.display = 'none'; box.style.display = 'none'; box.innerHTML = ''; return;
+  }
+  ct.style.display  = 'inline';
+  ct.textContent    = fileList.length;
+  box.style.display = 'flex';
+  box.innerHTML = fileList.map((f, i) => `
+    <div class="thumb">
+      ${f.preview
+        ? `<img src="${f.preview}" alt="${f.name}">`
+        : `<span>📄</span><div class="thumb-name">${f.name}</div>`}
+      <button class="thumb-del" onclick="removeFile(${i})">✕</button>
+    </div>`).join('');
 }
 
 // ═══════════════════════════════════════════════════════════
-//  RAG — BUSCA POR SIMILARIDADE NO SERVIDOR
+//  VOZ — CORRIGIDA: só final, preview separado, filtro IA
+// ═══════════════════════════════════════════════════════════
+function toggleRec() {
+  const SR = window.webkitSpeechRecognition || window.SpeechRecognition;
+  if (!SR) { toast('Use Chrome para gravação de voz', 'err'); return; }
+  const btn = document.getElementById('vozbtn');
+  if (!isRec) {
+    recObj = new SR();
+    recObj.lang = 'pt-BR';
+    recObj.continuous = true;
+    recObj.interimResults = true;
+    recFinal = '';
+
+    const preview = document.getElementById('voz-preview');
+    const filterStatus = document.getElementById('voz-filter-status');
+
+    recObj.onstart = () => {
+      isRec = true;
+      btn.classList.add('live');
+      btn.textContent = '⏹️';
+      btn.title = 'Parar gravação';
+      preview.classList.add('show');
+      preview.textContent = '🎙️ Gravando...';
+      filterStatus.classList.remove('show');
+    };
+
+    recObj.onresult = e => {
+      let interim = '';
+      for (let i = 0; i < e.results.length; i++) {
+        const r = e.results[i];
+        if (r.isFinal) {
+          // Só acumula resultados finais confirmados
+          recFinal += r[0].transcript + ' ';
+        } else {
+          // Mostra preview em tempo real (não acumula)
+          interim += r[0].transcript;
+        }
+      }
+      // Mostra o que já foi confirmado + preview do que está sendo dito
+      preview.textContent = (recFinal + (interim ? '▸ ' + interim : '')).trim() || '🎙️ Gravando...';
+    };
+
+    recObj.onerror = () => stopRecAndFilter(btn);
+    recObj.onend = () => {
+      if (isRec) {
+        // Se o reconhecimento parou sozinho (timeout), reinicia
+        try { recObj.start(); } catch(e) { stopRecAndFilter(btn); }
+      }
+    };
+
+    recObj.start();
+  } else {
+    isRec = false;
+    recObj.stop();
+    stopRecAndFilter(btn);
+  }
+}
+
+async function stopRecAndFilter(btn) {
+  isRec = false;
+  btn.classList.remove('live');
+  btn.textContent = '🎙️';
+  btn.title = 'Gravar voz';
+
+  const preview = document.getElementById('voz-preview');
+  const filterStatus = document.getElementById('voz-filter-status');
+  const rawText = recFinal.trim();
+
+  if (!rawText) {
+    preview.classList.remove('show');
+    return;
+  }
+
+  // ── FILTRO INTELIGENTE: envia transcrição bruta para o Claude ──
+  preview.textContent = '🔄 Filtrando achados relevantes...';
+  filterStatus.classList.add('show');
+  filterStatus.textContent = '⏳ Extraindo dados clínicos da gravação...';
+
+  try {
+    const filterResponse = await fetch('/api/generate', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        system: `Você é um filtro de transcrição médica para ultrassonografia.
+
+TAREFA: Receba uma transcrição bruta de uma consulta/exame de ultrassom e extraia APENAS as informações clinicamente relevantes para o laudo.
+
+EXTRAIR:
+- Medidas de órgãos e estruturas (em cm, mm, cm³, mL)
+- Achados ultrassonográficos (nódulos, cistos, cálculos, massas, dilatações)
+- Características ecográficas (ecogenicidade, ecotextura, contornos, limites)
+- Classificações (BI-RADS, TI-RADS, grau de Grannum)
+- Velocidades Doppler (VPS, VDF, IR, IP)
+- Localização anatômica dos achados
+- Conclusões ou impressões ditadas pelo médico
+
+IGNORAR:
+- Conversa com paciente (cumprimentos, orientações, perguntas pessoais)
+- Instruções ao técnico ou equipe
+- Comentários não clínicos
+- Repetições e hesitações
+
+FORMATO DE SAÍDA: Liste os achados de forma concisa e organizada, um por linha. Não adicione interpretações próprias. Se não encontrar dados clínicos relevantes, responda "Nenhum achado ultrassonográfico identificado na gravação."`,
+        userMsg: `TRANSCRIÇÃO BRUTA DA GRAVAÇÃO:\n\n${rawText}`
+      })
+    });
+
+    if (filterResponse.ok) {
+      const data = await filterResponse.json();
+      const filtered = data.content || rawText;
+      document.getElementById('ti').value =
+        (document.getElementById('ti').value.trim() + '\n' + filtered).trim();
+      preview.textContent = '✅ Achados extraídos com sucesso';
+      filterStatus.textContent = '✅ Dados clínicos inseridos no campo de texto';
+      setTimeout(() => {
+        preview.classList.remove('show');
+        filterStatus.classList.remove('show');
+      }, 3000);
+      toast('Achados extraídos da gravação', 'ok');
+    } else {
+      // Fallback: usa texto bruto se o filtro falhar
+      document.getElementById('ti').value =
+        (document.getElementById('ti').value.trim() + '\n' + rawText).trim();
+      preview.classList.remove('show');
+      filterStatus.classList.remove('show');
+      toast('Filtro indisponível — texto bruto inserido', 'inf');
+    }
+  } catch (e) {
+    // Fallback: usa texto bruto
+    document.getElementById('ti').value =
+      (document.getElementById('ti').value.trim() + '\n' + rawText).trim();
+    preview.classList.remove('show');
+    filterStatus.classList.remove('show');
+    toast('Texto bruto inserido (sem filtro)', 'inf');
+  }
+
+  recFinal = '';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  RAG
 // ═══════════════════════════════════════════════════════════
 async function ragSearch(query, exam) {
   try {
     const r = await fetch('/api/search', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({query, exam, limit: 5})
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({query, exam, limit:5})
     });
     if (!r.ok) return [];
-    const data = await r.json();
-    return data.results || [];
-  } catch {
-    return [];
-  }
+    return (await r.json()).results || [];
+  } catch { return []; }
 }
 
 // ═══════════════════════════════════════════════════════════
-//  MONTAR PROMPT COM RAG
+//  PROMPT
 // ═══════════════════════════════════════════════════════════
-async function buildPrompt(input, exam, images) {
-  // 1. Buscar laudos similares pelo RAG
-  const similar = await ragSearch(input, exam);
+async function buildPrompt(input, exam) {
+  const similar = await ragSearch(input || 'normal', exam);
+  const pill    = document.getElementById('rag-pill');
 
-  // 2. Montar contexto do banco
   let ragCtx = '';
   if (similar.length > 0) {
-    // Mostrar pill de confirmação
-    const pill = document.getElementById('rag-pill');
     pill.classList.add('show');
     document.getElementById('rag-txt').textContent =
       `${similar.length} laudo(s) similar(es) encontrado(s) no banco`;
-
-    ragCtx = '\n\n════ LAUDOS DO DR. ROBERTO PARA REFERÊNCIA ════\n';
-    ragCtx += 'INSTRUÇÕES: Use o estilo, frases e padrão de conclusão EXATOS destes laudos.\n';
+    ragCtx  = '\n\n════ LAUDOS DO DR. ROBERTO PARA REFERÊNCIA ════\n';
+    ragCtx += 'Use o estilo, frases e padrão de conclusão EXATOS destes laudos.\n';
     ragCtx += 'Adapte APENAS os dados do novo paciente. Não invente medidas.\n\n';
-
     similar.forEach((l, i) => {
       const tipo = l.classification === 'patologico' ? '⚠️ PATOLÓGICO' : '✅ NORMAL';
       const obs  = l.obs || l.observation || '';
@@ -835,33 +1064,32 @@ async function buildPrompt(input, exam, images) {
     });
     ragCtx += '════ FIM DAS REFERÊNCIAS ════';
   } else {
-    document.getElementById('rag-pill').classList.remove('show');
+    pill.classList.remove('show');
     ragCtx = '\n\n[Banco vazio para este exame — usando template padrão]';
   }
 
-  // 3. Instruções personalizadas
-  const pts = prompts.filter(p => p.exam === exam || p.exam === 'geral');
+  const pts  = prompts.filter(p => p.exam === exam || p.exam === 'geral');
   const pStr = pts.length
     ? '\n\nINSTRUÇÕES FIXAS DO DR. ROBERTO:\n' + pts.map(p => '- ' + p.txt).join('\n')
     : '';
 
-  // 4. Nota de fotos
-  const imgNote = images && images.length
-    ? '\n\nFOTOS ENVIADAS: Extraia APENAS medidas claramente visíveis. Nunca invente valores.'
+  const imgNote = fileList.length
+    ? `\n\nARQUIVOS RECEBIDOS (${fileList.length}): As medidas já foram extraídas e aparecem acima como "MEDIDAS EXTRAÍDAS DAS IMAGENS". Use esses valores no laudo.`
     : '';
 
-  const sys = `Você é o assistente de laudos do Dr. Roberto Freire Margotti (CRM-BA 26929 | RQE: 21367).
+  const sys =
+`Você é o assistente de laudos do Dr. Roberto Freire Margotti (CRM-BA 26929 | RQE: 21367).
 
 REGRAS ABSOLUTAS:
 1. Retorne APENAS o texto do laudo. Sem explicações, análises ou comentários.
 2. NUNCA invente medidas — se não foi fornecida, use "___".
 3. NUNCA use dados de pacientes das referências — apenas o estilo e as frases.
-4. Se há referências no banco: copie as frases EXATAS para descrever os mesmos achados.
+4. Se há referências no banco: copie as frases EXATAS para os mesmos achados.
 5. Mantenha o padrão exato da IMPRESSÃO DIAGNÓSTICA das referências.
 6. Assine: Dr. Roberto Freire Margotti | CRM-BA 26929 | RQE: 21367`;
 
   const userMsg =
-    `EXAME: ${exam}\nDADOS DO PACIENTE: ${input || 'analisar pelas imagens'}` +
+    `EXAME: ${exam}\nDADOS DO PACIENTE: ${input || 'analisar pelos arquivos'}` +
     ragCtx +
     `\n\nTEMPLATE BASE (usar apenas se banco vazio):\n${TPL[exam] || ''}` +
     pStr + imgNote;
@@ -870,14 +1098,15 @@ REGRAS ABSOLUTAS:
 }
 
 // ═══════════════════════════════════════════════════════════
-//  CHAMADA AO SERVIDOR
+//  CALL AI
 // ═══════════════════════════════════════════════════════════
-async function callAI(sys, userMsg, images) {
+async function callAI(sys, userMsg) {
   const body = {system: sys, userMsg};
-  if (images && images.length) body.images = images;
+  if (fileList.length > 0) {
+    body.images = fileList.map(f => ({name: f.name, base64: f.base64, type: f.type}));
+  }
   const r = await fetch('/api/generate', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
+    method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify(body)
   });
   if (!r.ok) {
@@ -885,11 +1114,12 @@ async function callAI(sys, userMsg, images) {
     throw new Error(e.error || r.statusText);
   }
   const d = await r.json();
+  if (!d.content) throw new Error('Resposta vazia do servidor');
   return d.content;
 }
 
 // ═══════════════════════════════════════════════════════════
-//  GERAR LAUDO
+//  GERAR
 // ═══════════════════════════════════════════════════════════
 async function generate() {
   const input = getInput();
@@ -898,16 +1128,15 @@ async function generate() {
   btn.disabled = true;
   btn.innerHTML = '<span class="dots"><span></span><span></span><span></span></span> Buscando...';
   try {
-    const imgs = curMode === 'file' ? fileList : [];
-    const {sys, userMsg} = await buildPrompt(input, curExam, imgs);
+    const {sys, userMsg} = await buildPrompt(input, curExam);
     btn.innerHTML = '<span class="dots"><span></span><span></span><span></span></span> Gerando...';
-    const content = await callAI(sys, userMsg, imgs);
+    const content = await callAI(sys, userMsg);
     report = content;
     document.getElementById('lta').value = content;
     document.getElementById('lta').setAttribute('readonly', '');
     document.getElementById('lempty').style.display = 'none';
     document.getElementById('mlarea').style.display = 'none';
-    document.getElementById('larea').style.display = 'flex';
+    document.getElementById('larea').style.display  = 'flex';
     toast('Laudo gerado!', 'ok');
     autoSave(curExam, content);
   } catch (e) {
@@ -928,29 +1157,27 @@ async function generateMulti() {
   btn.disabled = true;
   btn.innerHTML = '<span class="dots"><span></span><span></span><span></span></span> Detectando...';
   try {
-    // Detectar exames presentes no texto
-    const detectSys = 'Você é um classificador médico. Responda APENAS com um JSON array.';
-    const detectMsg = `Quais exames ultrassonográficos estão descritos neste texto?
-IDs válidos: obstetrico, abdome, endovaginal, tireoide, urinario, mamas, prostata, cervical, partes_moles, parede_abdominal
-Texto: "${input}"
-Responda SOMENTE com o array. Ex: ["tireoide","mamas","abdome"]`;
-    const raw = await callAI(detectSys, detectMsg, []);
+    const detectSys = 'Classificador médico. Responda APENAS com JSON array. Sem texto extra.';
+    const detectMsg =
+      `Quais exames ultrassonográficos estão neste texto?\n` +
+      `IDs válidos: obstetrico,abdome,endovaginal,tireoide,urinario,mamas,vascular,prostata,cervical,partes_moles,parede_abdominal\n` +
+      `Texto: "${input}"\nResponda SOMENTE com o array. Ex: ["tireoide","mamas"]`;
+    const savedFiles = fileList; fileList = [];
+    const raw = await callAI(detectSys, detectMsg);
+    fileList = savedFiles;
     const match = raw.match(/\[[\s\S]*?\]/);
     if (!match) throw new Error('Não foi possível detectar os exames');
     const ids = JSON.parse(match[0]);
-    if (!ids.length) { toast('Nenhum exame detectado no texto', 'err'); return; }
+    if (!ids.length) { toast('Nenhum exame detectado', 'err'); return; }
     toast(`${ids.length} exame(s) detectado(s)`, 'inf');
     btn.innerHTML = `<span class="dots"><span></span><span></span><span></span></span> Gerando ${ids.length}...`;
-    const imgs = curMode === 'file' ? fileList : [];
-    // Gerar todos em paralelo com RAG individual
     const results = await Promise.all(ids.map(async id => {
       const info = ALL_EXAMS.find(e => e.id === id) || {id, label:id, icon:'📋'};
-      const {sys, userMsg} = await buildPrompt(input, id, imgs);
-      const txt = await callAI(sys, userMsg, imgs);
+      const {sys, userMsg} = await buildPrompt(input, id);
+      const txt = await callAI(sys, userMsg);
       return {exam:id, label:info.label, icon:info.icon, text:txt};
     }));
-    multiLaudos  = results;
-    multiActive  = 0;
+    multiLaudos = results; multiActive = 0;
     document.getElementById('lempty').style.display = 'none';
     document.getElementById('larea').style.display  = 'none';
     document.getElementById('mlarea').style.display = 'flex';
@@ -971,42 +1198,70 @@ function renderMLTabs() {
   ).join('');
   document.getElementById('mlta').value = multiLaudos[multiActive]?.text || '';
 }
-
-function switchML(i) { multiActive = i; renderMLTabs(); }
-function copyML()    { navigator.clipboard.writeText(multiLaudos[multiActive]?.text||''); toast('Copiado!','ok'); }
-function pdfML()     { const l=multiLaudos[multiActive]; if(l) makePDF(l.label,l.exam,l.text); }
-function saveAll()   {
-  multiLaudos.forEach(l => autoSave(l.exam, l.text));
-  toast(`${multiLaudos.length} laudos salvos!`, 'ok');
-}
+function switchML(i)  { multiActive = i; renderMLTabs(); }
+function copyML()     { navigator.clipboard.writeText(multiLaudos[multiActive]?.text||''); toast('Copiado!','ok'); }
+function pdfML()      { const l=multiLaudos[multiActive]; if(l) makePDF(l.label,l.exam,l.text); }
+function saveAll()    { multiLaudos.forEach(l=>autoSave(l.exam,l.text)); toast(`${multiLaudos.length} salvos!`,'ok'); }
 
 // ═══════════════════════════════════════════════════════════
-//  AÇÕES DO LAUDO SIMPLES
+//  AÇÕES DO LAUDO
 // ═══════════════════════════════════════════════════════════
 function copyL() { navigator.clipboard.writeText(document.getElementById('lta').value||report); toast('Copiado!','ok'); }
 function editL() { document.getElementById('lta').removeAttribute('readonly'); document.getElementById('lta').focus(); toast('Modo edição','inf'); }
-function pdfL()  { const info=ALL_EXAMS.find(e=>e.id===curExam); makePDF(info?.label||curExam, curExam, document.getElementById('lta').value||report); }
+function pdfL()  { const info=ALL_EXAMS.find(e=>e.id===curExam); makePDF(info?.label||curExam,curExam,document.getElementById('lta').value||report); }
 
+// PDF PROFISSIONAL
 function makePDF(label, examId, txt) {
   if (!txt) { toast('Nenhum laudo', 'err'); return; }
-  const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Laudo</title>
-<style>body{font-family:Georgia,serif;max-width:720px;margin:40px auto;padding:20px 40px;font-size:13px;line-height:1.9;color:#111}
-.h{border-bottom:2px solid #111;padding-bottom:12px;margin-bottom:20px}
+  const pac    = getPaciente();
+  const dataBR = pac.data ? formatDataBR(pac.data) : new Date().toLocaleDateString('pt-BR');
+
+  const linhasPac = [];
+  if (pac.nome)  linhasPac.push(`<div class="ph-row"><span class="ph-key">Paciente:</span><span class="ph-val">${pac.nome}</span></div>`);
+  if (pac.data)  linhasPac.push(`<div class="ph-row"><span class="ph-key">Data do Exame:</span><span class="ph-val">${dataBR}</span></div>`);
+  if (pac.idade) linhasPac.push(`<div class="ph-row"><span class="ph-key">Idade:</span><span class="ph-val">${pac.idade}</span></div>`);
+
+  const pacBlock = linhasPac.length
+    ? `<div class="pac-hdr">${linhasPac.join('')}</div>`
+    : '';
+
+  const nomeArq = pac.nome
+    ? pac.nome.toLowerCase().replace(/\s+/g,'-')
+    : examId;
+
+  const html = `<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8">
+<title>Laudo - ${pac.nome || label}</title>
+<style>
+body{font-family:Georgia,serif;max-width:720px;margin:40px auto;padding:20px 40px;font-size:13px;line-height:1.9;color:#111}
+.h{border-bottom:2px solid #111;padding-bottom:12px;margin-bottom:16px}
 .h h1{font-size:13px;font-weight:700;margin:0 0 3px;text-transform:uppercase;letter-spacing:1px}
 .h p{font-size:11px;color:#555;margin:0}
-pre{white-space:pre-wrap;font-family:Georgia,serif}
+.pac-hdr{background:#f8f9fa;border:1px solid #dee2e6;border-radius:6px;
+  padding:10px 14px;margin-bottom:18px;}
+.ph-row{display:flex;gap:8px;margin-bottom:2px;}
+.ph-row:last-child{margin-bottom:0;}
+.ph-key{font-size:11px;font-weight:700;color:#555;min-width:110px;flex-shrink:0;}
+.ph-val{font-size:12px;font-weight:600;color:#111;}
+pre{white-space:pre-wrap;font-family:Georgia,serif;font-size:13px;}
 .f{border-top:1px solid #ccc;margin-top:40px;padding-top:10px;font-size:10px;color:#999}
-@media print{body{margin:20px 30px}}</style></head><body>
-<div class="h"><h1>${label}</h1>
-<p>Dr. Roberto Freire Margotti · CRM-BA 26929 · RQE: 21367 · ${new Date().toLocaleDateString('pt-BR')}</p></div>
+@media print{body{margin:20px 30px}}
+</style></head><body>
+<div class="h">
+  <h1>${label}</h1>
+  <p>Dr. Roberto Freire Margotti &middot; CRM-BA 26929 &middot; RQE: 21367 &middot; ${dataBR}</p>
+</div>
+${pacBlock}
 <pre>${txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>
-<div class="f">Margotti AI · ${new Date().toLocaleDateString('pt-BR')}</div></body></html>`;
-  const a = Object.assign(document.createElement('a'),{
-    href: URL.createObjectURL(new Blob([html],{type:'text/html'})),
-    download: `laudo-${examId}-${Date.now()}.html`
+<div class="f">Margotti AI &middot; ${dataBR}</div>
+</body></html>`;
+
+  const a = Object.assign(document.createElement('a'), {
+    href:     URL.createObjectURL(new Blob([html], {type:'text/html'})),
+    download: `laudo-${nomeArq}-${Date.now()}.html`
   });
   a.click(); URL.revokeObjectURL(a.href);
-  toast('Baixado! Abra e imprima como PDF','ok');
+  toast('Baixado! Abra e imprima como PDF', 'ok');
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1020,12 +1275,12 @@ async function loadBanco() {
       const data = await r.json();
       if (Array.isArray(data) && data.length) {
         banco = data.map(d => ({
-          id:    d.id,
-          exam:  d.exam || '',
-          cls:   d.classification || 'normal',
-          obs:   d.observation || '',
-          txt:   d.report_text || '',
-          dt:    d.created_at ? new Date(d.created_at).toLocaleDateString('pt-BR') : ''
+          id:  d.id,
+          exam: d.exam || '',
+          cls:  d.classification || 'normal',
+          obs:  d.observation || '',
+          txt:  d.report_text || '',
+          dt:   d.created_at ? new Date(d.created_at).toLocaleDateString('pt-BR') : ''
         }));
         localStorage.setItem('mb', JSON.stringify(banco));
       } else {
@@ -1041,7 +1296,7 @@ async function loadBanco() {
 }
 
 function autoSave(examId, txt) {
-  if (banco.find(b => b.txt === txt)) return;
+  if (!txt || banco.find(b => b.txt === txt)) return;
   const item = {id:Date.now(), exam:examId, cls:'normal', obs:'', txt,
     dt:new Date().toLocaleDateString('pt-BR')};
   banco.unshift(item);
@@ -1054,9 +1309,7 @@ function autoSave(examId, txt) {
   }).catch(() => {});
 }
 
-function toggleBanco() {
-  document.getElementById('banco').classList.toggle('col');
-}
+function toggleBanco() { document.getElementById('banco').classList.toggle('col'); }
 
 function filtB(btn) {
   document.querySelectorAll('.bflt').forEach(b => b.classList.remove('on'));
@@ -1066,22 +1319,28 @@ function filtB(btn) {
 }
 
 function renderBanco() {
-  const lista = bfilt === 'todos' ? banco : banco.filter(l => l.cls === bfilt);
+  const busca  = (document.getElementById('bsearch')?.value || '').toLowerCase().trim();
+  let   lista  = bfilt === 'todos' ? banco : banco.filter(l => l.cls === bfilt);
+  if (busca) {
+    lista = lista.filter(l =>
+      (l.obs||'').toLowerCase().includes(busca)  ||
+      (l.exam||'').toLowerCase().includes(busca) ||
+      (l.txt||'').toLowerCase().includes(busca));
+  }
   document.getElementById('bct').textContent = banco.length;
   if (!lista.length) {
     document.getElementById('bcards').innerHTML =
-      '<div class="bempty">Nenhum laudo.<br>Gere e salve para construir o banco.</div>';
-    return;
+      '<div class="bempty">Nenhum laudo encontrado.</div>'; return;
   }
   document.getElementById('bcards').innerHTML = lista.map(l => `
     <div class="lcard" onclick="viewL(${l.id})">
       <div class="lctop">
-        <span class="tag ${l.cls==='normal'?'tn':'tp'}">${l.cls==='normal'?'✅ Normal':'⚠️ Patol.'}</span>
+        <span class="tag ${l.cls==='normal'?'tn':'tp'}">${l.cls==='normal'?'Normal':'Patol.'}</span>
         <span class="lcdt">${l.dt}</span>
       </div>
       <div class="lcex">${l.exam}</div>
-      ${l.obs ? `<div class="lcobs">📌 ${l.obs}</div>` : ''}
-      <div class="lcprev">${l.txt}</div>
+      ${l.obs ? `<div class="lcobs">${l.obs}</div>` : ''}
+      <div class="lcprev">${(l.txt||'').substring(0,120)}...</div>
       <div class="lcbtns">
         <button class="lcbtn" onclick="event.stopPropagation();viewL(${l.id})">Ver</button>
         <button class="lcbtn dl" onclick="event.stopPropagation();delL(${l.id})">Excluir</button>
@@ -1098,10 +1357,12 @@ function viewL(id) {
   document.getElementById('lempty').style.display = 'none';
   document.getElementById('mlarea').style.display = 'none';
   document.getElementById('larea').style.display  = 'flex';
+  goTab('editor', document.querySelector('.ntab'));
   toast('Laudo carregado', 'inf');
 }
 
 function delL(id) {
+  if (!confirm('Confirma exclusão do laudo?')) return;
   banco = banco.filter(l => l.id !== id);
   localStorage.setItem('mb', JSON.stringify(banco));
   renderBanco();
@@ -1132,49 +1393,103 @@ function doSave() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  VOZ
+//  DASHBOARD
 // ═══════════════════════════════════════════════════════════
-function toggleRec() {
-  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-    toast('Use Chrome para gravação de voz', 'err'); return;
-  }
-  if (!isRec) {
-    const SR = window.webkitSpeechRecognition || window.SpeechRecognition;
-    recObj = new SR();
-    recObj.lang = 'pt-BR'; recObj.continuous = true; recObj.interimResults = true;
-    recObj.onstart = () => {
-      isRec = true;
-      document.getElementById('recbtn').classList.add('live');
-      document.getElementById('recbtn').textContent = '⏹️';
-      document.getElementById('reclbl').textContent = '● Gravando...';
-      document.getElementById('reclbl').classList.add('live');
-    };
-    recObj.onresult = e => {
-      let t = '';
-      for (let i = e.resultIndex; i < e.results.length; i++)
-        t += e.results[i][0].transcript;
-      document.getElementById('vi').value += ' ' + t;
-    };
-    recObj.onend = () => {
-      isRec = false;
-      document.getElementById('recbtn').classList.remove('live');
-      document.getElementById('recbtn').textContent = '🎙️';
-      document.getElementById('reclbl').textContent = 'Clique para gravar';
-      document.getElementById('reclbl').classList.remove('live');
-    };
-    recObj.start();
-  } else {
-    recObj.stop();
-  }
+function renderDash() {
+  const total = banco.length;
+  const norm  = banco.filter(l => l.cls === 'normal').length;
+  const pat   = banco.filter(l => l.cls === 'patologico').length;
+  const tipos = new Set(banco.map(l => l.exam).filter(Boolean)).size;
+
+  document.getElementById('d-total').textContent = total;
+  document.getElementById('d-norm').textContent  = norm;
+  document.getElementById('d-pat').textContent   = pat;
+  document.getElementById('d-tipos').textContent = tipos;
+
+  const byExam = {};
+  banco.forEach(l => { if (l.exam) byExam[l.exam] = (byExam[l.exam]||0)+1; });
+  const examLabels = Object.keys(byExam).map(id => {
+    const e = ALL_EXAMS.find(x => x.id === id);
+    return e ? `${e.icon} ${e.label}` : id;
+  });
+
+  const now = new Date();
+  const months = Array.from({length:6},(_,i) => {
+    const d = new Date(now.getFullYear(), now.getMonth()-5+i, 1);
+    return {label:d.toLocaleDateString('pt-BR',{month:'short',year:'2-digit'}),
+      y:d.getFullYear(), m:d.getMonth()};
+  });
+  const byMonth = months.map(({y,m}) =>
+    banco.filter(l => {
+      if (!l.dt) return false;
+      const p = l.dt.split('/');
+      return p.length===3 && parseInt(p[1])-1===m && parseInt('20'+p[2])===y;
+    }).length
+  );
+
+  const CDEF = {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:'#8098cc',font:{family:'Sora',size:11}}}},
+    scales:{
+      x:{ticks:{color:'#5a6e99',font:{family:'Sora',size:10}},grid:{color:'rgba(99,140,255,.07)'}},
+      y:{ticks:{color:'#5a6e99',font:{family:'Sora',size:10}},grid:{color:'rgba(99,140,255,.07)'}}
+    }
+  };
+
+  if (charts.donut) charts.donut.destroy();
+  charts.donut = new Chart(document.getElementById('chartDonut'),{
+    type:'doughnut',
+    data:{labels:['Normais','Patológicos'],
+      datasets:[{data:[norm,pat],
+        backgroundColor:['rgba(52,211,153,.7)','rgba(248,113,113,.7)'],
+        borderColor:['#34d399','#f87171'],borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#8098cc',font:{family:'Sora',size:11}}}}}
+  });
+
+  if (charts.line) charts.line.destroy();
+  charts.line = new Chart(document.getElementById('chartLine'),{
+    type:'line',
+    data:{labels:months.map(m=>m.label),
+      datasets:[{label:'Laudos',data:byMonth,
+        borderColor:'#4f8ef7',backgroundColor:'rgba(79,142,247,.15)',
+        tension:.4,pointBackgroundColor:'#4f8ef7',fill:true}]},
+    options:{...CDEF,plugins:{legend:{display:false}}}
+  });
+
+  if (charts.bar) charts.bar.destroy();
+  charts.bar = new Chart(document.getElementById('chartBar'),{
+    type:'bar',
+    data:{labels:examLabels,
+      datasets:[{label:'Laudos',data:Object.values(byExam),
+        backgroundColor:'rgba(79,142,247,.6)',borderColor:'#4f8ef7',
+        borderWidth:1,borderRadius:5}]},
+    options:{...CDEF,plugins:{legend:{display:false}},
+      scales:{
+        x:{ticks:{color:'#5a6e99',font:{family:'Sora',size:9}},grid:{color:'rgba(99,140,255,.07)'}},
+        y:{ticks:{color:'#5a6e99',font:{family:'Sora',size:10}},grid:{color:'rgba(99,140,255,.07)'}}
+      }}
+  });
+
+  const sorted = Object.entries(byExam).sort((a,b)=>b[1]-a[1]);
+  const maxv   = sorted[0]?.[1]||1;
+  document.getElementById('toplist').innerHTML = sorted.slice(0,10).map(([id,ct]) => {
+    const e = ALL_EXAMS.find(x=>x.id===id);
+    return `<div class="top-item">
+      <div class="top-lbl">${e?e.icon+' '+e.label:id}</div>
+      <div class="top-bar-wrap"><div class="top-bar" style="width:${Math.round(ct/maxv*100)}%"></div></div>
+      <div class="top-val">${ct}</div>
+    </div>`;
+  }).join('') || '<div style="color:var(--mut);font-size:12px">Nenhum dado ainda.</div>';
 }
 
 // ═══════════════════════════════════════════════════════════
-//  INSTRUÇÕES / PROMPTS
+//  INSTRUÇÕES
 // ═══════════════════════════════════════════════════════════
 function unlock() {
   if (document.getElementById('pwdinp').value === 'margotti') {
-    document.getElementById('lockform').style.display  = 'none';
-    document.getElementById('unlocked').style.display  = '';
+    document.getElementById('lockform').style.display = 'none';
+    document.getElementById('unlocked').style.display = '';
     toast('Desbloqueado!', 'ok');
   } else {
     toast('Senha incorreta', 'err');
@@ -1209,6 +1524,7 @@ function delPrompt(id) {
   renderPrompts();
   fetch('/api/db?path=' + encodeURIComponent(`/rest/v1/instrucoes?id=eq.${id}`),
     {method:'DELETE'}).catch(() => {});
+  toast('Removida', 'ok');
 }
 
 async function loadPrompts() {
@@ -1235,8 +1551,7 @@ async function loadPrompts() {
 function renderPrompts() {
   const el = document.getElementById('pilist');
   if (!prompts.length) {
-    el.innerHTML = '<div style="color:var(--mut);font-size:12px">Nenhuma instrução salva.</div>';
-    return;
+    el.innerHTML = '<div style="color:var(--mut);font-size:12px">Nenhuma instrução salva.</div>'; return;
   }
   el.innerHTML = prompts.map(p => `
     <div class="piitem">
@@ -1247,32 +1562,18 @@ function renderPrompts() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  API KEY
-// ═══════════════════════════════════════════════════════════
-function saveKey() {
-  const k = document.getElementById('makey').value.trim();
-  const p = document.getElementById('mprov').value;
-  if (k) localStorage.setItem('mac', JSON.stringify({prov:p, key:k}));
-  closeM('m-api');
-  toast('Salvo!', 'ok');
-}
-
-// ═══════════════════════════════════════════════════════════
-//  MODAIS
+//  MODAIS & TOAST
 // ═══════════════════════════════════════════════════════════
 function openM(id)  { document.getElementById(id).classList.remove('off'); }
 function closeM(id) { document.getElementById(id).classList.add('off'); }
 document.querySelectorAll('.ov').forEach(o =>
-  o.addEventListener('click', e => { if (e.target === o) o.classList.add('off'); }));
+  o.addEventListener('click', e => { if (e.target===o) o.classList.add('off'); }));
 
-// ═══════════════════════════════════════════════════════════
-//  TOAST
-// ═══════════════════════════════════════════════════════════
 let toastTimer;
 function toast(msg, type='inf') {
   const t = document.getElementById('toast');
   t.textContent = msg;
-  t.className = `toast show ${type}`;
+  t.className   = `toast show ${type}`;
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
 }
